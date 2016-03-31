@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="12dp"
+    android:paddingTop="12dp" >
+
+    <TextView
+        android:id="@+id/directory_item_vip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VIP"
+        android:textSize="14sp"
+        android:textColor="#ff6600" />
+
+    <TextView
+        android:id="@+id/directory_item_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="第100章 标题"
+        android:textColor="@color/text_black"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/directory_item_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/checked" />
+
+</LinearLayout>

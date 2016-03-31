@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/bg" >
+
+        <ImageView
+            android:id="@+id/pager_stop"
+            style="@style/toolbar_btn_img_border"
+            android:src="@drawable/stop"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/pager_update"
+            style="@style/toolbar_btn_img_border"
+            android:src="@drawable/update_nor" />
+
+        <ImageView
+            android:id="@+id/pager_add"
+            style="@style/toolbar_btn_img_border"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/add" />
+
+        <TextView
+            style="@style/toolbar_title"
+            android:text="@string/main_title" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <com.lqy.abook.widget.DrawerHScrollView
+            android:id="@+id/hscrollview"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scrollbars="none" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <GridView
+                    android:id="@+id/gridView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:listSelector="@color/transparent"
+                    android:scrollbars="horizontal" />
+            </LinearLayout>
+        </com.lqy.abook.widget.DrawerHScrollView>
+
+        <include layout="@layout/listview_empty" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/line" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/pager_num"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="top"
+        android:orientation="horizontal" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height" >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                style="@style/toolbar_btn_txt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="#66af43"
+                android:clickable="false"
+                android:enabled="false"
+                android:textColor="@color/white"
+                android:text="书架" />
+
+            <TextView
+                android:id="@+id/pager_toWeb"
+                style="@style/toolbar_btn_txt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="找书" />
+
+            <TextView
+                android:id="@+id/pager_myCenter"
+                style="@style/toolbar_btn_txt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="我的" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

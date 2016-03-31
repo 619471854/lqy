@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg" >
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <LinearLayout
+        android:id="@+id/browser_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/browser_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:drawablePadding="0dp"
+            android:gravity="center_vertical"
+            android:paddingBottom="5dp"
+            android:hint="搜索或输入网址"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:inputType="textUri"
+            android:imeOptions="actionGo"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/browser_refresh"
+            style="@style/toolbar_btn_img"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:src="@drawable/read_update_selector" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="46dp"
+        android:background="@drawable/line" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/browser_top"
+        android:background="@drawable/line" />
+
+    <LinearLayout
+        android:id="@+id/browser_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/browser_last"
+            style="@style/toolbar_btn_img"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/btn_last_selector" />
+
+        <ImageView
+            android:id="@+id/browser_next"
+            style="@style/toolbar_btn_img"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/btn_next_selector" />
+
+        <TextView
+            android:id="@+id/browser_save"
+            style="@style/toolbar_btn_txt"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:text="加入书架" />
+
+        <ImageView
+            android:id="@+id/browser_favorite_add"
+            style="@style/toolbar_btn_img"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/favorite" />
+        <ImageView
+            android:id="@+id/browser_more"
+            style="@style/toolbar_btn_img"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/more_nor" />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/browser_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/browser_bottom"
+        android:layout_below="@id/browser_top"
+        android:layout_marginTop="2dp" />
+
+
+    <LinearLayout
+        android:id="@+id/browser_more_lay"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/browser_bottom"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="5dp"
+        android:visibility="gone"
+        android:background="@drawable/read_menu_bg"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/browser_recommendation"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="推荐" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/browser_favorite"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="收藏夹" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/browser_history"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="历史纪录" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/browser_share"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="分享" />
+
+        <View style="@style/item_line" />
+        <TextView
+            android:id="@+id/browser_set"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="设置" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/browser_exit"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="退出" />
+    </LinearLayout>
+
+</RelativeLayout>

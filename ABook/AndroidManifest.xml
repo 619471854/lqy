@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.lqy.abook"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+    <!-- 百度统计 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- WindowManager -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <application
+        android:name="com.lqy.abook.MyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <!-- 启动界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.LoadingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- 书架 -->
+        <activity
+            android:name="com.lqy.abook.activity.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 读书界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.ReadActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Fullscreen" />
+        <!-- 读书菜单界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.ReadMenuActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/ReadMenuTheme" />
+        <!-- 读书更多设置界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.ReadSetActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 搜索列表界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.SearchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 小说封面界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.CoverActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 小说目录界面 -->
+        <activity
+            android:name="com.lqy.abook.activity.DirectoryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 切换网站 -->
+        <activity
+            android:name="com.lqy.abook.activity.SiteSwitchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 设置颜色 -->
+        <activity
+            android:name="com.lqy.abook.activity.ReadSetColorActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 浏览器 -->
+        <activity
+            android:name="com.lqy.abook.activity.BrowserActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+        <!-- 浏览器 历史纪录 -->
+        <activity
+            android:name="com.lqy.abook.activity.BrowserHistoryActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 浏览器 收藏和推荐 -->
+        <activity
+            android:name="com.lqy.abook.activity.BrowserFavoriteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 浏览器　设置 -->
+        <activity
+            android:name="com.lqy.abook.activity.BrowserSetActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+
+        <meta-data
+            android:name="BaiduMobAd_STAT_ID"
+            android:value="18bfbaab5a" />
+    </application>
+
+</manifest>

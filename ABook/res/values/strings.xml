@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">免费小说下载阅读器</string>
+    <string name="main_title">我的书架</string>
+    <string name="search_title">找书</string>
+    <string name="loading_zzjz">加载中...</string>
+    <string name="net_not_connected">请检查网络连接</string>
+    <string name="title">标题</string>
+    <string name="read">阅</string>
+
+    <string-array name="book_menu">
+        <item>更新本书</item>
+        <item>查看详情</item>
+        <item>查看目录</item>
+        <item>删除</item>
+    </string-array>
+    <string-array name="update_menu">
+        <item>智能下载本章</item>
+        <item>下载本章及后续章节</item>
+        <item>手工选择下载点</item>
+    </string-array>
+
+</resources>

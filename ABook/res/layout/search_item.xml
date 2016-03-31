@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp" >
+
+    <ImageView
+        android:id="@+id/search_item_cover"
+        android:layout_width="60dp"
+        android:layout_height="80dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/book_cover_bg"
+        android:scaleType="fitXY"
+        android:src="@drawable/book_cover_default" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp" >
+
+        <TextView
+            android:id="@+id/search_item_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="type "
+            android:textColor="#bebebe"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/search_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/search_item_type"
+            android:drawablePadding="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="title"
+            android:textColor="@color/text_black"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/search_item_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_item_title"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="author"
+            android:textColor="#fb8634"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/search_item_tips"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/search_item_author"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:gravity="bottom"
+            android:lines="2"
+            android:text="tips\ntips"
+            android:textColor="@color/hint"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,94 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            style="@style/toolbar_btn_img"
+            android:onClick="cancelButtonClick"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/toolbar_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="自定义颜色" />
+
+        <TextView
+            android:id="@+id/toolbar_btn_default"
+            style="@style/toolbar_btn_txt"
+            android:text="默认" />
+
+        <TextView
+            android:id="@+id/toolbar_btn_ok"
+            style="@style/toolbar_btn_txt"
+            android:text="确定" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/line" />
+
+    <TextView
+        android:id="@+id/set_color_current"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="这是当前定义的字体颜色和背景色"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#d0d5cb"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" >
+
+        <RadioGroup
+            android:id="@+id/set_color_rg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/set_color_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/set_color_rb"
+                android:button="@null"
+                android:checked="true"
+                android:drawablePadding="0dp"
+                android:text="字体颜色"
+                android:textColor="@color/set_color_rb" />
+
+            <RadioButton
+                android:id="@+id/set_color_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/set_color_rb"
+                android:button="@null"
+                android:drawablePadding="0dp"
+                android:text="背景颜色"
+                android:textColor="@color/set_color_rb" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <com.lqy.abook.widget.ColorPicker
+        android:id="@+id/set_color_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

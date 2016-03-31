@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp" >
+
+        <com.lqy.abook.widget.MyImageButton
+            android:id="@+id/books_cover"
+            android:layout_width="70dp"
+            android:layout_height="95dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/book_cover_bg"
+            android:gravity="center"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/books_noread"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/books_num"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="10"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/books_status"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="1dp"
+            android:layout_marginTop="73dp"
+            android:src="@drawable/status_new" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/books_title"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:singleLine="true"
+        android:text="诛仙"
+        android:textColor="@color/text_black"
+        android:textSize="14sp" />
+
+</LinearLayout>

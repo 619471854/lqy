@@ -1,0 +1,158 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppBaseTheme" parent="android:Theme"></style>
+
+    <style name="AppTheme" parent="AppBaseTheme"></style>
+
+    <style name="ActivityTheme" parent="android:Theme.Light.NoTitleBar">
+        <item name="android:windowAnimationStyle">@style/noAnimation</item>
+    </style>
+
+    <style name="Fullscreen" parent="ActivityTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="ReadMenuTheme" parent="ActivityTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="noAnimation">
+        <item name="android:activityOpenEnterAnimation">@null</item>
+        <item name="android:activityOpenExitAnimation">@null</item>
+        <item name="android:activityCloseEnterAnimation">@null</item>
+        <item name="android:activityCloseExitAnimation">@null</item>
+        <item name="android:taskOpenEnterAnimation">@null</item>
+        <item name="android:taskOpenExitAnimation">@null</item>
+        <item name="android:taskCloseEnterAnimation">@null</item>
+        <item name="android:taskCloseExitAnimation">@null</item>
+        <item name="android:taskToFrontEnterAnimation">@null</item>
+        <item name="android:taskToFrontExitAnimation">@null</item>
+        <item name="android:taskToBackEnterAnimation">@null</item>
+        <item name="android:taskToBackExitAnimation">@null</item>
+    </style>
+
+    <style name="toolbar_btn_img">
+        <item name="android:layout_width">@dimen/toolbar_height</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:onClick">sendButtonClick</item>
+        <item name="android:background">@drawable/btn</item>
+    </style>
+
+    <style name="toolbar_btn_img_border" parent="toolbar_btn_img">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:onClick">sendButtonClick</item>
+        <item name="android:background">@drawable/btn_border</item>
+    </style>
+
+    <style name="toolbar_btn_check" parent="toolbar_btn_img">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:button">@null</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:drawablePadding">0dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
+    <style name="toolbar_btn_txt">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/toolbar_height</item>
+        <item name="android:minWidth">@dimen/toolbar_height</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:onClick">sendButtonClick</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#877667</item>
+        <item name="android:background">@drawable/btn</item>
+    </style>
+
+    <style name="toolbar_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:textColor">@color/title</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:text">@string/title</item>
+    </style>
+
+    <style name="btn_txt_small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:onClick">sendButtonClick</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/btn_border</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">none</item>
+    </style>
+
+    <style name="btn_txt_big" parent="toolbar_btn_img">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="item_text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/item_height</item>
+        <item name="android:textColor">#ff7e6b5a</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:clickable">true</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:background">@drawable/list_selector</item>
+    </style>
+
+    <style name="item_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1px</item>
+        <item name="android:background">#ffd0c4ab</item>
+    </style>
+
+    <style name="font_btn">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:button">@null</item>
+        <item name="android:clickable">true</item>
+        <item name="android:drawablePadding">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:layout_marginTop">7dp</item>
+        <item name="android:layout_marginBottom">7dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:text">@string/read</item>
+    </style>
+
+</resources>

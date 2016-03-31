@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/bg" >
+
+        <ImageView
+            style="@style/toolbar_btn_img"
+            android:onClick="cancelButtonClick"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/toolbar_title"
+            android:text="书名" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/line" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="20dp"
+            android:paddingTop="5dp" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" >
+
+                <ImageView
+                    android:id="@+id/book_cover_img"
+                    android:layout_width="75dp"
+                    android:layout_height="95dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/book_cover_bg"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/book_cover_default" />
+
+                <TextView
+                    android:id="@+id/book_cover_author"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/book_cover_img"
+                    android:layout_marginTop="2dp"
+                    android:layout_toRightOf="@id/book_cover_img"
+                    android:background="@drawable/btn_border"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="2dp"
+                    android:singleLine="true"
+                    android:text="作者"
+                    android:textColor="@color/text_black"
+                    android:textSize="14dp" />
+
+                <ImageView
+                    android:id="@+id/book_cover_completedbook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@id/book_cover_img"
+                    android:layout_marginTop="2.5dp"
+                    android:src="@drawable/completedbook"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/book_cover_describe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/book_cover_author"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/book_cover_img"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:padding="0dp"
+                    android:singleLine="true"
+                    android:text="玄幻,100万字"
+                    android:textColor="@color/hint"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:id="@+id/book_cover_new_chapter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/book_cover_describe"
+                    android:layout_marginTop="7dp"
+                    android:layout_toRightOf="@id/book_cover_img"
+                    android:background="@drawable/list_selector"
+                    android:clickable="true"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:onClick="sendButtonClick"
+                    android:text="最新章节:"
+                    android:textColor="@color/hint"
+                    android:textSize="14dp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/book_cover_menu_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/book_cover_read"
+                    style="@style/btn_txt_small"
+                    android:minWidth="80dp"
+                    android:text="立即阅读" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/book_cover_dict"
+                    style="@style/btn_txt_small"
+                    android:minWidth="80dp"
+                    android:text="查看目录" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/book_cover_save"
+                    style="@style/btn_txt_small"
+                    android:minWidth="80dp"
+                    android:text="缓存全本" />
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/book_cover_site"
+                style="@style/btn_txt_small"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:drawableRight="@drawable/arrow_right"
+                android:background="@drawable/cover_site"
+                android:gravity="left"
+                android:textSize="16dp"
+                android:text="下载点： 17K小说" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
+                android:text="简介:"
+                android:textColor="@color/text_black"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/book_cover_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:textColor="@color/descript_text"
+                android:textSize="14dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

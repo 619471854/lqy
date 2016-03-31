@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <sf.hmg.turntest.PageWidget
+        android:id="@+id/read_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffe7cfad"
+        android:fastScrollEnabled="false"
+        android:lineSpacingMultiplier="1.2"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
+        android:textColor="#ff423829"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/read_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/read_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <!--
+        <ProgressBar
+            android:id="@+id/read_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/progressbar_color"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="1.5dp"
+            android:background="@color/read_status"
+            android:visibility="gone" /> -->
+
+        <TextView
+            android:id="@+id/read_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/read_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="8dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_toLeftOf="@id/read_num"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

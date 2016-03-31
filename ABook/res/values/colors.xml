@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="transparent">#00000000</color>
+    <color name="bg">#ffe1d8c4</color>
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="title">#ff867566</color>
+    <color name="border">#ffcbc1ac</color>
+    <color name="hint">#ff9d9280</color>
+    <color name="text_black">#ff524d48</color>
+    <color name="text_tag">#959595</color>
+    <color name="read_status">#ff9f8268</color>
+    <color name="list_item_clicked">#ffc3b8a2</color>
+    <color name="descript_text">#ff7e6b5a</color>
+    <color name="green">#ff66af43</color>
+    
+
+</resources>
