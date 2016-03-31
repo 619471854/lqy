@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.Base64;
@@ -15,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.lqy.abook.MyApp;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class Util {
 
@@ -84,7 +84,7 @@ public class Util {
 
 	public static void dialog(Context c, String msg, DialogInterface.OnClickListener positivelistener) {
 		try {
-			new AlertDialog.Builder(c).setTitle("系统提示").setMessage(msg).setPositiveButton("确定", positivelistener).setNegativeButton("取消", null).show();
+			new MyAlertDialog(c).setTitle("系统提示").setMessage(msg).setPositiveButton("确定", positivelistener).setNegativeButton("取消", null).show();
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -92,7 +92,7 @@ public class Util {
 
 	public static void dialog(Context c, String msg) {
 		try {
-			new AlertDialog.Builder(c).setTitle("系统提示").setMessage(msg).setPositiveButton("确定", null).show();
+			new MyAlertDialog(c).setTitle("系统提示").setMessage(msg).setPositiveButton("确定", null).show();
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -176,6 +176,7 @@ public class Util {
 			return CONSTANT.EMPTY;
 		}
 	}
+
 	/**
 	 * 验证网址
 	 */

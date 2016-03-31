@@ -166,6 +166,13 @@ public class ReadMenuActivity extends MenuActivity {
 		}
 	}
 
+	private View.OnClickListener listener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			sendButtonClick(v);
+		}
+	};
+
 	public void sendButtonClick(View v) {
 		Intent intent;
 		switch (v.getId()) {
@@ -260,6 +267,32 @@ public class ReadMenuActivity extends MenuActivity {
 			startActivity(new Intent(_this, ReadSetColorActivity.class));
 			finish();
 			animationRightToLeft();
+			break;
+		case R.id.read_menu_html:
+			ChapterEntity e = Cache.getCurrentChapter();
+			if (e != null) {
+				intent = new Intent(_this, BrowserActivity.class);
+				intent.putExtra("title", e.getName());
+				intent.putExtra("url", e.getUrl());
+				intent.putExtra("class", _this.getClass().getName());
+				startActivity(intent);
+				finish();
+				animationRightToLeft();
+			}
+			break;
+		case R.id.read_menu_baidu:
+			ChapterEntity e2 = Cache.getCurrentChapter();
+			if (e2 != null) {
+				intent = new Intent(_this, BrowserActivity.class);
+				BookEntity b2 = Cache.getBook();
+				String key = b2.getName() + " " + b2.getAuthor() + " " + e2.getName();
+				intent.putExtra("title", key);
+				intent.putExtra("url", "https://www.baidu.com/s?wd=" + key);
+				intent.putExtra("class", _this.getClass().getName());
+				startActivity(intent);
+				finish();
+				animationRightToLeft();
+			}
 			break;
 		default:
 			break;

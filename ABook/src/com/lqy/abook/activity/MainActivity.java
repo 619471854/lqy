@@ -1,5 +1,6 @@
 package com.lqy.abook.activity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +16,13 @@ import android.widget.TextView;
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
 import com.lqy.abook.adapter.BookGridAdapter;
+import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
+import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
@@ -114,7 +117,7 @@ public class MainActivity extends MenuActivity {
 		super.onNewIntent(intent);
 	}
 
-	public void refresh() {
+	private void refresh() {
 		if (books == null) {
 			view_hint.setText(NetworkUtils.isNetConnected(_this) ? "获取书籍失败" : "找不到网络");
 			view_hint.setVisibility(View.VISIBLE);
@@ -126,6 +129,22 @@ public class MainActivity extends MenuActivity {
 			view_hint.setVisibility(View.GONE);
 		}
 		refresh(true);
+	}
+
+	public void delete(BookEntity e) {
+		FileUtil.delFile(new File(FileUtil.getBooksPath(e.getId())));
+		new BookDao().deleteBook(e.getId());
+		books.remove(e);
+		if (Cache.getBook() != null && Cache.getBook().getId() == e.getId()) {
+			Cache.setBook(null);
+		}
+		if (waitLoadBooks != null && waitLoadBooks.contains(e)) {
+			waitLoadBooks.remove(e);
+			if (waitLoadBooks.size() == 0) {
+				waitLoadBooks = null;
+			}
+		}
+		refresh();
 	}
 
 	/**

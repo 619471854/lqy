@@ -1,7 +1,7 @@
 package com.lqy.abook.entity;
 
 public class ChapterEntity extends SerializableEntity {
-	private int id;
+	private int id;//章节列表的位置
 	private String name;
 	private String url;
 	private LoadStatus loadStatus = LoadStatus.notLoaded;

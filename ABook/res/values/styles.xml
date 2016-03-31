@@ -35,6 +35,31 @@
         <item name="android:taskToBackExitAnimation">@null</item>
     </style>
 
+    <style name="my_progress_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/my_dialog_bg</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+    </style>
+
+    <style name="progressBarStyle" parent="android:Widget.ProgressBar">
+        <item name="android:indeterminateDrawable">@drawable/progress_medium_holo</item>
+    </style>
+
+    <style name="dialog_full_screen" parent="@style/my_progress_dialog">
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="pop_down" parent="android:Animation">
+        <item name="@android:windowEnterAnimation">@anim/dialog_bottom_enter</item>
+        <item name="@android:windowExitAnimation">@anim/dialog_bottom_exit</item>
+    </style>
+
     <style name="toolbar_btn_img">
         <item name="android:layout_width">@dimen/toolbar_height</item>
         <item name="android:layout_height">match_parent</item>
@@ -112,7 +137,7 @@
         <item name="android:ellipsize">none</item>
     </style>
 
-    <style name="btn_txt_big" parent="toolbar_btn_img">
+    <style name="btn_txt_big" parent="btn_txt_small">
         <item name="android:layout_width">match_parent</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +16,7 @@ import com.lqy.abook.tool.GlobalConfig;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.widget.MyProgressDialog;
 
 public class MenuActivity extends Activity {
 	protected MenuActivity _this;
@@ -145,13 +145,15 @@ public class MenuActivity extends Activity {
 	/**
 	 * 显示正在加载的对话框
 	 */
-	private ProgressDialog dialog;
+	private MyProgressDialog dialog;
 
 	public void showLoadingDialog(String msg) {
 		if (!isFinishing()) {
-			dialog = new ProgressDialog(this);
-			dialog.setMessage(msg);
-			dialog.setCancelable(true);
+			if (Util.isJsEmpty(msg))
+				msg = CONSTANT.EMPTY;
+			dialog = new MyProgressDialog(this);
+			dialog.setCanCancel(true);
+			dialog.setText(msg);
 			dialog.show();
 		}
 	}

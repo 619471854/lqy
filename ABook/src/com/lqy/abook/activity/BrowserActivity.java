@@ -4,7 +4,6 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +36,7 @@ import com.lqy.abook.parser.ParserResult;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class BrowserActivity extends MenuActivity {
 	private static final int WHAT_INIT = 0;
@@ -94,13 +94,18 @@ public class BrowserActivity extends MenuActivity {
 			}
 		});
 		Intent intent = getIntent();
+		// ReadActivity的查看原网页等
+		String title = intent.getStringExtra("title");
+		String url = intent.getStringExtra("url");
 		// 其它应用的分享操作(android.intent.action.SEND)跳转过来
 		String sendText = intent.getStringExtra(Intent.EXTRA_TEXT);
 		// 浏览器(android.intent.category.BROWSABLE)跳转过来
 		String browserUrl = intent.getDataString();
-		if (browserUrl != null || sendText != null) {
+		if (!Util.isEmpty(url)) {
+			loadUrl(title, url);
+		} else if (browserUrl != null || sendText != null) {
 			// 从外部进来
-			String url = browserUrl == null ? sendText : browserUrl;
+			url = browserUrl == null ? sendText : browserUrl;
 			int index = url.indexOf("http");
 			if (index == -1) {
 				Util.dialog(_this, "未找到网址");
@@ -219,7 +224,7 @@ public class BrowserActivity extends MenuActivity {
 			});
 		} else if (result.getResult() == ParserResult.Result.InputName) {
 			final EditText et = new EditText(_this);
-			new AlertDialog.Builder(_this).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			new MyAlertDialog(_this).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {

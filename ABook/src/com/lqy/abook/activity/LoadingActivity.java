@@ -16,7 +16,6 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.tool.Util;
 
 public class LoadingActivity extends MenuActivity {
 
@@ -27,13 +26,7 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		String url = getIntent().getStringExtra("url");
-		if (Util.isEmpty(url)) {
-			getBooks();
-		} else {
-			// 添加网页到书架
-			addBook(url);
-		}
+		getBooks();
 	}
 
 	private void step(ArrayList<BookEntity> books) {
@@ -43,13 +36,6 @@ public class LoadingActivity extends MenuActivity {
 		startActivity(intent);
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 		finish();
-	}
-
-	/**
-	 * 添加网页到书架
-	 */
-	private void addBook(String url) {
-		
 	}
 
 	@Override

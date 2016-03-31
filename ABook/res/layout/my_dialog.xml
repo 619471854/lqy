@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/my_alert_dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:ellipsize="end"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:text="@string/app_name"
+        android:textColor="@color/title"
+        android:textSize="20sp"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/my_alert_dialog_parting "
+        style="@style/item_line"
+        android:layout_height="1dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/my_alert_dialog_msg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:scrollbars="vertical"
+        android:text="@string/toast"
+        android:textColor="@color/text_black"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/my_alert_dialog_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/my_alert_dialog_btn_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="horizontal" >
+
+        <View
+            android:id="@+id/my_alert_dialog_left"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/my_alert_dialog_ok"
+            style="@style/btn_txt_big"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="3"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:text="@string/ok"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/my_alert_dialog_abolish"
+            style="@style/btn_txt_big"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="3"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:text="@string/abolish"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/my_alert_dialog_cancel"
+            style="@style/btn_txt_big"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="3"
+            android:paddingBottom="0dp"
+            android:paddingTop="0dp"
+            android:text="@string/cancel"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/my_alert_dialog_right"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

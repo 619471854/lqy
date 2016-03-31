@@ -1,12 +1,12 @@
 package com.lqy.abook.tool;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import com.lqy.abook.activity.BrowserActivity;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class MyWebChromeClient extends WebChromeClient {
 	private BrowserActivity activity;
@@ -42,7 +42,7 @@ public class MyWebChromeClient extends WebChromeClient {
 	@Override
 	public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
 		if (activity != null && !activity.isFinishing())
-			new AlertDialog.Builder(activity).setTitle("系统提示").setMessage(message).setCancelable(false).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			new MyAlertDialog(activity).setTitle("系统提示").setMessage(message).setCancelable(false).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					result.confirm();

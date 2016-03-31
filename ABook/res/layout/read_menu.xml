@@ -243,10 +243,17 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/read_menu_color1"
+                android:id="@+id/read_menu_baidu"
                 style="@style/item_text"
                 android:onClick="sendButtonClick"
-                android:text="自定义颜色" />
+                android:text="百度搜索此章节" />
+
+            <View style="@style/item_line" />
+            <TextView
+                android:id="@+id/read_menu_html"
+                style="@style/item_text"
+                android:onClick="sendButtonClick"
+                android:text="打开原网页" />
 
             <View style="@style/item_line" />
             <TextView

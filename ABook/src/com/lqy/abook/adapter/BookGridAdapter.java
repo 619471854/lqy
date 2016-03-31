@@ -1,11 +1,9 @@
 package com.lqy.abook.adapter;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -18,20 +16,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lqy.abook.R;
+import com.lqy.abook.activity.BrowserActivity;
 import com.lqy.abook.activity.CoverActivity;
 import com.lqy.abook.activity.DirectoryActivity;
 import com.lqy.abook.activity.MainActivity;
 import com.lqy.abook.activity.ReadActivity;
-import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.AsyncImageLoader;
 import com.lqy.abook.load.Cache;
-import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 	private MainActivity activity;
@@ -184,7 +182,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 	}
 
 	private void showArrayDialog(final ImageView view_status, final BookEntity e) {
-		new AlertDialog.Builder(activity).setTitle(e.getName() + "-" + e.getSite().getName()).setItems(R.array.book_menu, new OnClickListener() {
+		new MyAlertDialog(activity).setTitle(e.getName() + "-" + e.getSite().getName()).setItems(R.array.book_menu, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Intent intent;
@@ -214,7 +212,28 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					Cache.setBook(e);
 					activity.startActivity(intent);
 					break;
-				case 3:// 删除
+				case 3:
+					if (Util.isEmpty(e.getDirectoryUrl())) {
+						Util.dialog(activity, "未找到原网页");
+					} else {
+						intent = new Intent(activity, BrowserActivity.class);
+						intent.putExtra("title", e.getName());
+						intent.putExtra("url", e.getDirectoryUrl());
+						intent.putExtra("class", activity.getClass().getName());
+						activity.startActivity(intent);
+						activity.animationRightToLeft();
+					}
+					break;
+				case 4:
+					intent = new Intent(activity, BrowserActivity.class);
+					String key = e.getName() + " " + e.getAuthor();
+					intent.putExtra("title", key);
+					intent.putExtra("url", "https://www.baidu.com/s?wd=" + key);
+					intent.putExtra("class", activity.getClass().getName());
+					activity.startActivity(intent);
+					activity.animationRightToLeft();
+					break;
+				case 5:// 删除
 					delete(e);
 					break;
 
@@ -230,13 +249,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				FileUtil.delFile(new File(FileUtil.getBooksPath(e.getId())));
-				new BookDao().deleteBook(e.getId());
-				books.remove(e);
-				if (Cache.getBook() != null && Cache.getBook().getId() == e.getId()) {
-					Cache.setBook(null);
-				}
-				activity.refresh();
+				activity.delete(e);
 			}
 		});
 	}

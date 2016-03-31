@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.GestureDetector;
@@ -21,6 +20,7 @@ import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.GlobalConfig;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class TurnUtil implements GestureDetector.OnGestureListener {
 	private PageWidget mPageWidget;
@@ -82,7 +82,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		else if (chapter.isVip())
 			pagefactory.openBook(null, TextType.VIP,0);
 		else {
-			MyLog.i("showChapterText " + chapter.getId());
+			MyLog.i("showChapterText " + chapter.getName());
 			String path = FileUtil.getBooksPath(bookId) + File.separator + FileUtil.getChapterName(chapter.getName());
 			isSuccess = pagefactory.openBook(path, TextType.PATH,readBegin);
 		}
@@ -243,6 +243,6 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		v = new ImageView(a);
 		v.setImageBitmap(curPageBitmap);
 		lay.addView(v, new LinearLayout.LayoutParams(400, -2));
-		new AlertDialog.Builder(a).setView(lay).show();
+		new MyAlertDialog(a).setView(lay).show();
 	}
 }
