@@ -11,25 +11,31 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
-import com.lqy.abook.parser.ParserBase;
+import com.lqy.abook.parser.ParserBase2;
 import com.lqy.abook.parser.ParserResult;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
-public class Parser17K extends ParserBase {
+public class Parser17K extends ParserBase2 {
+	protected static Config config = Config.get17KConfig();
 
 	public Parser17K() {
 		encodeType = "gbk";
-		config = Config.get17KConfig();
 		site = Site._17K;
+	}
+
+	@Override
+	protected Config getConfig() {
+		// TODO Auto-generated method stub
+		return config;
 	}
 
 	@Override
 	public boolean updateBook(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDetailUrl(), "div class=\"bookBox_r\"");
-			MyLog.i("updateBook getParserResult ok");
+			MyLog.i("Parser17K updateBook getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
@@ -54,13 +60,13 @@ public class Parser17K extends ParserBase {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i("updateBookAndDict  此书没有更新");
+				MyLog.i("Parser17K updateBookAndDict  此书没有更新");
 				return null;
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("updateBookAndDict getChapters failed");
+				MyLog.i("Parser17K updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				return chapters;
@@ -77,7 +83,7 @@ public class Parser17K extends ParserBase {
 		try {
 			if (Util.isEmpty(detail.getName())) {
 				SimpleNodeIterator iterator = getParserResult2(detail.getDetailUrl(), "div itemscope");
-				MyLog.i("parserBookDetail getParserResult ok");
+				MyLog.i("Parser17K parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
 					String html = iterator.nextNode().toHtml();
 					detail.setName(matcher(html, "<font\\s*itemprop=\"name\">(.+)</font>"));
@@ -92,7 +98,7 @@ public class Parser17K extends ParserBase {
 				}
 			} else {
 				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"bookBox_r\"");
-				MyLog.i("parserBookDetail getParserResult ok");
+				MyLog.i("Parser17K parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
 					String html = iterator.nextNode().toHtml();
 					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
@@ -109,7 +115,7 @@ public class Parser17K extends ParserBase {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = getParserResult(url, "li");
-			MyLog.i("parserBookDict getParserResult ok");
+			MyLog.i("Parser17K parserBookDict getParserResult ok");
 			ChapterEntity e;
 			String urlRoot = "http://www.17k.com";
 			while (iterator.hasMoreNodes()) {
@@ -139,7 +145,7 @@ public class Parser17K extends ParserBase {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(url, "div id=\"chapterContentWapper\"");
-			MyLog.i("asynGetChapterDetail getParserResult ok");
+			MyLog.i("Parser17K asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				html = matcher(html, "<div id=\"chapterContentWapper\">\\s*(((?!本书首发来自)[\\s\\S])+)");
@@ -187,7 +193,7 @@ public class Parser17K extends ParserBase {
 		book.setUpdateTime(matcher(html, config.updateTimeReg).trim());
 		book.setWords(Util.toInt(matcher(html, config.wordsReg)));
 
-		MyLog.i("search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i("Parser17K search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}

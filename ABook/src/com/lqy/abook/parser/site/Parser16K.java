@@ -19,10 +19,10 @@ import com.lqy.abook.tool.Util;
 import com.lqy.abook.tool.WebViewParser;
 
 public class Parser16K extends ParserBase {
+	protected static Config config = Config.get16KConfig();
 
 	public Parser16K() {
 		encodeType = "gbk";
-		config = Config.get16KConfig();
 		site = Site._16K;
 	}
 
@@ -43,37 +43,46 @@ public class Parser16K extends ParserBase {
 			// searchJs);
 			// return parserSearch(books, html, values);
 
-			String searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='articlename';a.searchkey.value='" + values[0] + "';a.submit();";
+			String searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='articlename';a.searchkey.value='" + values[0]
+					+ "';a.submit();";
 			String html = WebViewParser.getSearchResult(config.searchUrl, searchJs);
 			boolean re = parserSearch(books, html, values);
 			if (books.size() == 0) {
-				searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='author';a.searchkey.value='" + values[0] + "';a.submit();";
+				searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='author';a.searchkey.value='" + values[0]
+						+ "';a.submit();";
 				html = WebViewParser.getSearchResult(config.searchUrl, searchJs);
 				re = re || parserSearch(books, html, values);
 			}
 			return re;
 		} else {
-			String searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='author';a.searchkey.value='" + values[1] + "';a.submit();";
+			String searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='author';a.searchkey.value='" + values[1]
+					+ "';a.submit();";
 			String html = WebViewParser.getSearchResult(config.searchUrl, searchJs);
 			boolean re = parserSearch(books, html, values);
-			searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='articlename';a.searchkey.value='" + values[0] + "';a.submit();";
+			searchJs = "javascript:var a=document.getElementsByTagName('form')[0];a.searchtype.value='articlename';a.searchkey.value='" + values[0]
+					+ "';a.submit();";
 			html = WebViewParser.getSearchResult(config.searchUrl, searchJs);
 			re = re || parserSearch(books, html, values);
 			return re;
 		}
 	};
 
+	// 搜索小说所在的所在的site
+	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
+		return false;
+	}
+
 	private boolean parserSearch(List<BookEntity> books, String html, String[] keys) {
 		if (html == null)
 			return false;
 		try {
-			MyLog.i("Search  parseHtmlByWebView ok");
+			MyLog.i("Parser16K Search  parseHtmlByWebView ok");
 			int index = html.indexOf("===");
 			String resultUrl = html.substring(0, index);// 搜索结果的url地址
 			html = html.substring(index + 3);
 			if (resultUrl.equals(config.searchUrl)) {// search html
 				SimpleNodeIterator iterator = getParserResult(html, config.searchFilter);
-				MyLog.i("Search ok,parsering");
+				MyLog.i("Parser16K Search ok,parsering");
 				int count = 0;
 				while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
 					html = iterator.nextNode().toHtml();
@@ -83,7 +92,7 @@ public class Parser16K extends ParserBase {
 				}
 			} else {// 如果只有1本，取出的是目录界面
 				SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-				MyLog.i("Search ok is directory");
+				MyLog.i("Parser16K Search ok is directory");
 				if (iterator.hasMoreNodes()) {
 					html = iterator.nextNode().toHtml();
 					BookEntity book = processSearchDirectNode(html, resultUrl);
@@ -101,7 +110,7 @@ public class Parser16K extends ParserBase {
 	public boolean updateBook(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"hotTag\"");
-			MyLog.i("updateBook getParserResult ok");
+			MyLog.i("Parser16K updateBook getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
@@ -123,7 +132,7 @@ public class Parser16K extends ParserBase {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"wrap\"");
-			MyLog.i("updateBookAndDict getParserResult ok");
+			MyLog.i("Parser16K updateBookAndDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				iterator = getParserResult(html, "div class=\"hotTag\"");
@@ -131,20 +140,20 @@ public class Parser16K extends ParserBase {
 					String detail = iterator.nextNode().toHtml();
 					String newChapter = matcher(detail, config.newChapterReg2).trim().replaceAll("\\s", " ");
 					if (newChapter.equals(book.getNewChapter())) {
-						MyLog.i("updateBookAndDict  此书没有更新");
+						MyLog.i("Parser16K updateBookAndDict  此书没有更新");
 						return null;// 此书没有更新
 					}
 					book.setLoadStatus(LoadStatus.hasnew);
 					book.setNewChapter(newChapter);
 				} else {
-					MyLog.i("updateBookAndDict getNewChapter failed");
+					MyLog.i("Parser16K updateBookAndDict getNewChapter failed");
 					book.setLoadStatus(LoadStatus.failed);
 					return null;// 此书更新失败
 				}
 				List<ChapterEntity> chapters = parserBookDict(html);
 				if (chapters == null || chapters.size() == 0) {
 					book.setLoadStatus(LoadStatus.failed);
-					MyLog.i("updateBookAndDict getChapters failed");
+					MyLog.i("Parser16K updateBookAndDict getChapters failed");
 					return null;// 此书更新失败
 				} else {
 					return chapters;
@@ -164,7 +173,7 @@ public class Parser16K extends ParserBase {
 				return true;// 从目录界面过来
 			// 从搜索列表过来，更新封面和tip
 			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\"one\"");
-			MyLog.i("parserBookDetail getParserResult ok");
+			MyLog.i("Parser16K parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				detail.setCover(matcher(html, config.coverReg));
@@ -181,7 +190,7 @@ public class Parser16K extends ParserBase {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = getParserResult(url, "dd");
-			MyLog.i("parserBookDict getParserResult ok");
+			MyLog.i("Parser16K parserBookDict getParserResult ok");
 			ChapterEntity e;
 			String urlRoot = url.endsWith("/") ? url : url + '/';
 			while (iterator.hasMoreNodes()) {
@@ -204,7 +213,7 @@ public class Parser16K extends ParserBase {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = getParserResult2(url, "div id=\"htmlContent\"");
-			MyLog.i("asynGetChapterDetail getParserResult ok");
+			MyLog.i("Parser16K asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				html = html.replaceAll(Config.lineWrapReg, "\n");
@@ -265,7 +274,7 @@ public class Parser16K extends ParserBase {
 		book.setUpdateTime(matcher(html, config.updateTimeReg).trim());
 		book.setWords(Util.toInt(matcher(html, config.wordsReg)) * 1000);
 
-		MyLog.i("search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i("Parser16K search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}
@@ -289,7 +298,7 @@ public class Parser16K extends ParserBase {
 		// book.setType(null);
 		// book.setUpdateTime(null);
 
-		MyLog.i("search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i("Parser16K search a book " + book.getName() + "  " + book.getAuthor());
 		return book;
 	}
 
@@ -307,7 +316,7 @@ public class Parser16K extends ParserBase {
 		BookEntity book = null;
 		try {
 			SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-			MyLog.i("Search ok is directory");
+			MyLog.i("Parser16K Search ok is directory");
 			if (iterator.hasMoreNodes()) {
 				String detailHtml = iterator.nextNode().toHtml();
 				book = processSearchDirectNode(detailHtml, url);

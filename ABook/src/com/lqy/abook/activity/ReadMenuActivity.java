@@ -166,13 +166,6 @@ public class ReadMenuActivity extends MenuActivity {
 		}
 	}
 
-	private View.OnClickListener listener = new View.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			sendButtonClick(v);
-		}
-	};
-
 	public void sendButtonClick(View v) {
 		Intent intent;
 		switch (v.getId()) {

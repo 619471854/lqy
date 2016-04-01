@@ -6,7 +6,6 @@ import java.util.List;
 import org.htmlparser.Node;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.BodyTag;
-import org.htmlparser.tags.Html;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
@@ -21,8 +20,15 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class ParserOther extends ParserBase {
+
 	@Override
-	protected boolean processSearchNode(List<BookEntity> books, String html, String[] searchKey) throws Exception {
+	public boolean parserSearch(List<BookEntity> books, String key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -39,7 +45,7 @@ public class ParserOther extends ParserBase {
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("updateBookAndDict getChapters failed");
+				MyLog.i("ParserOther updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				return chapters;
@@ -70,7 +76,7 @@ public class ParserOther extends ParserBase {
 	private String getChapterDetail(String url, String encodeType, boolean isChangeCode) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(url, new NodeClassFilter(BodyTag.class), encodeType);
-			MyLog.i("asynGetChapterDetail getParserResult ok");
+			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				// Node node = iterator.nextNode();
 				String html = iterator.nextNode().toPlainTextString();
@@ -111,7 +117,7 @@ public class ParserOther extends ParserBase {
 	private List<ChapterEntity> parserBookDict(String url, String urlOrHtml, String encodeType, boolean isChangeCode) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(urlOrHtml, new NodeClassFilter(LinkTag.class), encodeType);
-			MyLog.i("ParserBrowser parserOther ok " + encodeType);
+			MyLog.i("ParserOther ParserBrowser parserOther ok " + encodeType);
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			ChapterEntity e;
 			// 获取域名
@@ -122,7 +128,7 @@ public class ParserOther extends ParserBase {
 			} else {
 				baseUrl = url.substring(0, url.length() - (baseUrl.length() - index));
 			}
-			MyLog.i("ParserBrowser baseUrl= " + baseUrl);
+			MyLog.i("ParserOther ParserBrowser baseUrl= " + baseUrl);
 
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();

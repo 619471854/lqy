@@ -106,27 +106,51 @@ public class Config {
 		return _16K;
 	}
 
+	private static Config baidu;
+
+	public static Config getBaiduConfig() {
+		if (baidu == null) {
+			baidu = new Config();
+			baidu.searchUrl = "http://dushu.baidu.com/searchresult?word=";
+			baidu.searchFilter = "div class=\"item\" data-";
+			baidu.detailUrlReg = null;
+			baidu.coverReg = null;
+			baidu.directoryUrlReg = null;
+			baidu.nameReg = null;
+			baidu.keyReg = null;// 搜索到的关键词
+			baidu.authorReg = null;
+			baidu.typeReg = null;
+			baidu.wordsReg = null;
+			baidu.tipsReg = null;
+			baidu.tipsDetailReg = null;
+			baidu.newChapterReg = null;
+			baidu.updateTimeReg = null;
+			baidu.completedReg = null;
+		}
+		return baidu;
+	}
+
 	private static Config _520;
 
 	public static Config get18KConfig() {
-		if (_520 == null) {
-			_520 = new Config();
-			_520.searchUrl = "http://520xs.co/modules/article/search.php?searchkey=";
-			_520.searchFilter = null;
-			_520.detailUrlReg = null;
-			_520.coverReg = null;
-			_520.directoryUrlReg = null;
-			_520.nameReg = null;
-			_520.keyReg = null;// 搜索到的关键词
-			_520.authorReg = null;
-			_520.typeReg = null;
-			_520.wordsReg = null;
-			_520.tipsReg = null;
-			_520.tipsDetailReg = null;
-			_520.newChapterReg = null;
-			_520.updateTimeReg = null;
-			_520.completedReg = null;
+		if (baidu == null) {
+			baidu = new Config();
+			baidu.searchUrl = "http://520xs.co/modules/article/search.php?searchkey=";
+			baidu.searchFilter = null;
+			baidu.detailUrlReg = null;
+			baidu.coverReg = null;
+			baidu.directoryUrlReg = null;
+			baidu.nameReg = null;
+			baidu.keyReg = null;// 搜索到的关键词
+			baidu.authorReg = null;
+			baidu.typeReg = null;
+			baidu.wordsReg = null;
+			baidu.tipsReg = null;
+			baidu.tipsDetailReg = null;
+			baidu.newChapterReg = null;
+			baidu.updateTimeReg = null;
+			baidu.completedReg = null;
 		}
-		return _520;
+		return baidu;
 	}
 }
