@@ -63,10 +63,12 @@ public class MainActivity extends MenuActivity {
 		refresh();
 
 		// 启动时默认检查更新
-		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
-		boolean autoCheckUpdate = !sp.getBoolean("not_auto_check_udate", false);
-		if (autoCheckUpdate) {
-			update(books, true);
+		if (NetworkUtils.isNetConnected(null)) {
+			SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
+			boolean autoCheckUpdate = !sp.getBoolean("not_auto_check_udate", false);
+			if (autoCheckUpdate) {
+				update(books, true);
+			}
 		}
 	}
 
