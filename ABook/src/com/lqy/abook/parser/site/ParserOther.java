@@ -12,9 +12,9 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
-import com.lqy.abook.parser.ParserResult;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -104,14 +104,14 @@ public class ParserOther extends ParserBase {
 	/**
 	 * 获取所有链接
 	 */
-	public ParserResult parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html) {
 		if (Util.isEmpty(html))
 			return null;
 		String encodeType = matcher(html, "<meta http-equiv=\"[^\"]+\" content=\"[^\"]*charset=([^\"]+)\">");
 		if (Util.isEmpty(encodeType))
 			encodeType = "gbk";
 		List<ChapterEntity> chapters = parserBookDict(url, html, encodeType, false);
-		return new ParserResult(url, chapters);
+		return new BookAndChapters(url, chapters);
 	}
 
 	private List<ChapterEntity> parserBookDict(String url, String urlOrHtml, String encodeType, boolean isChangeCode) {

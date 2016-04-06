@@ -18,6 +18,7 @@ public class CONSTANT {
 
 	public static final String SP_READ = "read";
 	public static final String SP_BROWSER = "browser";
+	public static final String SP_CENTER = "center";
 	
 	public  static final  String defaultTitle = "百度一下";//浏览器默认显示的标题和地址
 	public  static final  String defaultUrl = "https://www.baidu.com";

@@ -1,34 +1,31 @@
-package com.lqy.abook.parser;
+package com.lqy.abook.entity;
 
 import java.util.List;
 
-import com.lqy.abook.entity.BookEntity;
-import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
 import com.lqy.abook.tool.Util;
 
-public class ParserResult {
+public class BookAndChapters {
 
-	public static enum Result {
+	public static enum SearchResult {
 		Success, Failed, Search, InputName
 	}
 
-	private Result result;
+	private SearchResult result;
 	private BookEntity book;
 	private List<ChapterEntity> chapters;
 
-	public ParserResult(String name, String author) {
-		result = Result.Search;
+	public BookAndChapters(String name, String author) {
+		result = SearchResult.Search;
 		book = new BookEntity();
 		book.setName(name);
 		book.setAuthor(author);
 	}
 
-	public ParserResult(String url, List<ChapterEntity> chapters) {
+	public BookAndChapters(String url, List<ChapterEntity> chapters) {
 		if (Util.isEmpty(url) || chapters == null || chapters.size() == 0) {
-			result = Result.Failed;
+			result = SearchResult.Failed;
 		} else {
-			result = Result.InputName;
+			result = SearchResult.InputName;
 			book = new BookEntity();
 			book.setDirectoryUrl(url);
 			book.setSite(Site.Other);
@@ -36,23 +33,23 @@ public class ParserResult {
 		}
 	}
 
-	public ParserResult(BookEntity book, List<ChapterEntity> chapters) {
+	public BookAndChapters(BookEntity book, List<ChapterEntity> chapters) {
 		if (book != null) {
 			this.book = book;
 			if (chapters == null || chapters.size() == 0) {
-				result = Result.Search;
+				result = SearchResult.Search;
 			} else {
 				this.chapters = chapters;
-				result = Result.Success;
+				result = SearchResult.Success;
 			}
 		}
 	}
 
-	public Result getResult() {
+	public SearchResult getResult() {
 		return result;
 	}
 
-	public void setResult(Result result) {
+	public void setResult(SearchResult result) {
 		this.result = result;
 	}
 

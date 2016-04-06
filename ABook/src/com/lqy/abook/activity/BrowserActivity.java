@@ -29,12 +29,13 @@ import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.FavoriteEntity;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
-import com.lqy.abook.parser.ParserResult;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.MyWebChromeClient;
 import com.lqy.abook.tool.Util;
 import com.lqy.abook.widget.MyAlertDialog;
 
@@ -93,6 +94,7 @@ public class BrowserActivity extends MenuActivity {
 				return false;
 			}
 		});
+
 		Intent intent = getIntent();
 		// ReadActivity的查看原网页等
 		String title = intent.getStringExtra("title");
@@ -147,7 +149,7 @@ public class BrowserActivity extends MenuActivity {
 		webView.getSettings().setAppCacheEnabled(true);
 
 		webView.setWebViewClient(client);
-		// webView.setWebChromeClient(new MyWebChromeClient(this));
+		webView.setWebChromeClient(new MyWebChromeClient(this));
 	}
 
 	@Override
@@ -185,7 +187,7 @@ public class BrowserActivity extends MenuActivity {
 			break;
 		case WHAT_SAVEBOOK2:// 添加到书架
 			MyLog.i("savebook2 ", o);
-			saveBook((ParserResult) o);
+			saveBook((BookAndChapters) o);
 			break;
 		case WHAT_SAVEBOOK3:// 添加到书架成功，启动首页
 			MyLog.i("savebook3 ", o);
@@ -209,10 +211,10 @@ public class BrowserActivity extends MenuActivity {
 	/**
 	 * 添加到书架
 	 */
-	private void saveBook(final ParserResult result) {
-		if (result == null || result.getResult() == ParserResult.Result.Failed) {
+	private void saveBook(final BookAndChapters result) {
+		if (result == null || result.getResult() == BookAndChapters.SearchResult.Failed) {
 			Util.dialog(_this, "获取目录失败");
-		} else if (result.getResult() == ParserResult.Result.Search) {
+		} else if (result.getResult() == BookAndChapters.SearchResult.Search) {
 			String msg = "不能获取到目录，是否去搜索小说《" + result.getBook().getName() + "》";
 			Util.dialog(_this, msg, new DialogInterface.OnClickListener() {
 				@Override
@@ -222,7 +224,7 @@ public class BrowserActivity extends MenuActivity {
 					startActivity(intent);
 				}
 			});
-		} else if (result.getResult() == ParserResult.Result.InputName) {
+		} else if (result.getResult() == BookAndChapters.SearchResult.InputName) {
 			final EditText et = new EditText(_this);
 			new MyAlertDialog(_this).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -263,14 +265,14 @@ public class BrowserActivity extends MenuActivity {
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
 			super.onPageStarted(view, url, favicon);
-			// MyLog.web("onPageStarted " + url);
+			MyLog.web("onPageStarted " + url);
 		}
 
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			sendMsgOnThread(WHAT_OVERRIDEURL);
 			view.loadUrl(url);
-			// MyLog.web("shouldOverrideUrlLoading " + url);
+			MyLog.web("shouldOverrideUrlLoading " + url);
 			return true;
 		}
 
@@ -278,7 +280,7 @@ public class BrowserActivity extends MenuActivity {
 		public void onPageFinished(WebView view, String url) {
 			super.onPageFinished(view, url);
 			String title = view.getTitle();
-			// MyLog.web("onPageFinished " + title + " " + url);
+			MyLog.web("onPageFinished " + title + " " + url);
 			showTitle();
 			// 保存历史纪录
 			dao.saveHistory(title, url);
@@ -289,7 +291,7 @@ public class BrowserActivity extends MenuActivity {
 		@Override
 		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 			super.onReceivedError(view, errorCode, description, failingUrl);
-			// MyLog.web("onPageFinished");
+			MyLog.web("onPageFinished");
 			// 获取历史纪录数量
 			loadUrl("javascript:window.local_obj.setHistoryLength(history.length);");
 		}

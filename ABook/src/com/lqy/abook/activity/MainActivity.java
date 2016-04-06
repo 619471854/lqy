@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
 import com.lqy.abook.adapter.BookGridAdapter;
 import com.lqy.abook.db.BookDao;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
@@ -28,7 +30,6 @@ import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.DisplayUtil;
 import com.lqy.abook.tool.GlobalConfig;
-import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
 import com.lqy.abook.widget.DrawerHScrollView;
@@ -60,6 +61,13 @@ public class MainActivity extends MenuActivity {
 		init();
 
 		refresh();
+
+		// 启动时默认检查更新
+		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
+		boolean autoCheckUpdate = !sp.getBoolean("not_auto_check_udate", false);
+		if (autoCheckUpdate) {
+			update(books, true);
+		}
 	}
 
 	private void init() {
@@ -138,12 +146,7 @@ public class MainActivity extends MenuActivity {
 		if (Cache.getBook() != null && Cache.getBook().getId() == e.getId()) {
 			Cache.setBook(null);
 		}
-		if (waitLoadBooks != null && waitLoadBooks.contains(e)) {
-			waitLoadBooks.remove(e);
-			if (waitLoadBooks.size() == 0) {
-				waitLoadBooks = null;
-			}
-		}
+		AsyncTxtLoader.stopLoadBook(e.getId());
 		refresh();
 	}
 
@@ -211,31 +214,13 @@ public class MainActivity extends MenuActivity {
 		case R.id.pager_update:
 			if (!NetworkUtils.isNetConnectedRefreshWhereNot()) {
 				Util.toast(_this, R.string.net_not_connected);
-			} else if (books != null && books.size() > 0) {
-				btn_update.setVisibility(View.GONE);
-				btn_stop.setVisibility(View.VISIBLE);
-				// 全部的状态设置成更新中
-				for (BookEntity book : books) {
-					book.setLoadStatus(LoadStatus.loading);
-				}
-				refresh(false);
-				// 下载第一本书，且其他书添加到等待栈里
-				if (books.size() > 1) {
-					if (waitLoadBooks == null)
-						waitLoadBooks = new ArrayList<BookEntity>();
-					else
-						waitLoadBooks.clear();
-					waitLoadBooks.addAll(books);
-					asynUpdateBook(waitLoadBooks.remove(0));
-				} else {
-					asynUpdateBook(books.get(0));
-				}
+			} else {
+				update(books, false);
 			}
 			break;
 		case R.id.pager_stop:
 			AsyncTxtLoader.stopLoad();
-			waitLoadBooks = null;
-			currentBook = null;
+			updateBookCount = 0;
 			btn_stop.setVisibility(View.GONE);
 			btn_update.setVisibility(View.VISIBLE);
 			boolean hasLoading = false;
@@ -258,6 +243,8 @@ public class MainActivity extends MenuActivity {
 			animationRightToLeft();
 			break;
 		case R.id.pager_myCenter:
+			startActivity(new Intent(this, MyCenterActivity.class));
+			animationRightToLeft();
 			break;
 
 		default:
@@ -312,51 +299,47 @@ public class MainActivity extends MenuActivity {
 	@Override
 	protected void dealMsg(int what, int arg1, Object o) {
 		switch (what) {
-		case 0:// 没有更新
-			updateOver();
+		case 0:
+			if (o != null) {
+				BookAndChapters e = (BookAndChapters) o;
+				BookEntity book = e.getBook();
+				ArrayList<ChapterEntity> chapters = (ArrayList<ChapterEntity>) e.getChapters();
+				LoadManager.asynSaveDirectory(book.getId(), chapters);
+				// 如果正在阅读本书，更新章节
+				if (Cache.getBook() != null && Cache.getBook().getId() == book.getId() && Cache.getChapters() != null)
+					Cache.setChapters(chapters);
+
+				if (arg1 == 0) {// 下载未读章节
+					if (!AsyncTxtLoader.getInstance().load(_this, book, chapters, 1, book.getCurrentChapterId())) {
+						book.setLoadStatus(LoadStatus.completed);
+						updateBookCount--;
+					}
+				}
+			} else
+				updateBookCount--;
+			if (arg1 == 0 && !isLoading()) {
+				btn_stop.setVisibility(View.GONE);
+				btn_update.setVisibility(View.VISIBLE);
+			}
+			if (arg1 == 0)
+				refresh(false);
 			break;
-		case 1:// 更新结束
-			updateOver();
+		case 1:
+			updateBookCount--;
+			if (!isLoading()) {
+				btn_stop.setVisibility(View.GONE);
+				btn_update.setVisibility(View.VISIBLE);
+			}
+			refresh(false);
 			break;
 		case 2:// 其它界面开启的下载，下载结束后执行
-			if (!isBack && currentBook == null && waitLoadBooks == null) {
+			if (!isBack && !isLoading()) {
 				btn_stop.setVisibility(View.GONE);
 				btn_update.setVisibility(View.VISIBLE);
 			}
 			break;
-		case 3:
-			if (currentBook != null && o != null) {
-				List<ChapterEntity> chapters = (List<ChapterEntity>) o;
-				LoadManager.asynSaveDirectory(currentBook.getId(), chapters);
-				// 如果正在阅读本书，更新章节
-				if (Cache.getBook() != null && Cache.getBook().getId() == currentBook.getId() && Cache.getChapters() != null)
-					Cache.setChapters((ArrayList<ChapterEntity>) chapters);
-			}
+		case 4:
 			break;
-		}
-	}
-
-	/**
-	 * 更新结束
-	 */
-	private void updateOver() {
-		btn_stop.setVisibility(View.GONE);
-		btn_update.setVisibility(View.VISIBLE);
-		if (currentBook != null && currentBook.getLoadStatus() != LoadStatus.failed) {
-			MyLog.i("asynUpdateOver " + currentBook.getName());
-			currentBook.setLoadStatus(LoadStatus.completed);
-		}
-		refresh(false);
-		if (waitLoadBooks == null || waitLoadBooks.size() == 0) {
-			waitLoadBooks = null;
-			currentBook = null;
-		} else if (!NetworkUtils.isNetConnectedRefreshWhereNot()) {
-			Util.toast(_this, R.string.net_not_connected);
-			waitLoadBooks = null;
-			currentBook = null;
-		} else {
-			// 继续更新下一本
-			asynUpdateBook(waitLoadBooks.remove(0));
 		}
 	}
 
@@ -368,54 +351,77 @@ public class MainActivity extends MenuActivity {
 			instance.sendMsgOnThread(2, null);
 	}
 
-	private BookEntity currentBook;// 当前下载的
-	private List<BookEntity> waitLoadBooks;// 等待下载的
-
 	public boolean isLoading() {
-		return currentBook != null;
+		return updateBookCount > 0;
 	}
 
-	synchronized public void asynUpdateBook(final BookEntity book) {
-		MyLog.i("asynUpdateBook " + book.getName());
-		currentBook = book;
-		btn_stop.setVisibility(View.VISIBLE);
-		btn_update.setVisibility(View.GONE);
+	private int updateBookCount = 0;
+
+	private void update(List<BookEntity> books, boolean onlyCheck) {
+		if (books == null || books.size() == 0)
+			return;
+		if (!onlyCheck) {
+			btn_update.setVisibility(View.GONE);
+			btn_stop.setVisibility(View.VISIBLE);
+
+			updateBookCount = books.size();
+		}
+		for (BookEntity book : books) {
+			asynUpdateBook(book, 0, onlyCheck);
+		}
+		if (!onlyCheck)
+			refresh(false);
+	}
+
+	public boolean update(BookEntity book) {
+		if (isLoading()) {
+			Util.dialog(_this, "正在更新，请稍后");
+			return false;
+		} else {
+			btn_update.setVisibility(View.GONE);
+			btn_stop.setVisibility(View.VISIBLE);
+			updateBookCount = 1;
+			asynUpdateBook(book, 0, false);
+			return true;
+		}
+	}
+
+	private void asynUpdateBook(final BookEntity book, final int what, boolean onlyCheck) {
+		if (!onlyCheck)
+			book.setLoadStatus(LoadStatus.loading);
+		final int onlyCheckInt = onlyCheck ? 1 : 0;
 		new Thread() {
 			public void run() {
-				book.setLoadStatus(LoadStatus.loading);
 				List<ChapterEntity> chapters = ParserManager.updateBookAndDict(book);
-				if (chapters == null || chapters.size() == 0) {
-					if (book.getLoadStatus() == LoadStatus.failed) {
-						if (!NetworkUtils.isNetConnected(null))// 网络原因的不显示失败
-							book.setLoadStatus(LoadStatus.notLoaded);
-						sendMsgOnThread(0, null);
-						return;
-					} else {// 没有更新
-						chapters = LoadManager.getDirectory(book.getId());
-						if (chapters == null || chapters.size() == 0) {
-							chapters = ParserManager.getDict(book);
-						}
-						if (chapters == null || chapters.size() == 0) {
-							if (NetworkUtils.isNetConnected(null))
-								book.setLoadStatus(LoadStatus.failed);
-							sendMsgOnThread(0, null);// 更新失败
-							return;
-						}
+				if (chapters != null && chapters.size() > 0) {
+					// 检测到更新，获取剩余未读章节数
+					if (book.getCurrentChapterId() < 0)
+						book.setCurrentChapterId(0);
+					if (book.getCurrentChapterId() >= chapters.size())
+						book.setCurrentChapterId(chapters.size() - 1);
+					book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
+
+					sendMsgOnThread(what, onlyCheckInt, new BookAndChapters(book, chapters));
+				} else if (onlyCheckInt == 1) {// 仅仅检查更新
+					sendMsgOnThread(what, onlyCheckInt, null);
+				} else if (book.getLoadStatus() == LoadStatus.failed) {// 仅仅检查更新失败
+					if (!NetworkUtils.isNetConnected(null))// 网络原因的不显示失败
+						book.setLoadStatus(LoadStatus.notLoaded);
+					sendMsgOnThread(what, onlyCheckInt, null);
+				} else {// 没有更新，获取本地章节目录
+					chapters = LoadManager.getDirectory(book.getId());
+					if (chapters == null || chapters.size() == 0) {
+						chapters = ParserManager.getDict(book);
 					}
+					if (chapters == null || chapters.size() == 0) {
+						if (NetworkUtils.isNetConnected(null))
+							book.setLoadStatus(LoadStatus.failed);
+						sendMsgOnThread(what, onlyCheckInt, null);// 更新失败
+					} else
+						sendMsgOnThread(what, onlyCheckInt, new BookAndChapters(book, chapters));
 				}
-				// 获取剩余未读章节数
-				if (book.getCurrentChapterId() < 0)
-					book.setCurrentChapterId(0);
-				if (book.getCurrentChapterId() >= chapters.size())
-					book.setCurrentChapterId(chapters.size() - 1);
-				book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
-
-				if (!AsyncTxtLoader.getInstance().load(_this, book, chapters, 1, book.getCurrentChapterId()))
-					sendMsgOnThread(0, null);// 没有需要更新的
-
-				sendMsgOnThread(3, chapters);// 没有需要更新的
-
 			};
 		}.start();
 	}
+
 }

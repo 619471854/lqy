@@ -53,6 +53,8 @@ public class AsyncTxtLoader {
 				instance.executor.shutdownNow();
 				instance.isRunning = false;
 				instance = null;
+				instance.totalCountMap.clear();
+				instance.loadedCountMap.clear();
 				MyLog.i("stopLoad ");
 			} catch (Exception e) {
 				MyLog.e(e);
@@ -60,7 +62,25 @@ public class AsyncTxtLoader {
 		} else {
 			MyLog.i(" not Required  stopLoad");
 		}
-		MainActivity.setLoadingOver();
+	}
+
+	/**
+	 * 停止某一本书的下载
+	 */
+	public static void stopLoadBook(long bookId) {
+		if (instance != null) {
+			try {
+				synchronized (instance.executor) {
+					instance.totalCountMap.remove(bookId);
+					instance.loadedCountMap.remove(bookId);
+				}
+				MyLog.i("stopLoadBook " + bookId);
+			} catch (Exception e) {
+				MyLog.e(e);
+			}
+		} else {
+			MyLog.i(" not Required  stopLoad");
+		}
 	}
 
 	private AsyncTxtLoader() {
@@ -76,7 +96,7 @@ public class AsyncTxtLoader {
 	/**
 	 * 下载当前章节
 	 */
-	public boolean  loadCurrentChapter(final MenuActivity activity, final BookEntity book, final ChapterEntity chapter, final int what, final boolean isReload) {
+	public boolean loadCurrentChapter(final MenuActivity activity, final BookEntity book, final ChapterEntity chapter, final int what, final boolean isReload) {
 		if (book != null && chapter != null) {
 			new Thread() {
 				public void run() {

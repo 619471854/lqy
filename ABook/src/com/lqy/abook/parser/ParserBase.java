@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 
 public abstract class ParserBase extends ParserUtil {
@@ -14,13 +15,13 @@ public abstract class ParserBase extends ParserUtil {
 	// 搜索小说
 	public abstract boolean parserSearch(List<BookEntity> books, String key);
 
-	// 搜索小说所在的所在的site
+	// 搜索拥有此小说的网站
 	public abstract boolean parserSearchSite(List<BookEntity> books, String name, String author);
 
 	// 更新小说，如果false则未更新或更新失败
 	public abstract boolean updateBook(BookEntity book);
 
-	// 更新小说，如果false则未更新或更新失败
+	// 更新小说，如果null则未更新或更新失败
 	public abstract List<ChapterEntity> updateBookAndDict(BookEntity book);
 
 	// 根据小说主页地址获取 小说信息
@@ -33,6 +34,6 @@ public abstract class ParserBase extends ParserUtil {
 	public abstract String getChapterDetail(String url);
 
 	// 通过url与html解析小说目录
-	public abstract ParserResult parserBrowser(String url, String html);
+	public abstract BookAndChapters parserBrowser(String url, String html);
 
 }

@@ -190,15 +190,9 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 				case 0:// 更新本书
 					if (!NetworkUtils.isNetConnectedRefreshWhereNot()) {
 						Util.toast(activity, R.string.net_not_connected);
-					} else {
-						e.setLoadStatus(LoadStatus.loading);
-						if (activity.isLoading()) {
-							Util.dialog(activity, "正在更新，请稍后");
-						} else {
-							activity.asynUpdateBook(e);
-							view_status.setVisibility(View.VISIBLE);
-							view_status.setImageResource(R.drawable.status_refresh);
-						}
+					} else if (activity.update(e)) {
+						view_status.setVisibility(View.VISIBLE);
+						view_status.setImageResource(R.drawable.status_refresh);
 					}
 					break;
 				case 1:// 查看详情

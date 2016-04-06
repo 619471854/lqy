@@ -133,6 +133,11 @@
             android:name="com.lqy.abook.activity.BrowserSetActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme" />
+        <!-- 个人中心-->
+        <activity
+            android:name="com.lqy.abook.activity.MyCenterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
 
         <meta-data
             android:name="BaiduMobAd_STAT_ID"

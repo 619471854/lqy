@@ -9,10 +9,10 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
-import com.lqy.abook.parser.ParserResult;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -305,7 +305,7 @@ public class Parser16K extends ParserBase {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public ParserResult parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html) {
 		if (Util.isEmpty(html))
 			return null;
 		String url2 = URLDecoder.decode(url);
@@ -325,7 +325,7 @@ public class Parser16K extends ParserBase {
 		}
 		if (book != null) {
 			List<ChapterEntity> chaters = parserBookDict(html);
-			return new ParserResult(book, chaters);
+			return new BookAndChapters(book, chaters);
 		}
 		return null;
 	}

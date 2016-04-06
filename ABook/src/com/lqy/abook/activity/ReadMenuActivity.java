@@ -178,7 +178,8 @@ public class ReadMenuActivity extends MenuActivity {
 		case R.id.read_menu_stop:
 			menu_stop.setVisibility(View.GONE);
 			menu_update.setVisibility(View.VISIBLE);
-			AsyncTxtLoader.stopLoad();
+			AsyncTxtLoader.stopLoadBook(Cache.getBook().getId());
+			MainActivity.setLoadingOver();
 
 			if (Cache.getBook().getLoadStatus() == LoadStatus.loading)
 				Cache.getBook().setLoadStatus(LoadStatus.notLoaded);

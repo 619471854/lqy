@@ -26,7 +26,7 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		getBooks();
+		 getBooks();
 	}
 
 	private void step(ArrayList<BookEntity> books) {
