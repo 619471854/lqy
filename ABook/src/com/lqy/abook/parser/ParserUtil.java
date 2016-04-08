@@ -8,7 +8,6 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.util.SimpleNodeIterator;
 
-import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.WebServer;
