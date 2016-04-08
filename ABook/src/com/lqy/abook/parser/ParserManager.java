@@ -11,6 +11,7 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
+import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
@@ -112,6 +113,9 @@ public class ParserManager {
 					if (result != null) {
 						break;
 					}
+				}
+				if (result == null) {
+					result = new ParserBaidu().parserBrowser(url2, html);
 				}
 				if (result == null) {
 					result = new ParserOther().parserBrowser(url2, html);

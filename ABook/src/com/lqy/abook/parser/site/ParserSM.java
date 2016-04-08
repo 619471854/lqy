@@ -208,7 +208,7 @@ public class ParserSM extends ParserBase2 {
 		if (url.startsWith("http://m.sm.cn/nove")) {
 			// http://m.sm.cn/novel/reader.php?uc_param_str=dnntnwvepffrgibijbprsv&from=novel_wap#catal/修罗武神/善良的蜜蜂
 			if (url.startsWith("http://m.sm.cn/novel/reader.php")) {
-				Matcher m = getMatcher(url, "^http://m\\.sm\\.cn/novel/reader\\.php?[^/]+/([^/]+)/([^/]+)$");
+				Matcher m = getMatcher(url, "^http://m\\.sm\\.cn/novel/reader\\.php\\?[^/]+/([^/]+)/([^/]+)$");
 				if (m != null) {
 					return new BookAndChapters(m.group(1), m.group(2));
 				}
