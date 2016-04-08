@@ -42,6 +42,8 @@ public class BookAndChapters {
 				this.chapters = chapters;
 				result = SearchResult.Success;
 			}
+		}else{
+			result = SearchResult.Failed;
 		}
 	}
 

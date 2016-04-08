@@ -5,6 +5,7 @@ public class Config {
 	public static final String tagReg = "<[^>]+>";// 去标签
 	public static final String lineWrapReg = "<br\\s*/?>";// 换行
 	public static final String nbsp = "&nbsp;";// 替换空格
+	public static final String amp = "&amp;";// 替换&
 
 	public String searchUrl;
 	public String searchFilter;
@@ -112,20 +113,20 @@ public class Config {
 		if (baidu == null) {
 			baidu = new Config();
 			baidu.searchUrl = "http://dushu.baidu.com/searchresult?word=";
-			baidu.searchFilter = "div class=\"item\" data-";
+			baidu.searchFilter = "div class=\"item\"";
 			baidu.detailUrlReg = null;
-			baidu.coverReg = null;
+			baidu.coverReg = "<img\\s*class='cover-img\\s*lazy\'\\s*data-original=\"([^\"]+)\"";
 			baidu.directoryUrlReg = null;
-			baidu.nameReg = null;
+			baidu.nameReg = "<span\\s*class=\"header-title cut\">(((?!</div>)[\\s\\S])+)</span>\\s*</div>";
 			baidu.keyReg = null;// 搜索到的关键词
-			baidu.authorReg = null;
-			baidu.typeReg = null;
+			baidu.authorReg = "<span\\s*class=\"info-author\">(.+)</span>";
+			baidu.typeReg = "<span\\s*class=\"info-cate cut\">(.+)</span>";
 			baidu.wordsReg = null;
-			baidu.tipsReg = null;
+			baidu.tipsReg = "<div\\s*class=\"detail-intro cut\">\\s*<span>(((?!</span>)[\\s\\S])+)</span>\\s*</div>";
 			baidu.tipsDetailReg = null;
 			baidu.newChapterReg = null;
 			baidu.updateTimeReg = null;
-			baidu.completedReg = null;
+			baidu.completedReg = "<span\\s*class=\"info-status\">(.+)</span>";
 		}
 		return baidu;
 	}

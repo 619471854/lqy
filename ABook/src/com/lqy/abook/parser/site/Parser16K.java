@@ -31,7 +31,6 @@ public class Parser16K extends ParserBase {
 		if (Util.isEmpty(key)) {
 			return false;
 		}
-		key = key.replaceAll("'", "").replaceAll("\\s+", " ");// 去除单引号和多余的空格
 		// 如果有空格，就搜索关键字，否则先搜索作者再搜索名字
 		String values[] = key.split(" ");
 		if (values.length == 1) {

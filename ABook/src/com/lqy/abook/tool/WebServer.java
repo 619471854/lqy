@@ -12,8 +12,6 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import com.lqy.abook.entity.ResultEntity;
-
 public class WebServer {
 
 	private static HttpClient getHttpClient() {
@@ -30,35 +28,25 @@ public class WebServer {
 	/**
 	 * get方法
 	 */
-	public static ResultEntity hcGetData(String url, String charset) {
-		ResultEntity result = null;
+	public static String hcGetData(String url, String charset) throws Exception {
 		try {
+			if (Util.isEmpty(charset))
+				charset = HTTP.UTF_8;
+
 			HttpGet request = new HttpGet(url);
+			request.addHeader("User-Agent", CONSTANT.CHROME_USER_AGENT);
+
 			// 处理响应
 			HttpResponse response = getHttpClient().execute(request);
 			int code = response.getStatusLine().getStatusCode();
 			if (200 == code) {
-				if (Util.isEmpty(charset))
-					charset = HTTP.UTF_8;
-				String value = EntityUtils.toString(response.getEntity(), charset);
-				result = ResultEntity.success(value);
-			} else if (NetworkUtils.isNetConnected(null)) {
-				result = ResultEntity.error("服务器错误  " + code);
+				return EntityUtils.toString(response.getEntity(), charset);
 			} else {
-				result = ResultEntity.error("没有网路  " + code);
+				throw new Exception("没有网路  " + code);
 			}
-
 		} catch (OutOfMemoryError e) {
-			result = ResultEntity.error("内存溢出");
-		} catch (Exception e) {// ConnectTimeoutException:找不到服务器//HttpHostConnectException：没有网络
-			if (NetworkUtils.isNetConnected(null)) {
-				result = ResultEntity.error("服务器错误  " + e.toString());
-			} else {
-				result = ResultEntity.error("没有网路  " + e.toString());
-			}
+			throw new Exception("内存溢出");
 		}
-		MyLog.i(url + "----------------------------------" + result.toString());
-		return result;
 	}
 
 	/**

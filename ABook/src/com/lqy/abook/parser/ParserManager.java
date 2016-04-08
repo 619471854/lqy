@@ -10,6 +10,7 @@ import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
+import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
@@ -30,7 +31,8 @@ public class ParserManager {
 	/**
 	 * 搜索小说
 	 */
-	public static int asynSearch(final MenuActivity activity, final String key, final int what) {
+	public static int asynSearch(final MenuActivity activity, String _key, final int what) {
+		final String key = _key.replaceAll("'", "").replaceAll("\\s", " ");// 去除单引号和多余的空格
 		List<ParserBase> parsers = getParsers();
 		for (final ParserBase parser : parsers) {
 			new Thread() {

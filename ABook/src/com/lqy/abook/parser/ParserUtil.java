@@ -8,8 +8,10 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.WebServer;
 
 public abstract class ParserUtil {
 	protected String encodeType;
@@ -30,6 +32,18 @@ public abstract class ParserUtil {
 			}
 		};
 		return getParserResult(url, filter, encodeType);
+	}
+
+	protected SimpleNodeIterator getParserResult3(String url, final String reg) throws Exception {
+		String html = WebServer.hcGetData(url, encodeType);
+		//html = matcher(html, "(<body>[\\s\\S]+</body>)");
+		NodeFilter filter = new NodeFilter() {
+			public boolean accept(Node node) {
+				return node.getText().startsWith(reg);
+			}
+		};
+		Parser parser = new Parser(html);
+		return parser.parse(filter).elements();
 	}
 
 	protected static SimpleNodeIterator getParserResult(String url, NodeFilter filter, String encodeType) throws Exception {

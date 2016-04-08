@@ -7,6 +7,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public abstract class ParserBase2 extends ParserBase {
 
@@ -16,9 +17,8 @@ public abstract class ParserBase2 extends ParserBase {
 	 * 搜索小说
 	 */
 	public boolean parserSearch(List<BookEntity> books, String key) {
-		Config config=getConfig();
+		Config config = getConfig();
 		try {
-			key = key.replaceAll("'", "").replaceAll("\\s", " ");// 去除单引号和多余的空格
 			SimpleNodeIterator iterator = getParserResult(config.searchUrl + key, config.searchFilter);
 			MyLog.i("Search ok,parsering");
 			int count = 0;
@@ -41,9 +41,9 @@ public abstract class ParserBase2 extends ParserBase {
 	 * 搜索小说所在的所在的site
 	 */
 	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
-		Config config=getConfig();
+		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + author, config.searchFilter);
+			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + " " + author, config.searchFilter);
 			MyLog.i("SearchSite ok,parsering");
 			while (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
@@ -61,15 +61,18 @@ public abstract class ParserBase2 extends ParserBase {
 	 * 解析 搜索小说所在的所在的site
 	 */
 	protected boolean processSearchSiteNode(List<BookEntity> books, String html, String name, String author) throws Exception {
-		Config config=getConfig();
+		Config config = getConfig();
 		// MyLog.i(html);
 		BookEntity book = new BookEntity();
 		book.setSite(site);
 		String nameHtml = matcher(html, config.nameReg);
 		book.setName(nameHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+
+		book.setDirectoryUrl(matcher(html, config.directoryUrlReg));
+		if (Util.isEmpty(book.getName()) || Util.isEmpty(book.getDirectoryUrl()))
+			return false;// 不完善的数据
 		String authorHtml = matcher(html, config.authorReg);
 		book.setAuthor(authorHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
-
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return false;// 继续找第二本
@@ -81,7 +84,6 @@ public abstract class ParserBase2 extends ParserBase {
 
 		book.setNewChapter(matcher(html, config.newChapterReg));
 		book.setUpdateTime(matcher(html, config.updateTimeReg));
-		book.setDirectoryUrl(matcher(html, config.directoryUrlReg));
 
 		books.add(book);
 		return true;// 已找到
