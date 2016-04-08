@@ -1,16 +1,16 @@
 package com.lqy.abook.parser;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lqy.abook.MenuActivity;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
-import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
@@ -98,21 +98,23 @@ public class ParserManager {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public static void parserBrowser(final MenuActivity activity, final String url, final String html, final int what) {
+	public static void parserBrowser(final MenuActivity activity, String url, final String html, final int what) {
 		if (Util.isEmpty(url) || Util.isEmpty(html))
 			activity.sendMsgOnThread(what);
+
+		final String url2 = URLDecoder.decode(url);
 		new Thread() {
 			public void run() {
 				BookAndChapters result = null;
 				List<ParserBase> parsers = getParsers();
 				for (ParserBase parser : parsers) {
-					result = parser.parserBrowser(url, html);
+					result = parser.parserBrowser(url2, html);
 					if (result != null) {
 						break;
 					}
 				}
 				if (result == null) {
-					result = new ParserOther().parserBrowser(url, html);
+					result = new ParserOther().parserBrowser(url2, html);
 				}
 				if (result == null) {
 					activity.sendMsgOnThread(what);

@@ -305,11 +305,8 @@ public class Parser16K extends ParserBase {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		if (Util.isEmpty(html))
-			return null;
-		String url2 = URLDecoder.decode(url);
 		// http://www.16kxsw.com/16k/12/12217/index.html
-		String id = matcher(url2, "^http://www\\.16kxsw\\.com/16k/\\d+/(\\d+)/(index\\.html)?$");
+		String id = matcher(url, "^http://www\\.16kxsw\\.com/16k/\\d+/(\\d+)/(index\\.html)?$");
 		if (Util.isEmpty(id))
 			return null;
 		BookEntity book = null;

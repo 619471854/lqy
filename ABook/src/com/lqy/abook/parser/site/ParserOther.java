@@ -105,8 +105,6 @@ public class ParserOther extends ParserBase {
 	 * 获取所有链接
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		if (Util.isEmpty(html))
-			return null;
 		String encodeType = matcher(html, "<meta http-equiv=\"[^\"]+\" content=\"[^\"]*charset=([^\"]+)\">");
 		if (Util.isEmpty(encodeType))
 			encodeType = "gbk";

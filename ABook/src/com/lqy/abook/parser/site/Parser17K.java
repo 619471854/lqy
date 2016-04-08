@@ -201,10 +201,7 @@ public class Parser17K extends ParserBase2 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
-		if (Util.isEmpty(url))
-			return null;
-		String url2 = URLDecoder.decode(url);
+	public BookAndChapters parserBrowser(String url2, String html) {
 		// http://www.17k.com/list/40082.html
 		// http://h5.17k.com/list/391013.html
 		String id = matcher(url2, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");

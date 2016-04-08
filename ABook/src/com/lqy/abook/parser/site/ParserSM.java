@@ -1,6 +1,5 @@
 package com.lqy.abook.parser.site;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -8,10 +7,10 @@ import java.util.regex.Pattern;
 
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase2;
@@ -206,18 +205,17 @@ public class ParserSM extends ParserBase2 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		String url2 = URLDecoder.decode(url);
-		if (url2.startsWith("http://m.sm.cn/nove")) {
+		if (url.startsWith("http://m.sm.cn/nove")) {
 			// http://m.sm.cn/novel/reader.php?uc_param_str=dnntnwvepffrgibijbprsv&from=novel_wap#catal/修罗武神/善良的蜜蜂
-			if (url2.startsWith("http://m.sm.cn/novel/reader.php")) {
-				Matcher m = getMatcher(url2, "^http://m\\.sm\\.cn/novel/reader\\.php?[^/]+/([^/]+)/([^/]+)$");
+			if (url.startsWith("http://m.sm.cn/novel/reader.php")) {
+				Matcher m = getMatcher(url, "^http://m\\.sm\\.cn/novel/reader\\.php?[^/]+/([^/]+)/([^/]+)$");
 				if (m != null) {
 					return new BookAndChapters(m.group(1), m.group(2));
 				}
-			} else if (url2.startsWith("http://m.sm.cn/novelw/menu.php")) {
+			} else if (url.startsWith("http://m.sm.cn/novelw/menu.php")) {
 				// http://m.sm.cn/novelw/menu.php?uc_param_str=dnntnwvepffrgibijbprsv&from=novel_wap&title=修罗武神&author=善良的蜜蜂
-				String name = matcher(url2, "&title=([^&]+)");
-				String author = matcher(url2, "&author=([^&]+)");
+				String name = matcher(url, "&title=([^&]+)");
+				String author = matcher(url, "&author=([^&]+)");
 				if (!Util.isEmpty(name) && !Util.isEmpty(author)) {
 					return new BookAndChapters(name, author);
 				}
