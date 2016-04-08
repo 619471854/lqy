@@ -1,5 +1,12 @@
 package com.lqy.abook.tool;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -13,6 +20,93 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 public class WebServer {
+
+	/**
+	 * Get请求，获得返回数据
+	 */
+	public static String getData(String url) throws Exception {
+		try {
+			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+			conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
+			conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("accept", "*/*");
+			conn.setRequestProperty("connection", "Keep-Alive");
+			conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
+			conn.setRequestProperty("Referer", url);
+
+			// conn.setRequestProperty("Host", "sosu.qidian.com");
+			// conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+
+			if (conn.getResponseCode() == 200) {
+				return convertToString(conn.getInputStream());
+			} else {
+				throw new Exception("没有网路  " + conn.getResponseCode());
+			}
+		} catch (OutOfMemoryError e) {
+			throw new Exception("内存溢出");
+		}
+	}
+
+	/**
+	 * 向指定 URL 发送POST方法的请求请求参数应该是 name1=value1&name2=value2 的形式。
+	 */
+	public static String postData(String url, String param) throws Exception {
+		PrintWriter out = null;
+		try {
+			// 打开和URL之间的连接
+			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+			// 设置通用的请求属性
+			conn.setRequestProperty("accept", "*/*");
+			conn.setRequestProperty("connection", "Keep-Alive");
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			conn.setRequestProperty("charset", "utf-8");
+			conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
+			conn.setUseCaches(false);
+			// 发送POST请求必须设置如下两行
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
+			conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
+
+			if (param != null && !param.trim().equals("")) {
+				// 获取URLConnection对象对应的输出流
+				out = new PrintWriter(conn.getOutputStream());
+				// 发送请求参数
+				out.print(param);
+				// flush输出流的缓冲
+				out.flush();
+			}
+			return convertToString(conn.getInputStream());
+		} finally {
+			try {
+				out.close();
+			} catch (Exception e) {
+			}
+		}
+	}
+
+	public static String convertToString(InputStream is) throws Exception {
+		StringBuffer string = new StringBuffer();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		String line;
+		try {
+			while ((line = reader.readLine()) != null) {
+				string.append(line + "\n");
+			}
+		} finally {
+			try {
+				is.close();
+			} catch (Exception e) {
+			}
+			try {
+				reader.close();
+			} catch (Exception e) {
+			}
+		}
+		return string.toString();
+	}
 
 	private static HttpClient getHttpClient() {
 		HttpClient httpClient = new DefaultHttpClient();

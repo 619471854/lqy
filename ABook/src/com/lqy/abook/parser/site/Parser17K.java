@@ -1,15 +1,14 @@
 package com.lqy.abook.parser.site;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase2;

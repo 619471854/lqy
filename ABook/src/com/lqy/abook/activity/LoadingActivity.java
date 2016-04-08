@@ -18,7 +18,6 @@ import com.lqy.abook.entity.ResultEntity;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.Config;
-import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.WebServer;
 
@@ -31,19 +30,19 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		getBooks();
-		// new Thread() {
-		// public void run() {
-		//
-		// // ResultEntity e =
-		// // WebServer.hcGetData(Config.getBaiduConfig().searchUrl + "武神",
-		// // "utf-8");
-		// // FileUtil.write(e.getMsg(), FileUtil.getDBPath(), "aa");
-		// ArrayList<BookEntity> d = new ArrayList<BookEntity>();
-		// new ParserBaidu().parserSearchSite(d, "绝世唐门", "唐家三少");
-		// MyLog.i(d);
-		// }
-		// }.start();
+		 getBooks();
+//		new Thread() {
+//			public void run() {
+//				try {
+//
+//					String e = WebServer.hcGetData(Config.getQidianConfig().searchUrl + "武神", "utf-8");
+//					 FileUtil.write(e, FileUtil.getDBPath(), "aa2");
+//					//MyLog.i(e.substring(20000));
+//				} catch (Exception e) {
+//					// TODO: handle exception
+//				}
+//			}
+//		}.start();
 	}
 
 	private void step(ArrayList<BookEntity> books) {

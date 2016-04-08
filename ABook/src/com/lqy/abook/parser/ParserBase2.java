@@ -2,6 +2,8 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.BodyTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookEntity;
@@ -13,18 +15,25 @@ public abstract class ParserBase2 extends ParserBase {
 
 	protected abstract Config getConfig();
 
-	/**
-	 * 搜索小说
-	 */
+	@Override
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		Config config = getConfig();
+		return parserSearch(books, config.searchUrl + key, key.split(" "), false);
+	}
+
+	protected boolean parserSearch(List<BookEntity> books, String url, String[] keys, boolean isStartOrEqual) {
+		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = getParserResult(config.searchUrl + key, config.searchFilter);
+			SimpleNodeIterator iterator = null;
+			if (isStartOrEqual)
+				iterator = getParserResult(url, new NodeClassFilter(BodyTag.class), encodeType);
+			else
+				iterator = getParserResult(url, config.searchFilter);
 			MyLog.i("Search ok,parsering");
 			int count = 0;
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
-				String html = iterator.nextNode().toHtml();
-				boolean success = processSearchNode(books, html, key.split(" "));
+				String html = iterator.nextNode().toHtml().substring(15000);
+				boolean success = processSearchNode(books, html, keys);
 				if (!success)
 					break;// 如果未匹配，后面的就不要了
 			}
@@ -37,13 +46,21 @@ public abstract class ParserBase2 extends ParserBase {
 	// 解析 搜索小说
 	protected abstract boolean processSearchNode(List<BookEntity> books, String html, String[] searchKey) throws Exception;
 
-	/**
-	 * 搜索小说所在的所在的site
-	 */
+	@Override
 	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
 		Config config = getConfig();
+		return parserSearchSite(books, config.searchUrl + name + " " + author, name, author, false);
+	}
+
+	protected boolean parserSearchSite(List<BookEntity> books, String url, String name, String author, boolean isStartOrEqual) {
+		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + " " + author, config.searchFilter);
+			SimpleNodeIterator iterator = null;
+			if (isStartOrEqual)
+				iterator = getParserResult2(url, config.searchFilter);
+			else
+				iterator = getParserResult(url, config.searchFilter);
+
 			MyLog.i("SearchSite ok,parsering");
 			while (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();

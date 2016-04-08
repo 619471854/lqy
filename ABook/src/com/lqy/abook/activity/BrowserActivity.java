@@ -32,6 +32,7 @@ import com.lqy.abook.entity.FavoriteEntity;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
+import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
@@ -94,7 +95,9 @@ public class BrowserActivity extends MenuActivity {
 				return false;
 			}
 		});
-
+		if (true) {
+			loadUrl(Config.getQidianConfig().searchUrl + "%E6%AD%A6%E7%A5%9E");
+		}
 		Intent intent = getIntent();
 		// ReadActivity的查看原网页等
 		String title = intent.getStringExtra("title");
@@ -139,6 +142,7 @@ public class BrowserActivity extends MenuActivity {
 
 		webSettings.setSavePassword(false);
 		webSettings.setSaveFormData(false);
+		webSettings.setUserAgentString(CONSTANT.CHROME_USER_AGENT);
 
 		String cacheDirPath = FileUtil.getCachePath();
 		// 设置数据库缓存路径
@@ -328,7 +332,7 @@ public class BrowserActivity extends MenuActivity {
 	}
 
 	private void loadUrl(String url) {
-		MyLog.web("loadUrl" + url);
+		MyLog.web("loadUrl " + url);
 		try {
 			if (url.startsWith("http")) {
 				backClickCount = 0;

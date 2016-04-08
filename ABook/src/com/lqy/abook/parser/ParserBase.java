@@ -2,9 +2,9 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.Site;
 
 public abstract class ParserBase extends ParserUtil {

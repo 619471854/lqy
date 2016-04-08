@@ -131,6 +131,30 @@ public class Config {
 		return baidu;
 	}
 
+	private static Config qidian;
+
+	public static Config getQidianConfig() {
+		if (baidu == null) {
+			baidu = new Config();
+			baidu.searchUrl = "http://sosu.qidian.com/searchresult.aspx?keyword=";
+			baidu.searchFilter = "div class=\"box\"";
+			baidu.detailUrlReg = null;
+			baidu.coverReg = null;
+			baidu.directoryUrlReg = null;
+			baidu.nameReg = null;
+			baidu.keyReg = null;// 搜索到的关键词
+			baidu.authorReg = null;
+			baidu.typeReg = null;
+			baidu.wordsReg = null;
+			baidu.tipsReg = null;
+			baidu.tipsDetailReg = null;
+			baidu.newChapterReg = null;
+			baidu.updateTimeReg = null;
+			baidu.completedReg = null;
+		}
+		return baidu;
+	}
+
 	private static Config _520;
 
 	public static Config get18KConfig() {

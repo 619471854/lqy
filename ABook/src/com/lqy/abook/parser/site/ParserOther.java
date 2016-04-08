@@ -9,10 +9,10 @@ import org.htmlparser.tags.BodyTag;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;

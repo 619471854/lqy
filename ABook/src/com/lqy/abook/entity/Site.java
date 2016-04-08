@@ -3,11 +3,13 @@ package com.lqy.abook.entity;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
+import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
+import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.parser.site.ParserSM;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu;
+	_17K, SM, _16K, Other, Baidu, Qidian;
 
 	public static Site getDefault() {
 		return Other;
@@ -38,7 +40,9 @@ public enum Site {
 		case _16K:
 			return new Parser16K();
 		case Baidu:
-			return new ParserOther();
+			return new ParserBaidu();
+		case Qidian:
+			return new ParserQidian();
 		default:
 			return new ParserOther();
 		}
@@ -54,6 +58,8 @@ public enum Site {
 			return "16K小说网";
 		case Baidu:
 			return "百度书城";
+		case Qidian:
+			return "起点中文网";
 		default:
 			return "未知网站";
 		}

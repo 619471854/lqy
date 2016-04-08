@@ -26,6 +26,12 @@ public class MyWebChromeClient extends WebChromeClient {
 	// }
 
 	@Override
+	public void onProgressChanged(WebView view, int progress) {
+		// 加载进度
+		MyLog.web("onProgressChanged " + progress);
+	}
+
+	@Override
 	public void onReceivedTitle(WebView view, String title) {
 		MyLog.web("onReceivedTitle=" + title);
 		super.onReceivedTitle(view, title);
@@ -42,17 +48,18 @@ public class MyWebChromeClient extends WebChromeClient {
 	@Override
 	public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
 		if (activity != null && !activity.isFinishing())
-			new MyAlertDialog(activity).setTitle("系统提示").setMessage(message).setCancelable(false).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					result.confirm();
-				}
-			}).setNeutralButton("取消", new DialogInterface.OnClickListener() {
+			new MyAlertDialog(activity).setTitle("系统提示").setMessage(message).setCancelable(false)
+					.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							result.confirm();
+						}
+					}).setNeutralButton("取消", new DialogInterface.OnClickListener() {
 
-				public void onClick(DialogInterface dialog, int which) {
-					result.cancel();
-				}
-			}).show();
+						public void onClick(DialogInterface dialog, int which) {
+							result.cancel();
+						}
+					}).show();
 		return true;
 	}
 }
