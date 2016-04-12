@@ -15,6 +15,7 @@ import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.WebServer;
 
 public class ParserBaidu extends ParserBase {
 
@@ -28,7 +29,8 @@ public class ParserBaidu extends ParserBase {
 	// 搜索小说
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		try {
-			SimpleNodeIterator iterator = getParserResult3(config.searchUrl + key, config.searchFilter);
+			String html = WebServer.hcGetData(config.searchUrl + key, encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
 			int count = 0;
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
 				Node node = iterator.nextNode();
@@ -44,20 +46,21 @@ public class ParserBaidu extends ParserBase {
 	}
 
 	// 搜索小说所在的所在的site
-	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
+	@Override
+	public BookEntity parserSearchSite(String name, String author) {
 		try {
-			SimpleNodeIterator iterator = getParserResult3(config.searchUrl + name + " " + author, config.searchFilter);
+			String html = WebServer.hcGetData(config.searchUrl + name + " " + author, encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();
-				boolean success = processSearchSiteNode(books, node, name, author);
-				if (success)
-					break;// 如果未匹配，后面的就不要了
+				BookEntity e = processSearchSiteNode(node, name, author);
+				if (e != null)
+					return e;
 			}
-			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
-			return false;
 		}
+		return null;
 	}
 
 	@Override
@@ -150,7 +153,7 @@ public class ParserBaidu extends ParserBase {
 		return true;
 	}
 
-	protected boolean processSearchSiteNode(List<BookEntity> books, Node node, String name, String author) throws Exception {
+	protected BookEntity processSearchSiteNode(Node node, String name, String author) throws Exception {
 		String text = node.getText();
 		String html = node.toHtml();
 		BookEntity book = new BookEntity();
@@ -169,12 +172,12 @@ public class ParserBaidu extends ParserBase {
 				book.setDirectoryUrl("http://m.baidu.com/tc?appui=alaxs&srct=zw&gid=" + id + "&srd=1&src=" + src);
 		}
 		if (Util.isEmpty(book.getName()) || Util.isEmpty(book.getDirectoryUrl()))
-			return false;// 不完善的数据
+			return null;// 不完善的数据
 		book.setAuthor(matcher(html, config.authorReg).trim());
 
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
-			return false;// 继续找第二本
+			return null;// 继续找第二本
 		}
 		book.setCover(matcher(html, config.coverReg).replaceAll(Config.amp, "&"));
 		// book.setDetailUrl(null);
@@ -187,8 +190,7 @@ public class ParserBaidu extends ParserBase {
 		book.setCompleted(matcher(html, config.completedReg).trim().equals("完结"));
 
 		MyLog.i("ParserBaidu search a book " + book.getName() + "  " + book.getAuthor());
-		books.add(book);
-		return true;
+		return book;
 	}
 
 	/**

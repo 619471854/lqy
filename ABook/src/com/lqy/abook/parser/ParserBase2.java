@@ -2,6 +2,7 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
+import org.htmlparser.NodeFilter;
 import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.BodyTag;
 import org.htmlparser.util.SimpleNodeIterator;
@@ -18,19 +19,11 @@ public abstract class ParserBase2 extends ParserBase {
 	@Override
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		Config config = getConfig();
-		return parserSearch(books, config.searchUrl + key, key.split(" "), false);
-	}
-
-	protected boolean parserSearch(List<BookEntity> books, String url, String[] keys, boolean isStartOrEqual) {
-		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = null;
-			if (isStartOrEqual)
-				iterator = getParserResult(url, new NodeClassFilter(BodyTag.class), encodeType);
-			else
-				iterator = getParserResult(url, config.searchFilter);
+			SimpleNodeIterator iterator = getParserResult(config.searchUrl + key, config.searchFilter);
 			MyLog.i("Search ok,parsering");
 			int count = 0;
+			String[] keys = key.split(" ");
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
 				String html = iterator.nextNode().toHtml().substring(15000);
 				boolean success = processSearchNode(books, html, keys);
@@ -47,37 +40,28 @@ public abstract class ParserBase2 extends ParserBase {
 	protected abstract boolean processSearchNode(List<BookEntity> books, String html, String[] searchKey) throws Exception;
 
 	@Override
-	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
-		Config config = getConfig();
-		return parserSearchSite(books, config.searchUrl + name + " " + author, name, author, false);
-	}
-
-	protected boolean parserSearchSite(List<BookEntity> books, String url, String name, String author, boolean isStartOrEqual) {
+	public BookEntity parserSearchSite(String name, String author) {
 		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = null;
-			if (isStartOrEqual)
-				iterator = getParserResult2(url, config.searchFilter);
-			else
-				iterator = getParserResult(url, config.searchFilter);
+			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + " " + author, config.searchFilter);
 
 			MyLog.i("SearchSite ok,parsering");
 			while (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				// 完全匹配到了1个就可以了
-				if (processSearchSiteNode(books, html, name, author))
-					break;
+				BookEntity e = processSearchSiteNode(html, name, author);
+				if (e != null)
+					return e;
 			}
-			return true;
 		} catch (Exception e) {
-			return false;
 		}
+		return null;
 	}
 
 	/**
 	 * 解析 搜索小说所在的所在的site
 	 */
-	protected boolean processSearchSiteNode(List<BookEntity> books, String html, String name, String author) throws Exception {
+	protected BookEntity processSearchSiteNode(String html, String name, String author) throws Exception {
 		Config config = getConfig();
 		// MyLog.i(html);
 		BookEntity book = new BookEntity();
@@ -87,12 +71,12 @@ public abstract class ParserBase2 extends ParserBase {
 
 		book.setDirectoryUrl(matcher(html, config.directoryUrlReg));
 		if (Util.isEmpty(book.getName()) || Util.isEmpty(book.getDirectoryUrl()))
-			return false;// 不完善的数据
+			return null;// 不完善的数据
 		String authorHtml = matcher(html, config.authorReg);
 		book.setAuthor(authorHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
-			return false;// 继续找第二本
+			return null;// 继续找第二本
 		}
 		book.setCover(matcher(html, config.coverReg));
 		book.setDetailUrl(matcher(html, config.detailUrlReg));
@@ -102,8 +86,7 @@ public abstract class ParserBase2 extends ParserBase {
 		book.setNewChapter(matcher(html, config.newChapterReg));
 		book.setUpdateTime(matcher(html, config.updateTimeReg));
 
-		books.add(book);
-		return true;// 已找到
+		return book;// 已找到
 	}
 
 }

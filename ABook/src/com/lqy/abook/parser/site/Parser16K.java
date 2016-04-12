@@ -66,8 +66,9 @@ public class Parser16K extends ParserBase {
 	};
 
 	// 搜索小说所在的所在的site
-	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
-		return false;
+	@Override
+	public BookEntity parserSearchSite(String name, String author) {
+		return null;
 	}
 
 	private boolean parserSearch(List<BookEntity> books, String html, String[] keys) {
@@ -210,7 +211,7 @@ public class Parser16K extends ParserBase {
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = getParserResult2(url, "div id=\"htmlContent\"");
+			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div id=\"htmlContent\""), encodeType);
 			MyLog.i("Parser16K asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();

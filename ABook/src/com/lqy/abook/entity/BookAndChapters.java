@@ -40,9 +40,12 @@ public class BookAndChapters {
 				result = SearchResult.Search;
 			} else {
 				this.chapters = chapters;
-				result = SearchResult.Success;
+				if (Util.isEmpty(book.getName()))
+					result = SearchResult.InputName;
+				else
+					result = SearchResult.Success;
 			}
-		}else{
+		} else {
 			result = SearchResult.Failed;
 		}
 	}

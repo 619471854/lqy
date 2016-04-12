@@ -16,7 +16,7 @@ public abstract class ParserBase extends ParserUtil {
 	public abstract boolean parserSearch(List<BookEntity> books, String key);
 
 	// 搜索拥有此小说的网站
-	public abstract boolean parserSearchSite(List<BookEntity> books, String name, String author);
+	public abstract BookEntity parserSearchSite(String name, String author);
 
 	// 更新小说，如果false则未更新或更新失败
 	public abstract boolean updateBook(BookEntity book);

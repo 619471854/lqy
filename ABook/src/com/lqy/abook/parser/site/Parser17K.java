@@ -81,7 +81,7 @@ public class Parser17K extends ParserBase2 {
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
 			if (Util.isEmpty(detail.getName())) {
-				SimpleNodeIterator iterator = getParserResult2(detail.getDetailUrl(), "div itemscope");
+				SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), createStartFilter("div itemscope"), encodeType);
 				MyLog.i("Parser17K parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
 					String html = iterator.nextNode().toHtml();

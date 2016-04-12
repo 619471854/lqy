@@ -8,12 +8,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
+import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -83,7 +88,7 @@ public class BrowserActivity extends MenuActivity {
 
 			@Override
 			public void onFocusChange(View v, boolean hasFocus) {
-				showTitle();
+				showTitle(null, null);
 			}
 		});
 		view_url.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -95,9 +100,7 @@ public class BrowserActivity extends MenuActivity {
 				return false;
 			}
 		});
-		if (true) {
-			loadUrl(Config.getQidianConfig().searchUrl + "%E6%AD%A6%E7%A5%9E");
-		}
+
 		Intent intent = getIntent();
 		// ReadActivity的查看原网页等
 		String title = intent.getStringExtra("title");
@@ -270,6 +273,7 @@ public class BrowserActivity extends MenuActivity {
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
 			super.onPageStarted(view, url, favicon);
 			MyLog.web("onPageStarted " + url);
+			showTitle(url, url);
 		}
 
 		@Override
@@ -285,7 +289,7 @@ public class BrowserActivity extends MenuActivity {
 			super.onPageFinished(view, url);
 			String title = view.getTitle();
 			MyLog.web("onPageFinished " + title + " " + url);
-			showTitle();
+			showTitle(title, url);
 			// 保存历史纪录
 			dao.saveHistory(title, url);
 			// 获取历史纪录数量
@@ -295,7 +299,7 @@ public class BrowserActivity extends MenuActivity {
 		@Override
 		public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 			super.onReceivedError(view, errorCode, description, failingUrl);
-			MyLog.web("onPageFinished");
+			MyLog.web("onReceivedError");
 			// 获取历史纪录数量
 			loadUrl("javascript:window.local_obj.setHistoryLength(history.length);");
 		}
@@ -304,8 +308,8 @@ public class BrowserActivity extends MenuActivity {
 	class InJavaScriptLocalObj {
 		@JavascriptInterface
 		public void showSource(String html) {
-			// MyLog.web("showSource " + html);
-			MyLog.save(html);
+			MyLog.web("showSource " + html);
+			// MyLog.save(html);
 		}
 
 		@JavascriptInterface
@@ -346,15 +350,17 @@ public class BrowserActivity extends MenuActivity {
 		}
 	}
 
-	private void showTitle() {
-		String title = webView.getTitle();
+	private void showTitle(String title, String url) {
 		if (view_url.isFocused()) {
-			String url = webView.getUrl();
+			if (url == null)
+				url = webView.getUrl();
 			if (Util.isEmpty(url))
 				url = CONSTANT.defaultUrl;
 			view_url.setText(url);
 			view_url.setSelection(view_url.getText().toString().length());
 		} else {
+			if (title == null)
+				title = webView.getTitle();
 			if (Util.isEmpty(title))
 				title = "无标题";
 			view_url.setText(title);

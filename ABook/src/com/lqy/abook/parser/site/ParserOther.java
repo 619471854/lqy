@@ -28,9 +28,9 @@ public class ParserOther extends ParserBase {
 	}
 
 	@Override
-	public boolean parserSearchSite(List<BookEntity> books, String name, String author) {
+	public BookEntity parserSearchSite(String name, String author) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ParserOther extends ParserBase {
 
 	private String getChapterDetail(String url, String encodeType, boolean isChangeCode) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(url, new NodeClassFilter(BodyTag.class), encodeType);
+			SimpleNodeIterator iterator = parseUrl(url, new NodeClassFilter(BodyTag.class), encodeType);
 			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				// Node node = iterator.nextNode();
@@ -114,7 +114,7 @@ public class ParserOther extends ParserBase {
 
 	private List<ChapterEntity> parserBookDict(String url, String urlOrHtml, String encodeType, boolean isChangeCode) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(urlOrHtml, new NodeClassFilter(LinkTag.class), encodeType);
+			SimpleNodeIterator iterator = parseUrl(urlOrHtml, new NodeClassFilter(LinkTag.class), encodeType);
 			MyLog.i("ParserOther ParserBrowser parserOther ok " + encodeType);
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			ChapterEntity e;

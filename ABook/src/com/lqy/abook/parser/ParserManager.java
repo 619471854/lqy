@@ -13,6 +13,7 @@ import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
 import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
+import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -26,6 +27,7 @@ public class ParserManager {
 		parsers.add(new ParserSM());
 		parsers.add(new Parser17K());
 		parsers.add(new Parser16K());
+		parsers.add(new ParserQidian());
 		return parsers;
 	}
 
@@ -51,20 +53,17 @@ public class ParserManager {
 	/**
 	 * 搜索拥有此小说的网站
 	 */
-	public static void asynSearchSite(final MenuActivity activity, final String name, final String author, final int what) {
-		new Thread() {
-			public void run() {
-				List<BookEntity> data = new ArrayList<BookEntity>();
-				boolean fail = true;
-				for (ParserBase parser : getParsers()) {
-					fail &= !parser.parserSearchSite(data, name, author);
-					if (!fail)
-						activity.sendMsgOnThread(what, data);
-				}
-				if (fail)
-					activity.sendErrorOnThread("未找到下载点");
-			};
-		}.start();
+	public static int asynSearchSite(final MenuActivity activity, final String name, final String author, final int what) {
+		List<ParserBase> parsers = getParsers();
+		for (final ParserBase parser : parsers) {
+			new Thread() {
+				public void run() {
+					BookEntity e = parser.parserSearchSite(name, author);
+					activity.sendMsgOnThread(what, e);
+				};
+			}.start();
+		}
+		return parsers.size();
 	}
 
 	/**
