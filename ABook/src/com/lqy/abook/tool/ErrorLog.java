@@ -64,7 +64,7 @@ public class ErrorLog {
 	/**
 	 * 收集信息
 	 */
-	private String collectInfo(Throwable ex, Context ctx) {
+	public  String collectInfo(Throwable ex, Context ctx) {
 		StringBuffer sb = new StringBuffer();
 		try {
 			// 时间

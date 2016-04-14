@@ -2,9 +2,6 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
-import org.htmlparser.NodeFilter;
-import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.tags.BodyTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookEntity;
@@ -25,7 +22,7 @@ public abstract class ParserBase2 extends ParserBase {
 			int count = 0;
 			String[] keys = key.split(" ");
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
-				String html = iterator.nextNode().toHtml().substring(15000);
+				String html = iterator.nextNode().toHtml();
 				boolean success = processSearchNode(books, html, keys);
 				if (!success)
 					break;// 如果未匹配，后面的就不要了
@@ -74,6 +71,9 @@ public abstract class ParserBase2 extends ParserBase {
 			return null;// 不完善的数据
 		String authorHtml = matcher(html, config.authorReg);
 		book.setAuthor(authorHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+
+		MyLog.i(" processSearchSiteNode a book " + book.getName() + "  " + book.getAuthor());
+		
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return null;// 继续找第二本

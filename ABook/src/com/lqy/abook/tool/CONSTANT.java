@@ -14,7 +14,7 @@ public class CONSTANT {
 	public static final int auto_load_size = 5;// 每次自动下载的章节数
 
 	public static final int MSG_ERROR = -1;
-	public static final int ID_DEFAULT = -1;
+	public static final int _1 = -1;
 
 	public static final String SP_READ = "read";
 	public static final String SP_BROWSER = "browser";

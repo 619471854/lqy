@@ -4,7 +4,7 @@ import com.lqy.abook.tool.CONSTANT;
 
 public class BookEntity extends SerializableEntity {
 
-	private long id = CONSTANT.ID_DEFAULT;
+	private long id = CONSTANT._1;
 	private String cover;
 	private String name;//not null
 	private String type;

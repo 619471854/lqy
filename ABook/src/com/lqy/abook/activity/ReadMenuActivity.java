@@ -183,6 +183,12 @@ public class ReadMenuActivity extends MenuActivity {
 
 			if (Cache.getBook().getLoadStatus() == LoadStatus.loading)
 				Cache.getBook().setLoadStatus(LoadStatus.notLoaded);
+			if(Cache.getChapters()!=null)
+				for (ChapterEntity e:Cache.getChapters()) {
+					if(e.getLoadStatus()==LoadStatus.loading){
+						e.setLoadStatus(LoadStatus.notLoaded);
+					}
+				}
 			break;
 		case R.id.read_menu_bg:
 			showMenuLay(menuLay_bg);
@@ -244,10 +250,7 @@ public class ReadMenuActivity extends MenuActivity {
 		case R.id.read_menu_update3:// 手工选择下载点
 			intent = new Intent(_this, SiteSwitchActivity.class);
 			intent.putExtra("class", _this.getClass().getName());
-			BookEntity book = Cache.getBook();
-			intent.putExtra("name", book.getName());
-			intent.putExtra("author", book.getAuthor());
-			intent.putExtra("site", book.getSite().ordinal());
+			intent.putExtra("book",  Cache.getBook());
 			startActivityForResult(intent, R.id.read_menu_update3);
 			animationRightToLeft();
 			break;

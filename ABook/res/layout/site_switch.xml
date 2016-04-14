@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
-    android:orientation="vertical" >
+    android:background="@color/bg" >
 
     <RelativeLayout
+        android:id="@+id/toolbar_lay"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:background="@color/bg" >
@@ -20,11 +20,15 @@
             style="@style/toolbar_title" />
     </RelativeLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_lay"
+        android:orientation="vertical" >
 
         <include layout="@layout/load_progress" />
+
+        <include layout="@layout/listview_empty" />
 
         <ListView
             android:id="@+id/android:list"
@@ -38,13 +42,12 @@
             android:listSelector="@color/transparent"
             android:paddingBottom="10dp"
             android:scrollbarStyle="outsideOverlay" />
+    </LinearLayout>
 
-        <include layout="@layout/listview_empty" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_below="@id/toolbar_lay"
+        android:background="@drawable/line" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/line" />
-    </FrameLayout>
-
-</LinearLayout>
+</RelativeLayout>

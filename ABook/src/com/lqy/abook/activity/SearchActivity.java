@@ -5,10 +5,12 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,6 +19,7 @@ import com.lqy.abook.R;
 import com.lqy.abook.adapter.SearchAdapter;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.parser.ParserManager;
+import com.lqy.abook.tool.DisplayUtil;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -49,6 +52,9 @@ public class SearchActivity extends MenuActivity {
 			view_content.setText(search);
 			view_content.setSelection(search.length());
 		}
+
+		loadView = findViewById(R.id.loading_view);
+		loadView.setLayoutParams(new LinearLayout.LayoutParams(-1, DisplayUtil.dip2px(_this, 100)));
 	}
 
 	public void addClick(View v) {
@@ -96,11 +102,11 @@ public class SearchActivity extends MenuActivity {
 					books.add(b);
 			}
 		}
-		if (counter == parseNum || books.size() != 0) {
+		if (counter == parseNum) {
 			notHideProgress = false;
 			hideProgressBar();
-			render();
-		}// else 继续等待搜索
+		}
+		render();
 	}
 
 	private void render() {

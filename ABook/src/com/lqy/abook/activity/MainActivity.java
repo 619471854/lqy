@@ -233,6 +233,13 @@ public class MainActivity extends MenuActivity {
 						b.setLoadStatus(LoadStatus.notLoaded);
 					}
 				}
+
+			if (Cache.getChapters() != null)
+				for (ChapterEntity e : Cache.getChapters()) {
+					if (e.getLoadStatus() == LoadStatus.loading) {
+						e.setLoadStatus(LoadStatus.notLoaded);
+					}
+				}
 			if (hasLoading)
 				refresh(false);
 			break;

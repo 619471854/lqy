@@ -3,7 +3,7 @@ package com.lqy.abook.entity;
 import com.lqy.abook.tool.CONSTANT;
 
 public class FavoriteEntity extends BaseEntity {
-	private int id = CONSTANT.ID_DEFAULT;
+	private int id = CONSTANT._1;
 	private String title;
 	private String url;
 

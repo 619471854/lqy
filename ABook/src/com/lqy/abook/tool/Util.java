@@ -1,6 +1,7 @@
 package com.lqy.abook.tool;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +25,17 @@ public class Util {
 
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	public static String formatDate(long time) {
+		if (time != CONSTANT._1)
+			try {
+				Date d = new Date();
+				d.setTime(time);
+				return sdf.format(d).substring(0, 16);
+			} catch (Exception e) {
+			}
+		return CONSTANT.EMPTY;
+	}
+
 	public static String toString(Object o) {
 		if (o != null)
 			return o.toString();
@@ -32,20 +44,6 @@ public class Util {
 
 	public static int toInt(Object o) {
 		int result = 0;
-		try {
-			if (o != null) {
-				String str = o.toString().trim();
-				if (str.length() != 0) {
-					result = Integer.parseInt(str);
-				}
-			}
-		} catch (Exception e) {
-		}
-		return result;
-	}
-
-	public static int toIntOr_1(Object o) {
-		int result = 1;
 		try {
 			if (o != null) {
 				String str = o.toString().trim();

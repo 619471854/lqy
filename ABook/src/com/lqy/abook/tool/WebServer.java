@@ -16,33 +16,76 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 public class WebServer {
 
-	/**
-	 * Get请求，获得返回数据
-	 */
 	public static String getData(String url, String encodeType) throws Exception {
+		return hcGetData(url, encodeType);
+	}
+
+	/**
+	 * get方法
+	 */
+	private static String hcGetData(String url, String encodeType) throws Exception {
+		try {
+			if (Util.isEmpty(encodeType))
+				encodeType = HTTP.UTF_8;
+
+			HttpGet request = new HttpGet(url);
+			HttpClient httpClient = new DefaultHttpClient();
+			addHeader(httpClient.getParams(), request, url, encodeType);
+			HttpResponse response = httpClient.execute(request);
+
+			int code = response.getStatusLine().getStatusCode();
+			if (200 == code) {
+				return EntityUtils.toString(response.getEntity(), encodeType);
+			} else {
+				throw new Exception("没有网路  " + code);
+			}
+		} catch (OutOfMemoryError e) {
+			throw new Exception("内存溢出");
+		}
+	}
+
+	private static void addHeader(HttpParams params, HttpUriRequest request, String url, String encodeType) {
+		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, CONSTANT.CONNECTION_TIMEOUT);
+		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+		params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, encodeType);
+
+		request.addHeader("accept", "*/*");
+		request.addHeader("connection", "Keep-Alive");
+		request.addHeader("User-Agent", CONSTANT.CHROME_USER_AGENT);
+		request.addHeader("Referer", url);
+	}
+
+	private static void addHeader(HttpURLConnection conn, String url) {
+		conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
+		conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
+		conn.setRequestProperty("accept", "*/*");
+		conn.setRequestProperty("connection", "Keep-Alive");
+		conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
+		conn.setRequestProperty("Referer", url);
+	}
+
+	/**
+	 * Get请求，获得返回数据,gzip可能会出错http://files.qidian.com/Author2/1445033/26694962.
+	 * txt
+	 */
+	private static String getDataByUrlConnection(String url, String encodeType) throws Exception {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-			conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
-			conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
 			conn.setRequestMethod("GET");
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
-			conn.setRequestProperty("Referer", url);
-
-			// conn.setRequestProperty("Host", "sosu.qidian.com");
-			// conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+			addHeader(conn, url);
 
 			if (conn.getResponseCode() == 200) {
-				return convertToString(conn.getInputStream(), encodeType);
+				return convertToString(conn, encodeType);
 			} else {
 				throw new Exception("没有网路  " + conn.getResponseCode());
 			}
@@ -54,7 +97,7 @@ public class WebServer {
 	/**
 	 * 向指定 URL 发送POST方法的请求请求参数应该是 name1=value1&name2=value2 的形式。
 	 */
-	public static String postData(String url, String param, String encodeType) throws Exception {
+	public static String postData1(String url, String param, String encodeType) throws Exception {
 		PrintWriter out = null;
 		try {
 			// 打开和URL之间的连接
@@ -63,13 +106,8 @@ public class WebServer {
 			conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
 			// 设置通用的请求属性
 			conn.setRequestMethod("POST");
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
-			conn.setRequestProperty("Referer", url);
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			addHeader(conn, url);
 			conn.setUseCaches(false);
-			// 发送POST请求必须设置如下两行
 			conn.setDoOutput(true);
 			conn.setDoInput(true);
 
@@ -82,7 +120,8 @@ public class WebServer {
 				out.flush();
 			}
 			// printResponseHeader(conn);
-			return convertToString(conn.getInputStream(), encodeType);
+			conn.connect();
+			return convertToString(conn, encodeType);
 		} finally {
 			try {
 				out.close();
@@ -110,13 +149,30 @@ public class WebServer {
 		return header;
 	}
 
-	public static String convertToString(InputStream is, String encodeType) throws Exception {
+	public static String convertToString(HttpURLConnection conn, String encodeType) throws Exception {
+		// ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		// byte[] buffer = new byte[1024];
+		// int length = -1;
+		// while ((length = is.read(buffer)) != -1) {
+		// bos.write(buffer, 0, length);
+		// }
+		// return new String(bos.toByteArray(), encodeType);
+		InputStream is = null;
+		// String encode = conn.getContentEncoding();
+		// if (!Util.isEmpty(encode) && encode.toLowerCase().contains("gzip")) {
+		// is = new GZIPInputStream(conn.getInputStream());
+		// }
+		if (null == is) {
+			is = conn.getInputStream();
+		}
+
 		StringBuffer string = new StringBuffer();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, encodeType));
-		String line;
 		try {
-			while ((line = reader.readLine()) != null) {
+			String line = reader.readLine();
+			while (line != null && line.length() != 0) {
 				string.append(line + "\n");
+				line = reader.readLine();
 			}
 		} finally {
 			try {
@@ -132,34 +188,6 @@ public class WebServer {
 	}
 
 	/**
-	 * get方法
-	 */
-	public static String hcGetData(String url, String charset) throws Exception {
-		try {
-			if (Util.isEmpty(charset))
-				charset = HTTP.UTF_8;
-
-			HttpGet request = new HttpGet(url);
-			request.addHeader("User-Agent", CONSTANT.CHROME_USER_AGENT);
-
-			// 处理响应
-			HttpClient httpClient = new DefaultHttpClient();
-			httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, CONSTANT.CONNECTION_TIMEOUT);
-			httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-			httpClient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, charset);
-			HttpResponse response = httpClient.execute(request);
-			int code = response.getStatusLine().getStatusCode();
-			if (200 == code) {
-				return EntityUtils.toString(response.getEntity(), charset);
-			} else {
-				throw new Exception("没有网路  " + code);
-			}
-		} catch (OutOfMemoryError e) {
-			throw new Exception("内存溢出");
-		}
-	}
-
-	/**
 	 * post方法
 	 */
 	protected static String hcPostData(String url, PostParams params, String encodeType) throws Exception {
@@ -168,9 +196,7 @@ public class WebServer {
 			post.setEntity(new UrlEncodedFormEntity(params.getList(), HTTP.UTF_8));
 		}
 		HttpClient httpClient = new DefaultHttpClient();
-		httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, CONSTANT.CONNECTION_TIMEOUT);
-		httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-		httpClient.getParams().setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, encodeType);
+		addHeader(httpClient.getParams(), post, url, encodeType);
 
 		HttpResponse response = httpClient.execute(post);
 		int code = response.getStatusLine().getStatusCode();

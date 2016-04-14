@@ -95,6 +95,9 @@ public class ParserQidian extends ParserBase {
 				book.setMatchWords(searchKey[0].length());
 			else
 				book.setMatchWords(searchKey[0].length() + searchKey[1].length());
+
+			MyLog.i("ParserQidian search a book " + book.getName() + "  " + book.getAuthor());
+
 		} else if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return null;// 继续找第二本
 		}
@@ -102,16 +105,16 @@ public class ParserQidian extends ParserBase {
 		book.setCover(item.get(config.coverReg));
 		book.setDetailUrl(item.get(config.detailUrlReg));
 		book.setType(item.get(config.typeReg));
-		book.setTip(item.get(config.tipsReg));
+		book.setTip(Util.toString(item.get(config.tipsReg)).trim());
 		book.setWords(Util.toInt(item.get(config.wordsReg)));
 		book.setNewChapter(item.get(config.newChapterReg));
-		book.setUpdateTime(item.get(config.updateTimeReg));
+		long time = Util.toLongOr_1(item.get(config.updateTimeReg));
+		book.setUpdateTime(Util.formatDate(time));
 		// "1": "出版中","2": "封 笔","3": "已完成","4": "已经完本", "5": "情节展开","6":
 		// "接近尾声", "7": "新书上传","8": "暂 停", "9": "精彩纷呈", "10": "连载中"
 		String status = item.get(config.completedReg);
 		book.setCompleted("3".equals(status) || "4".equals(status));
 
-		MyLog.i("ParserQidian search a book " + book.getName() + "  " + book.getAuthor());
 		if (books != null)
 			books.add(book);
 		return book;

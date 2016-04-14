@@ -14,10 +14,8 @@ import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.ResultEntity;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.parser.Config;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.WebServer;
 
@@ -30,19 +28,20 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		 getBooks();
-//		new Thread() {
-//			public void run() {
-//				try {
-//
-//					String e = WebServer.hcGetData(Config.getQidianConfig().searchUrl + "武神", "utf-8");
-//					 FileUtil.write(e, FileUtil.getDBPath(), "aa2");
-//					//MyLog.i(e.substring(20000));
-//				} catch (Exception e) {
-//					// TODO: handle exception
-//				}
-//			}
-//		}.start();
+		getBooks();
+//		testGetData();
+	}
+
+	private static void testGetData() {
+		new Thread() {
+			public void run() {
+				try {
+					MyLog.i(WebServer.getData("http://192.168.1.45/test/home/test", "utf-8"));
+				} catch (Exception e) {
+					MyLog.i(e);
+				}
+			}
+		}.start();
 	}
 
 	private void step(ArrayList<BookEntity> books) {

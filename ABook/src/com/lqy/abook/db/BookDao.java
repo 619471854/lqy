@@ -29,10 +29,10 @@ public class BookDao {
 	 */
 	public long getOrSaveBookId(BookEntity book) {
 		long id = DBManager.getInstance().getBookId(book);
-		if (id == CONSTANT.ID_DEFAULT) {
+		if (id == CONSTANT._1) {
 			id = DBManager.getInstance().addBook(book);
 		}
-		if (id != CONSTANT.ID_DEFAULT) {
+		if (id != CONSTANT._1) {
 			book.setId(id);
 		}
 		return id;
@@ -50,7 +50,7 @@ public class BookDao {
 	 */
 	public boolean addBook(BookEntity book) {
 		long id = DBManager.getInstance().addBook(book);
-		if (id != CONSTANT.ID_DEFAULT) {
+		if (id != CONSTANT._1) {
 			book.setId(id);
 			return true;
 		} else {
@@ -62,7 +62,7 @@ public class BookDao {
 	 * 更新本书
 	 */
 	public boolean updateBook(BookEntity book) {
-		if (book.getId() == CONSTANT.ID_DEFAULT) {
+		if (book.getId() == CONSTANT._1) {
 			return addBook(book);
 		} else {
 			return DBManager.getInstance().updateBook(book);

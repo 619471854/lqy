@@ -9,12 +9,9 @@ import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
-import com.lqy.abook.parser.site.Parser16K;
-import com.lqy.abook.parser.site.Parser17K;
 import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserQidian;
-import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -22,11 +19,12 @@ public class ParserManager {
 	/**
 	 * 解析器
 	 */
-	private static List<ParserBase> getParsers() {
+	private static List<ParserBase> getParsers(Site exclude) {
 		List<ParserBase> parsers = new ArrayList<ParserBase>();
-		parsers.add(new ParserSM());
-		parsers.add(new Parser17K());
-		parsers.add(new Parser16K());
+//		for (Site s : Site.values()) {
+//			if (s != Site.Other && s != exclude)
+//				parsers.add(s.getParser());
+//		}
 		parsers.add(new ParserQidian());
 		return parsers;
 	}
@@ -36,7 +34,7 @@ public class ParserManager {
 	 */
 	public static int asynSearch(final MenuActivity activity, String _key, final int what) {
 		final String key = _key.replaceAll("'", "").replaceAll("\\s", " ");// 去除单引号和多余的空格
-		List<ParserBase> parsers = getParsers();
+		List<ParserBase> parsers = getParsers(null);
 		for (final ParserBase parser : parsers) {
 			new Thread() {
 				public void run() {
@@ -53,12 +51,12 @@ public class ParserManager {
 	/**
 	 * 搜索拥有此小说的网站
 	 */
-	public static int asynSearchSite(final MenuActivity activity, final String name, final String author, final int what) {
-		List<ParserBase> parsers = getParsers();
+	public static int asynSearchSite(final MenuActivity activity, final BookEntity book, final int what) {
+		List<ParserBase> parsers = getParsers(book.getSite());
 		for (final ParserBase parser : parsers) {
 			new Thread() {
 				public void run() {
-					BookEntity e = parser.parserSearchSite(name, author);
+					BookEntity e = parser.parserSearchSite(book.getName(), book.getAuthor());
 					activity.sendMsgOnThread(what, e);
 				};
 			}.start();
@@ -106,7 +104,7 @@ public class ParserManager {
 		new Thread() {
 			public void run() {
 				BookAndChapters result = null;
-				List<ParserBase> parsers = getParsers();
+				List<ParserBase> parsers = getParsers(null);
 				for (ParserBase parser : parsers) {
 					result = parser.parserBrowser(url2, html);
 					if (result != null) {

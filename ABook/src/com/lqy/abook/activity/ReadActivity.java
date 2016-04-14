@@ -216,7 +216,7 @@ public class ReadActivity extends MenuActivity {
 		} else if (SiteSwitchActivity.class.getName().equals(formClass)) {
 			// 切换网站
 			BookEntity otherSiteBook = (BookEntity) intent.getSerializableExtra("book");
-			if (otherSiteBook != null && book.getId() != CONSTANT.ID_DEFAULT) {
+			if (otherSiteBook != null && book.getId() != CONSTANT._1) {
 				book.setCover(otherSiteBook.getCover());
 				book.setType(otherSiteBook.getType());
 				book.setSite(otherSiteBook.getSite());

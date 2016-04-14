@@ -89,7 +89,7 @@ public class CoverActivity extends MenuActivity {
 		// 类别和字数
 		String describe = "暂未分类";
 		if (!Util.isEmpty(book.getType()))
-			describe += book.getType();
+			describe = book.getType();
 		if (book.getWords() > 0) {
 			int w = book.getWords() / 10000;
 			int q = book.getWords() % 10000 / 1000;
@@ -237,9 +237,7 @@ public class CoverActivity extends MenuActivity {
 		switch (v.getId()) {
 		case R.id.book_cover_site:
 			intent = new Intent(_this, SiteSwitchActivity.class);
-			intent.putExtra("name", book.getName());
-			intent.putExtra("author", book.getAuthor());
-			intent.putExtra("site", book.getSite().ordinal());
+			intent.putExtra("book", book);
 			startActivityForResult(intent, 0);
 			animationRightToLeft();
 			break;

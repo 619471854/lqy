@@ -105,7 +105,7 @@ public class BrowserFavoriteActivity extends MenuActivity {
 				public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 					try {
 						final FavoriteEntity e = adapter.getItem(arg2 - 1);
-						if (e.getId() != CONSTANT.ID_DEFAULT) {
+						if (e.getId() != CONSTANT._1) {
 							Util.dialog(_this, "确定要删除吗？", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {

@@ -117,7 +117,7 @@ public class MenuActivity extends Activity {
 	/**
 	 * 显示加载提示悬浮框
 	 */
-	private View loadView;
+	protected View loadView;
 
 	public void showProgressBar() {
 		if (loadView == null)
