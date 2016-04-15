@@ -2,12 +2,15 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.BodyTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.WebServer;
 
 public abstract class ParserBase2 extends ParserBase {
 
@@ -29,6 +32,7 @@ public abstract class ParserBase2 extends ParserBase {
 			}
 			return true;
 		} catch (Exception e) {
+			MyLog.i(e.toString());
 			return false;
 		}
 	}
@@ -73,7 +77,7 @@ public abstract class ParserBase2 extends ParserBase {
 		book.setAuthor(authorHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 
 		MyLog.i(" processSearchSiteNode a book " + book.getName() + "  " + book.getAuthor());
-		
+
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return null;// 继续找第二本

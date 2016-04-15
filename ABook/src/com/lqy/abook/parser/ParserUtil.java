@@ -29,7 +29,7 @@ public abstract class ParserUtil {
 		return parser.parse(filter).elements();
 	}
 
-	protected static String matcher(String html, String reg) {
+	public static String matcher(String html, String reg) {
 		try {
 			Pattern p = Pattern.compile(reg);
 			Matcher m = p.matcher(html);

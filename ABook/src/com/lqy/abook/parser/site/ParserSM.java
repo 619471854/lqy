@@ -48,8 +48,8 @@ public class ParserSM extends ParserBase2 {
 				book.setCompleted(matcher(html, config.completedReg).length() > 0);
 				book.setWords(Util.toInt(matcher(html, config.wordsReg)));
 				book.setUpdateTime(matcher(html, config.updateTimeReg2));
+				return true;
 			}
-			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
 		}

@@ -37,7 +37,7 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		try {
-			String msg = WebServer.getData(config.searchUrl + key, encodeType);
+			String msg = WebServer.getDataByUrlConnection(config.searchUrl + key, encodeType);
 			Type type = new TypeToken<Map<String, Object>>() {
 			}.getType();
 			Map<String, Object> data = new Gson().fromJson(msg, type);
@@ -58,7 +58,7 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public BookEntity parserSearchSite(String name, String author) {
 		try {
-			String msg = WebServer.getData(config.searchUrl + name + "+" + author, encodeType);
+			String msg = WebServer.getDataByUrlConnection(config.searchUrl + name + "+" + author, encodeType);
 			Type type = new TypeToken<Map<String, Object>>() {
 			}.getType();
 			Map<String, Object> data = new Gson().fromJson(msg, type);
@@ -105,11 +105,13 @@ public class ParserQidian extends ParserBase {
 		book.setCover(item.get(config.coverReg));
 		book.setDetailUrl(item.get(config.detailUrlReg));
 		book.setType(item.get(config.typeReg));
-		book.setTip(Util.toString(item.get(config.tipsReg)).trim());
+		book.setTip(Util.toString(item.get(config.tipsReg)).replaceAll(Config.blank, " ").trim());
 		book.setWords(Util.toInt(item.get(config.wordsReg)));
 		book.setNewChapter(item.get(config.newChapterReg));
 		long time = Util.toLongOr_1(item.get(config.updateTimeReg));
-		book.setUpdateTime(Util.formatDate(time));
+		if (time != CONSTANT._1)
+			time *= 1000;
+		book.setUpdateTime(Util.formatDate(time, 10));
 		// "1": "出版中","2": "封 笔","3": "已完成","4": "已经完本", "5": "情节展开","6":
 		// "接近尾声", "7": "新书上传","8": "暂 停", "9": "精彩纷呈", "10": "连载中"
 		String status = item.get(config.completedReg);
@@ -123,7 +125,7 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public boolean updateBook(BookEntity book) {
 		try {
-			String html = WebServer.getData(book.getDetailUrl(), encodeType);
+			String html = WebServer.hcGetData(book.getDetailUrl(), encodeType);
 
 			SimpleNodeIterator iterator = parseHtml(html, createStartFilter("div class=\"updata_cont\" id=\"readV\""));
 			MyLog.i("ParserQidian updateBook getParserResult ok");
@@ -131,6 +133,7 @@ public class ParserQidian extends ParserBase {
 			if (iterator.hasMoreNodes()) {
 				String html1 = iterator.nextNode().toHtml();
 				String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
+				// MyLog.i("ParserQidian updateBook newChapter="+newChapter);
 				if (newChapter.equals(book.getNewChapter())) {
 					return false;// 此书没有更新
 				}
@@ -144,8 +147,8 @@ public class ParserQidian extends ParserBase {
 					book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
 					book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
 				}
+				return true;
 			}
-			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -177,14 +180,13 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
-			String html = WebServer.getData(detail.getDetailUrl(), encodeType);
 			NodeFilter filter = new NodeFilter() {
 				public boolean accept(Node node) {
 					String text = node.getText();
 					return text.equals("span itemprop=\"description\"") || text.startsWith("a itemprop=\"url\" stat-type");
 				}
 			};
-			SimpleNodeIterator iterator = parseHtml(html, filter);
+			SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), filter, encodeType);
 			MyLog.i("ParserQidian parserBookDetail getParserResult ok");
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();
@@ -192,7 +194,7 @@ public class ParserQidian extends ParserBase {
 					String tip = node.toPlainTextString();
 					tip = tip.replaceAll(config.nbsp, CONSTANT.EMPTY);
 					tip = tip.replaceAll("\\s", CONSTANT.EMPTY);
-					tip = tip.replaceAll("　", CONSTANT.EMPTY);// 全角空格
+					tip = tip.replaceAll(Config.blank, CONSTANT.EMPTY);// 全角空格
 					detail.setTip(tip);
 				} else if (node instanceof LinkTag) {
 					String directoryUrl = ((LinkTag) node).getLink();
@@ -245,7 +247,7 @@ public class ParserQidian extends ParserBase {
 					return null;
 				MyLog.i("ParserQidian asynGetChapterDetail " + m.group(1));
 
-				String text = WebServer.getData(m.group(1), m.group(2));
+				String text = WebServer.hcGetData(m.group(1), m.group(2));
 				m = getMatcher(text, "^document.write\\('([\\s\\S]+)'\\);$");
 				if (m != null)
 					text = m.group(1);
@@ -257,7 +259,7 @@ public class ParserQidian extends ParserBase {
 				if (i != -1)
 					text = text.substring(0, i);
 				text = text.replaceAll(Config.lineWrapReg2, "\n");
-				text = text.replaceAll("　", "    ");// 替换全角空格为4个半角空格
+				text = text.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
 				text = text.replaceAll(Config.nbsp, "  ");
 				text = text.replaceAll("\n{2,}+", "\n");
 				return text.trim();
@@ -272,13 +274,13 @@ public class ParserQidian extends ParserBase {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		String id = matcher(url, "http://m.qidian.com/book/bookchapterlist.aspx?bookid=(\\d+)");
+		String id = matcher(url, "http://m\\.qidian\\.com/book/bookchapterlist\\.aspx\\?bookid=(\\d+)");
 		if (Util.isEmpty(id))
-			id = matcher(url, "http://m.qidian.com/book/showbook.aspx?bookid=(\\d+)");
+			id = matcher(url, "http://m\\.qidian\\.com/book/showbook\\.aspx\\?bookid=(\\d+)");
 		if (Util.isEmpty(id))
-			id = matcher(url, "http://www.qidian.com/Book/(\\d+).aspx");
+			id = matcher(url, "http://www\\.qidian\\.com/Book/(\\d+)\\.aspx");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://read.qidian.com/BookReader/(\\w+).aspx");
+			id = matcher(url, "http://read\\.qidian\\.com/BookReader/(\\w+)\\.aspx");
 			if (Util.isEmpty(id))
 				return null;
 			id = null;

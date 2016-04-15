@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.lqy.abook.R;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.Site;
+import com.lqy.abook.parser.Config;
 
 public class SiteSwitchAdapter extends ArrayAdapter<BookEntity> {
 	private LayoutInflater layoutInflater;
@@ -40,7 +41,7 @@ public class SiteSwitchAdapter extends ArrayAdapter<BookEntity> {
 		BookEntity book = getItem(position);
 		holder.title.setText(book.getSite().getName());
 		holder.updatedTime.setText("最近更新：" + book.getUpdateTime());
-		holder.newChapter.setText("更新至　：" + book.getNewChapter());
+		holder.newChapter.setText("更新至" + Config.blank + "：" + book.getNewChapter());
 		holder.check.setVisibility(currentSite == book.getSite() ? View.VISIBLE : View.GONE);
 		return convertView;
 	}

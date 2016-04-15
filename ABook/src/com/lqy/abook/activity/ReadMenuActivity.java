@@ -17,6 +17,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
+import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.FontMode;
@@ -183,9 +184,9 @@ public class ReadMenuActivity extends MenuActivity {
 
 			if (Cache.getBook().getLoadStatus() == LoadStatus.loading)
 				Cache.getBook().setLoadStatus(LoadStatus.notLoaded);
-			if(Cache.getChapters()!=null)
-				for (ChapterEntity e:Cache.getChapters()) {
-					if(e.getLoadStatus()==LoadStatus.loading){
+			if (Cache.getChapters() != null)
+				for (ChapterEntity e : Cache.getChapters()) {
+					if (e.getLoadStatus() == LoadStatus.loading) {
 						e.setLoadStatus(LoadStatus.notLoaded);
 					}
 				}
@@ -250,7 +251,7 @@ public class ReadMenuActivity extends MenuActivity {
 		case R.id.read_menu_update3:// 手工选择下载点
 			intent = new Intent(_this, SiteSwitchActivity.class);
 			intent.putExtra("class", _this.getClass().getName());
-			intent.putExtra("book",  Cache.getBook());
+			intent.putExtra("book", Cache.getBook());
 			startActivityForResult(intent, R.id.read_menu_update3);
 			animationRightToLeft();
 			break;
@@ -450,6 +451,9 @@ public class ReadMenuActivity extends MenuActivity {
 				return;
 			}
 			Cache.setChapters(chapters);
+			if (book.getLoadStatus() == LoadStatus.hasnew) {
+				new BookDao().updateBook(book);
+			}
 			LoadManager.asynSaveDirectory(book.getId(), Cache.getChapters());
 			if (ReadActivity.getInstance() != null)
 				ReadActivity.getInstance().refreshChapter();

@@ -46,6 +46,7 @@ public class MainActivity extends MenuActivity {
 	private boolean isBack = false;
 	private static MainActivity instance;
 	private BookGridAdapter adapter;
+	private BookDao dao = new BookDao();
 
 	public static MainActivity getInstance() {
 		if (instance.isFinishing())
@@ -313,6 +314,9 @@ public class MainActivity extends MenuActivity {
 				BookAndChapters e = (BookAndChapters) o;
 				BookEntity book = e.getBook();
 				ArrayList<ChapterEntity> chapters = (ArrayList<ChapterEntity>) e.getChapters();
+				if (book.getLoadStatus() == LoadStatus.hasnew) {
+					dao.updateBook(book);
+				}
 				LoadManager.asynSaveDirectory(book.getId(), chapters);
 				// 如果正在阅读本书，更新章节
 				if (Cache.getBook() != null && Cache.getBook().getId() == book.getId() && Cache.getChapters() != null)

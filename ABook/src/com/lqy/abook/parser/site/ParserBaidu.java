@@ -29,7 +29,7 @@ public class ParserBaidu extends ParserBase {
 	// 搜索小说
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		try {
-			String html = WebServer.getData(config.searchUrl + key, encodeType);
+			String html = WebServer.hcGetData(config.searchUrl + key, encodeType);
 			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
 			int count = 0;
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
@@ -49,7 +49,7 @@ public class ParserBaidu extends ParserBase {
 	@Override
 	public BookEntity parserSearchSite(String name, String author) {
 		try {
-			String html = WebServer.getData(config.searchUrl + name + " " + author, encodeType);
+			String html = WebServer.hcGetData(config.searchUrl + name + " " + author, encodeType);
 			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();

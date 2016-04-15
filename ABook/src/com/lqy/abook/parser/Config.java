@@ -7,6 +7,7 @@ public class Config {
 	public static final String lineWrapReg2 = "<p>";// 换行
 	public static final String nbsp = "&nbsp;";// 替换空格
 	public static final String amp = "&amp;";// 替换&
+	public static final String blank = "　";// 全角空格
 
 	public String searchUrl;
 	public String searchFilter;

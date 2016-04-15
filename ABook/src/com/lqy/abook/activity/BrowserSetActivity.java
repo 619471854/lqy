@@ -24,14 +24,24 @@ public class BrowserSetActivity extends MenuActivity {
 
 		final SharedPreferences sp = getSharedPreferences(CONSTANT.SP_BROWSER, 0);
 		boolean useDefaultUrl = sp.getBoolean("useDefaultUrl", false);
+		boolean interceptPic = sp.getBoolean("interceptPic", false);
 		// 动时默认打开上次浏览网页
-		MySwitch mySwitch = (MySwitch) findViewById(R.id.browser_set_start_url);
-		mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		MySwitch urlSwitch = (MySwitch) findViewById(R.id.browser_set_start_url);
+		urlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				sp.edit().putBoolean("useDefaultUrl", !isChecked).commit();
 			}
 		});
-		mySwitch.setChecked(!useDefaultUrl);
+		urlSwitch.setChecked(!useDefaultUrl);
+		// 是否禁止加载图片
+		MySwitch picSwitch = (MySwitch) findViewById(R.id.browser_set_pic);
+		picSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				BrowserActivity.changeInterceptPic = true;
+				sp.edit().putBoolean("interceptPic", isChecked).commit();
+			}
+		});
+		picSwitch.setChecked(interceptPic);
 	}
 
 	public void sendButtonClick(View v) {

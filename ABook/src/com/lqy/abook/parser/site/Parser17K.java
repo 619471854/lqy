@@ -47,8 +47,8 @@ public class Parser17K extends ParserBase2 {
 				// book.setUpdateTime(matcher(html, ));
 
 				book.setCompleted(matcher(html, config.completedReg).length() > 0);
+				return true;
 			}
-			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -151,7 +151,7 @@ public class Parser17K extends ParserBase2 {
 				html = html.replaceAll(Config.lineWrapReg, "\n");
 				html = html.replaceAll("\r\n", "\n");
 				html = html.replaceAll("\n{2,}+", "\n");
-				html = html.replaceAll("　", "    ");// 替换全角空格为4个半角空格
+				html = html.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
 				return html.trim();
 			}
 		} catch (Exception e) {

@@ -119,8 +119,8 @@ public class Parser16K extends ParserBase {
 				book.setLoadStatus(LoadStatus.hasnew);
 				book.setNewChapter(newChapter);
 				// book.setUpdateTime(matcher(html, ));
+				return true;
 			}
-			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
 		}

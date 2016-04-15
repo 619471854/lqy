@@ -16,6 +16,8 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
+import com.lqy.abook.parser.Config;
+import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.WebServer;
 
@@ -29,14 +31,15 @@ public class LoadingActivity extends MenuActivity {
 		setContentView(R.layout.loading);
 
 		getBooks();
-//		testGetData();
+		// testGetData();
 	}
 
 	private static void testGetData() {
 		new Thread() {
 			public void run() {
 				try {
-					MyLog.i(WebServer.getData("http://192.168.1.45/test/home/test", "utf-8"));
+					String a = WebServer.getDataByUrlConnection("http://so.shenmaxiaoshuo.com/cse/search?s=1112742193063402114&q=完美世界", "utf-8");
+					MyLog.i(a);
 				} catch (Exception e) {
 					MyLog.i(e);
 				}

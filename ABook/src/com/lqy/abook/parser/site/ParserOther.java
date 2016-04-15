@@ -83,7 +83,7 @@ public class ParserOther extends ParserBase {
 				// html = html .substring(Math.min(html.length(),
 				// 700),Math.min(html.length(), 1500));
 				html = html.replaceAll(Config.nbsp, " ");
-				html = html.replaceAll("　", " ");// 全角空格
+				html = html.replaceAll(Config.blank, " ");// 全角空格
 				// 去掉多余的换行和空格，段落首行8格
 				html = html.replaceAll("\\s{2,}", "\n        ");
 				// 去掉没有标点的段落(这些一般不是内容)

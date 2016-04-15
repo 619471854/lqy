@@ -21,11 +21,11 @@ public class ParserManager {
 	 */
 	private static List<ParserBase> getParsers(Site exclude) {
 		List<ParserBase> parsers = new ArrayList<ParserBase>();
-//		for (Site s : Site.values()) {
-//			if (s != Site.Other && s != exclude)
-//				parsers.add(s.getParser());
-//		}
-		parsers.add(new ParserQidian());
+		for (Site s : Site.values()) {
+			if (s != Site.Other && s != exclude)
+				parsers.add(s.getParser());
+		}
+		// parsers.add(new ParserQidian());
 		return parsers;
 	}
 

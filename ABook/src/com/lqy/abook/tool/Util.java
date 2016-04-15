@@ -25,12 +25,12 @@ public class Util {
 
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public static String formatDate(long time) {
+	public static String formatDate(long time, int end) {
 		if (time != CONSTANT._1)
 			try {
 				Date d = new Date();
 				d.setTime(time);
-				return sdf.format(d).substring(0, 16);
+				return sdf.format(d).substring(0, end);
 			} catch (Exception e) {
 			}
 		return CONSTANT.EMPTY;

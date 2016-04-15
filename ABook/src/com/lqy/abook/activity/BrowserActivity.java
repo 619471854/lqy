@@ -8,16 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.http.SslError;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
-import android.webkit.HttpAuthHandler;
 import android.webkit.JavascriptInterface;
-import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -31,13 +28,12 @@ import com.lqy.abook.R;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.db.FavoriteDao;
 import com.lqy.abook.db.HistoryDao;
+import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.FavoriteEntity;
-import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
@@ -56,6 +52,7 @@ public class BrowserActivity extends MenuActivity {
 	private int historyLength = 0;// 历史网页数量
 	private int backClickCount = 0;// 点击后退按钮次数
 	private HistoryDao dao = new HistoryDao();
+	public static boolean changeInterceptPic = false;// 改变了是否禁止加载图片的设置
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +97,11 @@ public class BrowserActivity extends MenuActivity {
 				return false;
 			}
 		});
+
+		if (true) {
+			loadUrl("http://m.shenmaxiaoshuo.com/ml-45980/");
+			return;
+		}
 
 		Intent intent = getIntent();
 		// ReadActivity的查看原网页等
@@ -146,14 +148,19 @@ public class BrowserActivity extends MenuActivity {
 		webSettings.setSavePassword(false);
 		webSettings.setSaveFormData(false);
 		webSettings.setUserAgentString(CONSTANT.CHROME_USER_AGENT);
+		// 禁止加载图片
+		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_BROWSER, 0);
+		boolean interceptPic = sp.getBoolean("interceptPic", false);
+		webSettings.setBlockNetworkImage(interceptPic);
+		changeInterceptPic = false;
 
 		String cacheDirPath = FileUtil.getCachePath();
 		// 设置数据库缓存路径
-		webView.getSettings().setDatabasePath(cacheDirPath);
+		webSettings.setDatabasePath(cacheDirPath);
 		// 设置 Application Caches 缓存目录
-		webView.getSettings().setAppCachePath(cacheDirPath);
+		webSettings.setAppCachePath(cacheDirPath);
 		// 开启 Application Caches 功能
-		webView.getSettings().setAppCacheEnabled(true);
+		webSettings.setAppCacheEnabled(true);
 
 		webView.setWebViewClient(client);
 		webView.setWebChromeClient(new MyWebChromeClient(this));
@@ -233,6 +240,7 @@ public class BrowserActivity extends MenuActivity {
 			});
 		} else if (result.getResult() == BookAndChapters.SearchResult.InputName) {
 			final EditText et = new EditText(_this);
+			et.setBackgroundColor(Color.WHITE);
 			new MyAlertDialog(_this).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -294,6 +302,22 @@ public class BrowserActivity extends MenuActivity {
 			dao.saveHistory(title, url);
 			// 获取历史纪录数量
 			loadUrl("javascript:window.local_obj.setHistoryLength(history.length);");
+		}
+
+		public void onLoadResource(WebView view, String url) {
+			MyLog.web("onLoadResource " + url);
+		};
+
+		@SuppressLint("NewApi")
+		public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+			// api 11-21
+			MyLog.web("WebResourceResponse " + url);
+			if (url != null && url.contains("t.zg71.com")) {
+				url = null;
+				MyLog.web("WebResourceResponse null");
+			} else {
+			}
+			return super.shouldInterceptRequest(view, url);
 		}
 
 		@Override
@@ -473,6 +497,20 @@ public class BrowserActivity extends MenuActivity {
 		default:
 			break;
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		if (changeInterceptPic) {
+			try {
+				SharedPreferences sp = getSharedPreferences(CONSTANT.SP_BROWSER, 0);
+				boolean interceptPic = sp.getBoolean("interceptPic", false);
+				webView.getSettings().setBlockNetworkImage(interceptPic);
+			} catch (Exception e) {
+			}
+			changeInterceptPic = false;
+		}
+		super.onResume();
 	}
 
 	@Override

@@ -7,8 +7,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -23,17 +27,24 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.htmlparser.Parser;
+import org.htmlparser.lexer.Page;
+
+import com.lqy.abook.parser.ParserUtil;
 
 public class WebServer {
-
-	public static String getData(String url, String encodeType) throws Exception {
-		return hcGetData(url, encodeType);
-	}
 
 	/**
 	 * get方法
 	 */
-	private static String hcGetData(String url, String encodeType) throws Exception {
+
+	public static String getDataByParser(String url, String encodeType) throws Exception {
+		URLConnection conn = Parser.getConnectionManager().openConnection(url);
+		conn.connect();
+		return getConnectionResult(conn, encodeType);
+	}
+
+	public static String hcGetData(String url, String encodeType) throws Exception {
 		try {
 			if (Util.isEmpty(encodeType))
 				encodeType = HTTP.UTF_8;
@@ -72,20 +83,22 @@ public class WebServer {
 		conn.setRequestProperty("connection", "Keep-Alive");
 		conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
 		conn.setRequestProperty("Referer", url);
+		// conn.setRequestProperty("Content-Encoding", "gzip,deflate");
 	}
 
 	/**
 	 * Get请求，获得返回数据,gzip可能会出错http://files.qidian.com/Author2/1445033/26694962.
 	 * txt
 	 */
-	private static String getDataByUrlConnection(String url, String encodeType) throws Exception {
+	public static String getDataByUrlConnection(String url, String encodeType) throws Exception {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setRequestMethod("GET");
 			addHeader(conn, url);
 
+			conn.connect();
 			if (conn.getResponseCode() == 200) {
-				return convertToString(conn, encodeType);
+				return getConnectionResult(conn, encodeType);
 			} else {
 				throw new Exception("没有网路  " + conn.getResponseCode());
 			}
@@ -97,7 +110,7 @@ public class WebServer {
 	/**
 	 * 向指定 URL 发送POST方法的请求请求参数应该是 name1=value1&name2=value2 的形式。
 	 */
-	public static String postData1(String url, String param, String encodeType) throws Exception {
+	public static String postData(String url, String param, String encodeType) throws Exception {
 		PrintWriter out = null;
 		try {
 			// 打开和URL之间的连接
@@ -121,7 +134,7 @@ public class WebServer {
 			}
 			// printResponseHeader(conn);
 			conn.connect();
-			return convertToString(conn, encodeType);
+			return getConnectionResult(conn, encodeType);
 		} finally {
 			try {
 				out.close();
@@ -130,15 +143,15 @@ public class WebServer {
 		}
 	}
 
-	private static void printResponseHeader(HttpURLConnection http) throws UnsupportedEncodingException {
+	private static void printResponseHeader(URLConnection http) throws UnsupportedEncodingException {
 		Map<String, String> header = getHttpResponseHeader(http);
 		for (Map.Entry<String, String> entry : header.entrySet()) {
 			String key = entry.getKey() != null ? entry.getKey() + ":" : "";
-			System.out.println(key + entry.getValue());
+			MyLog.i(key + "==" + entry.getValue());
 		}
 	}
 
-	private static Map<String, String> getHttpResponseHeader(HttpURLConnection http) throws UnsupportedEncodingException {
+	private static Map<String, String> getHttpResponseHeader(URLConnection http) throws UnsupportedEncodingException {
 		Map<String, String> header = new LinkedHashMap<String, String>();
 		for (int i = 0;; i++) {
 			String mine = http.getHeaderField(i);
@@ -149,7 +162,29 @@ public class WebServer {
 		return header;
 	}
 
-	public static String convertToString(HttpURLConnection conn, String encodeType) throws Exception {
+	public static String getConnectionResult(URLConnection conn, String encodeType) throws Exception {
+		//printResponseHeader(conn);
+		// 获取编码格式
+		String charset = conn.getHeaderField("Content-Type");
+		charset = ParserUtil.matcher(charset, "charset=['\"]?([^'\";]+)['\"]?");
+		encodeType = Page.findCharset(charset, encodeType);
+
+		InputStream is;
+		String encode = conn.getContentEncoding();
+		if (Util.isEmpty(encode)) {
+			is = conn.getInputStream();
+		} else if (encode.toLowerCase().contains("gzip")) {
+			is = new GZIPInputStream(conn.getInputStream());
+		} else if (encode.toLowerCase().contains("deflate")) {
+			is = new InflaterInputStream(conn.getInputStream(), new Inflater(true));
+		} else {
+			is = conn.getInputStream();
+		}
+
+		return convertToString(is, encodeType);
+	}
+
+	public static String convertToString(InputStream is, String encodeType) throws Exception {
 		// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		// byte[] buffer = new byte[1024];
 		// int length = -1;
@@ -157,20 +192,11 @@ public class WebServer {
 		// bos.write(buffer, 0, length);
 		// }
 		// return new String(bos.toByteArray(), encodeType);
-		InputStream is = null;
-		// String encode = conn.getContentEncoding();
-		// if (!Util.isEmpty(encode) && encode.toLowerCase().contains("gzip")) {
-		// is = new GZIPInputStream(conn.getInputStream());
-		// }
-		if (null == is) {
-			is = conn.getInputStream();
-		}
-
 		StringBuffer string = new StringBuffer();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is, encodeType));
 		try {
 			String line = reader.readLine();
-			while (line != null && line.length() != 0) {
+			while (line != null) {
 				string.append(line + "\n");
 				line = reader.readLine();
 			}
@@ -210,5 +236,4 @@ public class WebServer {
 			throw new Exception("hcPostData：code=" + code);
 		}
 	}
-
 }
