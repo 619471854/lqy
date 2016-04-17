@@ -1,5 +1,7 @@
 package com.lqy.abook.parser.site;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,7 @@ import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.WebServer;
 
 public class ParserOther extends ParserBase {
 
@@ -75,11 +78,17 @@ public class ParserOther extends ParserBase {
 
 	private String getChapterDetail(String url, String encodeType, boolean isChangeCode) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(url, new NodeClassFilter(BodyTag.class), encodeType);
+			String cookie = matcher(url, "[\\?&]cookie=([^&]*)");
+			url = url.replaceAll("[\\?&]cookie=([^&]*)", CONSTANT.EMPTY);
+			if (!Util.isEmpty(cookie))
+				cookie = URLDecoder.decode(cookie);
+			cookie = "cdb_cookietime=2592000; cdb_auth=%2BqkCkRVFBnRnBJKSedmBxL4g4EhXTIHtJHZ3MXFvYrxItjr6kjYq7lv6MfNMIADw5w; cdb_visitedfid=11; cdb_oldtopics=D1087230D699783D; cdb_fid11=1460810158; cdb_sid=z7m67E";
+			String html = WebServer.getDataOnCookie(url, cookie, encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(BodyTag.class));
 			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				// Node node = iterator.nextNode();
-				String html = iterator.nextNode().toPlainTextString();
+				html = iterator.nextNode().toPlainTextString();
 				// html = html .substring(Math.min(html.length(),
 				// 700),Math.min(html.length(), 1500));
 				html = html.replaceAll(Config.nbsp, " ");
@@ -90,7 +99,7 @@ public class ParserOther extends ParserBase {
 				html = ("\n" + html).replaceAll("\n[^！”“，。；？……]+\n", "\n");
 				return html.trim();
 			}
-		} catch (org.htmlparser.util.EncodingChangeException e) {
+		} catch (org.htmlparser.util.EncodingChang11eException e) {
 			MyLog.e(e);
 			if (!isChangeCode) {
 				return getChapterDetail(url, "gbk".equals(encodeType) ? "utf-8" : "gbk", true);
@@ -112,7 +121,7 @@ public class ParserOther extends ParserBase {
 		return new BookAndChapters(url, chapters);
 	}
 
-	private List<ChapterEntity> parserBookDict(String url, String urlOrHtml, String encodeType, boolean isChangeCode) {
+	private List<ChapterEntity> parserBookDict(String url, String urlOrHtml, String encodeType, String cookie, boolean isChangeCode) {
 		try {
 			SimpleNodeIterator iterator = parseUrl(urlOrHtml, new NodeClassFilter(LinkTag.class), encodeType);
 			MyLog.i("ParserOther ParserBrowser parserOther ok " + encodeType);
@@ -147,6 +156,14 @@ public class ParserOther extends ParserBase {
 						chapterUrl = baseUrl + chapterUrl;
 					} else {
 						chapterUrl = baseUrl + "/" + chapterUrl;
+					}
+
+					if (!Util.isEmpty(cookie)) {
+						cookie = URLEncoder.encode(cookie);
+						if (chapterUrl.contains("?"))
+							chapterUrl += "&cookie=" + cookie;
+						else
+							chapterUrl += "\\?cookie=" + cookie;
 					}
 				}
 				e = new ChapterEntity();
