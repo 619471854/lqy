@@ -34,15 +34,13 @@ import com.lqy.abook.parser.ParserUtil;
 
 public class WebServer {
 
-	public static String getDataByParser(String url, String encodeType)
-			throws Exception {
+	public static String getDataByParser(String url, String encodeType) throws Exception {
 		URLConnection conn = Parser.getConnectionManager().openConnection(url);
 		conn.connect();
 		return getConnectionResult(conn, encodeType);
 	}
 
-	public static String hcGetData(String url, String encodeType)
-			throws Exception {
+	public static String hcGetData(String url, String encodeType) throws Exception {
 		try {
 			if (Util.isEmpty(encodeType))
 				encodeType = HTTP.UTF_8;
@@ -63,12 +61,9 @@ public class WebServer {
 		}
 	}
 
-	private static void addHeader(HttpParams params, HttpUriRequest request,
-			String url, String encodeType) {
-		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,
-				CONSTANT.CONNECTION_TIMEOUT);
-		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION,
-				HttpVersion.HTTP_1_1);
+	private static void addHeader(HttpParams params, HttpUriRequest request, String url, String encodeType) {
+		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, CONSTANT.CONNECTION_TIMEOUT);
+		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
 		params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, encodeType);
 
 		request.addHeader("accept", "*/*");
@@ -77,8 +72,7 @@ public class WebServer {
 		request.addHeader("Referer", url);
 	}
 
-	private static void addHeader(HttpURLConnection conn, String url,
-			String cookie) {
+	private static void addHeader(HttpURLConnection conn, String url, String cookie) {
 		conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
 		conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
 		conn.setRequestProperty("accept", "*/*");
@@ -94,16 +88,13 @@ public class WebServer {
 	 * Get请求，获得返回数据,gzip可能会出错http://files.qidian.com/Author2/1445033/26694962.
 	 * txt
 	 */
-	public static String getDataByUrlConnection(String url, String encodeType)
-			throws Exception {
+	public static String getDataByUrlConnection(String url, String encodeType) throws Exception {
 		return getDataOnCookie(url, null, encodeType);
 	}
 
-	public static String getDataOnCookie(String url, String cookie,
-			String encodeType) throws Exception {
+	public static String getDataOnCookie(String url, String cookie, String encodeType) throws Exception {
 		try {
-			HttpURLConnection conn = (HttpURLConnection) new URL(url)
-					.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setRequestMethod("GET");
 			addHeader(conn, url, cookie);
 
@@ -121,13 +112,11 @@ public class WebServer {
 	/**
 	 * 向指定 URL 发送POST方法的请求请求参数应该是 name1=value1&name2=value2 的形式。
 	 */
-	public static String postData(String url, String param, String encodeType)
-			throws Exception {
+	public static String postData(String url, String param, String encodeType) throws Exception {
 		PrintWriter out = null;
 		try {
 			// 打开和URL之间的连接
-			HttpURLConnection conn = (HttpURLConnection) new URL(url)
-					.openConnection();
+			HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setReadTimeout(CONSTANT.CONNECTION_TIMEOUT);
 			conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
 			// 设置通用的请求属性
@@ -156,8 +145,7 @@ public class WebServer {
 		}
 	}
 
-	private static void printResponseHeader(URLConnection http)
-			throws UnsupportedEncodingException {
+	private static void printResponseHeader(URLConnection http) throws UnsupportedEncodingException {
 		Map<String, String> header = getHttpResponseHeader(http);
 		for (Map.Entry<String, String> entry : header.entrySet()) {
 			String key = entry.getKey() != null ? entry.getKey() + ":" : "";
@@ -165,8 +153,7 @@ public class WebServer {
 		}
 	}
 
-	private static Map<String, String> getHttpResponseHeader(URLConnection http)
-			throws UnsupportedEncodingException {
+	private static Map<String, String> getHttpResponseHeader(URLConnection http) throws UnsupportedEncodingException {
 		Map<String, String> header = new LinkedHashMap<String, String>();
 		for (int i = 0;; i++) {
 			String mine = http.getHeaderField(i);
@@ -177,8 +164,7 @@ public class WebServer {
 		return header;
 	}
 
-	public static String getConnectionResult(URLConnection conn,
-			String encodeType) throws Exception {
+	public static String getConnectionResult(URLConnection conn, String encodeType) throws Exception {
 		// printResponseHeader(conn);
 		// 获取编码格式
 		String charset = conn.getHeaderField("Content-Type");
@@ -192,8 +178,7 @@ public class WebServer {
 		} else if (encode.toLowerCase().contains("gzip")) {
 			is = new GZIPInputStream(conn.getInputStream());
 		} else if (encode.toLowerCase().contains("deflate")) {
-			is = new InflaterInputStream(conn.getInputStream(), new Inflater(
-					true));
+			is = new InflaterInputStream(conn.getInputStream(), new Inflater(true));
 		} else {
 			is = conn.getInputStream();
 		}
@@ -201,8 +186,7 @@ public class WebServer {
 		return convertToString(is, encodeType);
 	}
 
-	public static String convertToString(InputStream is, String encodeType)
-			throws Exception {
+	public static String convertToString(InputStream is, String encodeType) throws Exception {
 		// ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		// byte[] buffer = new byte[1024];
 		// int length = -1;
@@ -211,8 +195,12 @@ public class WebServer {
 		// }
 		// return new String(bos.toByteArray(), encodeType);
 		StringBuffer string = new StringBuffer();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is,
-				encodeType));
+		BufferedReader reader = null;
+
+		if (Util.isEmpty(encodeType))
+			reader = new BufferedReader(new InputStreamReader(is));
+		else
+			reader = new BufferedReader(new InputStreamReader(is, encodeType));
 		try {
 			String line = reader.readLine();
 			while (line != null) {
@@ -235,12 +223,10 @@ public class WebServer {
 	/**
 	 * post方法
 	 */
-	protected static String hcPostData(String url, PostParams params,
-			String encodeType) throws Exception {
+	protected static String hcPostData(String url, PostParams params, String encodeType) throws Exception {
 		HttpPost post = new HttpPost(url);
 		if (params != null) {
-			post.setEntity(new UrlEncodedFormEntity(params.getList(),
-					HTTP.UTF_8));
+			post.setEntity(new UrlEncodedFormEntity(params.getList(), HTTP.UTF_8));
 		}
 		HttpClient httpClient = new DefaultHttpClient();
 		addHeader(httpClient.getParams(), post, url, encodeType);

@@ -90,6 +90,7 @@ public class DBManager {
 		e.setCompleted(c.getInt(c.getColumnIndex(BookDao.column_isCompleted)) == 1);
 		e.setCurrentChapterId(c.getInt(c.getColumnIndex(BookDao.column_currentChapterId)));
 		e.setReadBegin(c.getInt(c.getColumnIndex(BookDao.column_readBegin)));
+		e.setExt(c.getString(c.getColumnIndex(BookDao.column_ext)));
 		// MyLog.i(c.getLong(c.getColumnIndex(BookDao.column_sortTime)) + "");
 		return e;
 	}
@@ -148,6 +149,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
+			values.put(BookDao.column_ext, book.getExt());
 			return db.insert(BookDao.table_name, null, values);
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -178,6 +180,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
+			values.put(BookDao.column_ext, book.getExt());
 			int result = db.update(BookDao.table_name, values, BookDao.column_id + "=" + book.getId(), null);
 			return result > 0;
 		} catch (Exception e) {

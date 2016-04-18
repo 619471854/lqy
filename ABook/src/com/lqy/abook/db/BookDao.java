@@ -18,11 +18,12 @@ public class BookDao {
 	public static final String column_words = "words";// 字数
 	public static final String column_updateTime = "updateTime";// 最新章节更新日期
 	public static final String column_newChapter = "newChapter";// 最新章节名字
-	public static final String column_directoryUrl = "directoryUrl";// 目录页地址
+	public static final String column_directoryUrl = "directoryUrl";// 目录页地址	
 	public static final String column_isCompleted = "isCompleted";// 本书是否已完结
 	public static final String column_sortTime = "sortTime";// 开始阅读的时间，用于排序
 	public static final String column_currentChapterId = "currentChapterId";// 当前章节
 	public static final String column_readBegin = "readBegin";// 当前章节当前阅读位置
+	public static final String column_ext = "ext";// 其他信息
 
 	/**
 	 * 获取书的id，如果书不存在则添加本书

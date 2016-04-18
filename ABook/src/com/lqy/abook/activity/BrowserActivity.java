@@ -98,10 +98,10 @@ public class BrowserActivity extends MenuActivity {
 			}
 		});
 
-		if (true) {
-			loadUrl("http://m.shenmaxiaoshuo.com/ml-45980/");
-			return;
-		}
+		// if (true) {
+		// loadUrl("http://m.shenmaxiaoshuo.com/ml-45980/");
+		// return;
+		// }
 
 		Intent intent = getIntent();
 		// ReadActivity的查看原网页等
@@ -197,7 +197,8 @@ public class BrowserActivity extends MenuActivity {
 		case WHAT_SAVEBOOK1:// 添加到书架
 			MyLog.i("savebook1");
 			showLoadingDialog("正在获取小说目录");
-			ParserManager.parserBrowser(_this, webView.getUrl(), o.toString(), WHAT_SAVEBOOK2);
+			String[] params = (String[]) o;
+			ParserManager.parserBrowser(_this, webView.getUrl(), params[1], params[0], WHAT_SAVEBOOK2);
 			break;
 		case WHAT_SAVEBOOK2:// 添加到书架
 			MyLog.i("savebook2 ", o);
@@ -337,9 +338,9 @@ public class BrowserActivity extends MenuActivity {
 		}
 
 		@JavascriptInterface
-		public void saveBook(String html) {
+		public void saveBook(String cookie, String html) {
 			MyLog.save(html);
-			sendMsgOnThread(WHAT_SAVEBOOK1, html);
+			sendMsgOnThread(WHAT_SAVEBOOK1, new String[] { cookie, html });
 		}
 
 		@JavascriptInterface
@@ -436,7 +437,8 @@ public class BrowserActivity extends MenuActivity {
 					// intent.putExtra("url", webView.getUrl());
 					// startActivity(intent);
 					// saveBook()
-					getHtml("saveBook");
+					// getHtml("saveBook");
+					loadUrl("javascript:window.local_obj.saveBook(document.cookie,document.getElementsByTagName('html')[0].innerHTML);");
 				}
 			});
 			break;

@@ -96,7 +96,7 @@ public class ParserManager {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public static void parserBrowser(final MenuActivity activity, String url, final String html, final int what) {
+	public static void parserBrowser(final MenuActivity activity, String url, final String html, final String cookie, final int what) {
 		if (Util.isEmpty(url) || Util.isEmpty(html))
 			activity.sendMsgOnThread(what);
 
@@ -112,10 +112,7 @@ public class ParserManager {
 					}
 				}
 				if (result == null) {
-					result = new ParserBaidu().parserBrowser(url2, html);
-				}
-				if (result == null) {
-					result = new ParserOther().parserBrowser(url2, html);
+					result = new ParserOther().parserBrowser(url2, html, cookie);
 				}
 				if (result == null) {
 					activity.sendMsgOnThread(what);

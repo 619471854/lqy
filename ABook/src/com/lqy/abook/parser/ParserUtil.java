@@ -10,6 +10,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public abstract class ParserUtil {
 	protected String encodeType;
@@ -84,5 +85,25 @@ public abstract class ParserUtil {
 			MyLog.e(e);
 		}
 		return null;
+	}
+
+	protected static String addParams(String url, String params) {
+		if (!Util.isEmpty(url) && !Util.isEmpty(params)) {
+			if (url.contains("?"))
+				url += "&cookie=" + params;
+			else
+				url += "\\?cookie=" + params;
+		}
+		return url;
+	}
+
+	protected static String getAndRemoveUrlParam(String url, String key) {
+		if (!Util.isEmpty(url) && !Util.isEmpty(key)) {
+			String reg = "[\\?&]" + key + "=([^&]*)";
+			String param = matcher(url, reg);
+			url = url.replaceAll(reg, CONSTANT.EMPTY);
+			return param;
+		}
+		return CONSTANT.EMPTY;
 	}
 }
