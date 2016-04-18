@@ -20,7 +20,7 @@ public class Test {
 		// String data = new ParserSM()
 		// .getChapterDetail("http://www.shenmaxiaoshuo.com/ml-21318-125304187/");
 		try {
-			String url = "http://www.mayaname.com/viewthread.php?tid=1087230&extra=page%3D1";
+			String url = "www.baidu.com";
 
 			MyLog.e(	WebServer.getDataByUrlConnection(url, "gbk"));
 
