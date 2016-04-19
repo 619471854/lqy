@@ -3,7 +3,7 @@ package com.lqy.abook.entity;
 import com.google.gson.Gson;
 import com.lqy.abook.tool.Util;
 
-public class ExtEntity extends BaseEntity {
+public class ExtEntity extends SerializableEntity {
 
 	private String cookie;
 	private String encodeType;

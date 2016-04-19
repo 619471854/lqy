@@ -25,7 +25,10 @@ public class BookAndChapters {
 		if (book != null) {
 			this.book = book;
 			if (chapters == null || chapters.size() == 0) {
-				result = SearchResult.Search;
+				if (Util.isEmpty(book.getName()))
+					result = SearchResult.Failed;
+				else
+					result = SearchResult.Search;
 			} else {
 				this.chapters = chapters;
 				if (Util.isEmpty(book.getName()))

@@ -14,6 +14,7 @@ import com.lqy.abook.entity.FavoriteEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public class DBManager {
 	private static DBManager dbMgr;
@@ -151,7 +152,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
-			values.put(BookDao.column_ext, book.getExt().toString());
+			values.put(BookDao.column_ext, Util.toString(book.getExt()));
 			return db.insert(BookDao.table_name, null, values);
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -182,7 +183,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
-			values.put(BookDao.column_ext, book.getExt().toString());
+			values.put(BookDao.column_ext, Util.toString(book.getExt()));
 			int result = db.update(BookDao.table_name, values, BookDao.column_id + "=" + book.getId(), null);
 			return result > 0;
 		} catch (Exception e) {

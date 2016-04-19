@@ -77,7 +77,7 @@ public class WebServer {
 		conn.setConnectTimeout(CONSTANT.CONNECTION_TIMEOUT);
 		conn.setRequestProperty("accept", "*/*");
 		conn.setRequestProperty("connection", "Keep-Alive");
-		conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT);
+		conn.setRequestProperty("User-Agent", CONSTANT.CHROME_USER_AGENT_PC);
 		conn.setRequestProperty("Referer", url);
 		if (!Util.isEmpty(cookie))
 			conn.setRequestProperty("Cookie", cookie);
