@@ -266,7 +266,7 @@ public class AsyncTxtLoader {
 				text = FileUtil.readByLine(FileUtil.getBooksPath(book.getId()) + File.separator + FileUtil.getChapterName(chapter.getName()));
 			boolean success = false;
 			if (Util.isEmpty(text)) {
-				text = ParserManager.getChapterDetail(chapter.getUrl(), book.getSite());
+				text = ParserManager.getChapterDetail(book, chapter.getUrl());
 				if (Util.isEmpty(text)) {
 					text = null;
 				} else {

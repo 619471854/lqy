@@ -1,8 +1,6 @@
 package com.lqy.abook.parser.site;
 
 import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +13,9 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
+import com.lqy.abook.entity.ExtEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
@@ -46,7 +46,7 @@ public class ParserOther extends ParserBase {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
-			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
+			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
 				MyLog.i("ParserOther updateBookAndDict getChapters failed");
@@ -69,74 +69,26 @@ public class ParserOther extends ParserBase {
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
-		String cookie = getAndRemoveUrlParam(url, "cookie");
-		String encodeType = getAndRemoveUrlParam(url, "encodeType");
-		if (!Util.isEmpty(cookie))
-			cookie = URLDecoder.decode(cookie);
-		if (Util.isEmpty(encodeType))
-			encodeType = "gbk";
-		String params = "cookie=" + URLEncoder.encode(cookie) + "&encodeType=" + encodeType;
-		return parserBookDict(url, null, encodeType, cookie, params);
-	}
-
-	@Override
-	public String getChapterDetail(String url) {
-		try {
-			String cookie = getAndRemoveUrlParam(url, "cookie");
-			String encodeType = getAndRemoveUrlParam(url, "encodeType");
-			if (!Util.isEmpty(cookie))
-				cookie = URLDecoder.decode(cookie);
-			String html = WebServer.getDataOnCookie(url, cookie, encodeType);
-			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(BodyTag.class));
-			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				// Node node = iterator.nextNode();
-				html = iterator.nextNode().toPlainTextString();
-				// html = html .substring(Math.min(html.length(),
-				// 700),Math.min(html.length(), 1500));
-				html = html.replaceAll(Config.nbsp, " ");
-				html = html.replaceAll(Config.blank, " ");// 全角空格
-				// 去掉多余的换行和空格，段落首行8格
-				html = html.replaceAll("\\s{2,}", "\n        ");
-				// 去掉没有标点的段落(这些一般不是内容)
-				html = ("\n" + html).replaceAll("\n[^！”“，。；？……]+\n", "\n");
-				return html.trim();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
-		}
 		return null;
 	}
 
-	/**
-	 * 获取所有链接
-	 */
-	@Override
-	public BookAndChapters parserBrowser(String url, String html) {
-		return null;
-	}
-
-	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String encodeType = matcher(html, "<meta[\\s\\S]*charset=[\"']([^\"']+)[\"']>");
-		if (Util.isEmpty(encodeType))
-			return null;
-		String params = "cookie=" + URLEncoder.encode(cookie) + "&encodeType=" + encodeType;
-		List<ChapterEntity> chapters = parserBookDict(url, html, encodeType, cookie, params);
-		return new BookAndChapters(addParams(url, params), chapters);
-	}
-
-	private List<ChapterEntity> parserBookDict(String url, String html, String encodeType, String cookie, String params) {
+	public List<ChapterEntity> parserBookDict(String url, String html, ExtEntity ext) {
 		try {
 			if (Util.isEmpty(html))
-				html = WebServer.getDataOnCookie(url, cookie, encodeType);
+				html = WebServer.getDataOnCookie(url, ext.getCookie(), ext.getEncodeType());
 			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(LinkTag.class));
-			MyLog.i("ParserOther ParserBrowser parserOther ok " + encodeType);
+			MyLog.i("ParserOther ParserBrowser parserOther ok " + ext.getEncodeType());
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			ChapterEntity e;
 			// 获取域名
 			String baseUrl = null;
 			try {
-				baseUrl = new URI(url).getHost();
+				String path = new URI(url).getPath();
+				int index = url.indexOf(path);
+				if ("/".equals(path) || index < 1)
+					baseUrl = url;
+				else
+					baseUrl = url = url.substring(0, index);
 			} catch (Exception e2) {
 			}
 			if (Util.isEmpty(baseUrl)) {
@@ -172,7 +124,6 @@ public class ParserOther extends ParserBase {
 						chapterUrl = baseUrl + "/" + chapterUrl;
 					}
 				}
-				chapterUrl = addParams(chapterUrl, params);
 
 				e = new ChapterEntity();
 				e.setName(name);
@@ -186,5 +137,57 @@ public class ParserOther extends ParserBase {
 			MyLog.e(e);
 		}
 		return null;
+	}
+
+	@Override
+	public String getChapterDetail(String url) {
+		return null;
+	}
+
+	public String getChapterDetail(String url, ExtEntity ext) {
+		try {
+			String html = WebServer.getDataOnCookie(url, ext.getCookie(), ext.getEncodeType());
+			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(BodyTag.class));
+			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
+			if (iterator.hasMoreNodes()) {
+				// Node node = iterator.nextNode();
+				html = iterator.nextNode().toPlainTextString();
+				// html = html .substring(Math.min(html.length(),
+				// 700),Math.min(html.length(), 1500));
+				html = html.replaceAll(Config.nbsp, " ");
+				html = html.replaceAll(Config.blank, " ");// 全角空格
+				// 去掉多余的换行和空格，段落首行8格
+				html = html.replaceAll("\\s{2,}", "\n        ");
+				// 去掉没有标点的段落(这些一般不是内容)
+				html = ("\n" + html).replaceAll("\n[^！”“，。；？……]+\n", "\n");
+				return html.trim();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
+	}
+
+	/**
+	 * 获取所有链接
+	 */
+	@Override
+	public BookAndChapters parserBrowser(String url, String html) {
+		return null;
+	}
+
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
+		String encodeType = matcher(html, "<meta[\\s\\S]*charset=[\"']?([^\"']+)[\"']?>");
+		if (Util.isEmpty(encodeType))
+			return null;
+		ExtEntity ext = new ExtEntity(cookie, encodeType);
+		List<ChapterEntity> chapters = parserBookDict(url, html, ext);
+
+		BookEntity book = new BookEntity();
+		book.setDirectoryUrl(url);
+		book.setSite(Site.Other);
+		book.setExt(ext);
+
+		return new BookAndChapters(book, chapters);
 	}
 }

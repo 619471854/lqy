@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.lqy.abook.MyApp;
 import com.lqy.abook.entity.BookEntity;
+import com.lqy.abook.entity.ExtEntity;
 import com.lqy.abook.entity.FavoriteEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.tool.CONSTANT;
@@ -63,8 +64,9 @@ public class DBManager {
 		int id = CONSTANT.MSG_ERROR;
 		try {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
-			Cursor c = db.query(BookDao.table_name, new String[] { BookDao.column_id }, BookDao.column_author + "=? and " + BookDao.column_name + "=? and " + BookDao.column_site + "=?", new String[] {
-					book.getAuthor(), book.getName(), book.getSite().ordinal() + CONSTANT.EMPTY }, null, null, null, "1");// 只取1项
+			Cursor c = db.query(BookDao.table_name, new String[] { BookDao.column_id }, BookDao.column_author + "=? and " + BookDao.column_name + "=? and "
+					+ BookDao.column_site + "=?", new String[] { book.getAuthor(), book.getName(), book.getSite().ordinal() + CONSTANT.EMPTY }, null, null,
+					null, "1");// 只取1项
 			if (c.moveToNext())
 				id = c.getInt(0);
 			c.close();
@@ -90,7 +92,7 @@ public class DBManager {
 		e.setCompleted(c.getInt(c.getColumnIndex(BookDao.column_isCompleted)) == 1);
 		e.setCurrentChapterId(c.getInt(c.getColumnIndex(BookDao.column_currentChapterId)));
 		e.setReadBegin(c.getInt(c.getColumnIndex(BookDao.column_readBegin)));
-		e.setExt(c.getString(c.getColumnIndex(BookDao.column_ext)));
+		e.setExt(ExtEntity.valueOf(c.getString(c.getColumnIndex(BookDao.column_ext))));
 		// MyLog.i(c.getLong(c.getColumnIndex(BookDao.column_sortTime)) + "");
 		return e;
 	}
@@ -149,7 +151,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
-			values.put(BookDao.column_ext, book.getExt());
+			values.put(BookDao.column_ext, book.getExt().toString());
 			return db.insert(BookDao.table_name, null, values);
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -180,7 +182,7 @@ public class DBManager {
 			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
-			values.put(BookDao.column_ext, book.getExt());
+			values.put(BookDao.column_ext, book.getExt().toString());
 			int result = db.update(BookDao.table_name, values, BookDao.column_id + "=" + book.getId(), null);
 			return result > 0;
 		} catch (Exception e) {

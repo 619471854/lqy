@@ -1,5 +1,7 @@
 package com.lqy.abook.parser;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,23 +89,4 @@ public abstract class ParserUtil {
 		return null;
 	}
 
-	protected static String addParams(String url, String params) {
-		if (!Util.isEmpty(url) && !Util.isEmpty(params)) {
-			if (url.contains("?"))
-				url += "&cookie=" + params;
-			else
-				url += "\\?cookie=" + params;
-		}
-		return url;
-	}
-
-	protected static String getAndRemoveUrlParam(String url, String key) {
-		if (!Util.isEmpty(url) && !Util.isEmpty(key)) {
-			String reg = "[\\?&]" + key + "=([^&]*)";
-			String param = matcher(url, reg);
-			url = url.replaceAll(reg, CONSTANT.EMPTY);
-			return param;
-		}
-		return CONSTANT.EMPTY;
-	}
 }

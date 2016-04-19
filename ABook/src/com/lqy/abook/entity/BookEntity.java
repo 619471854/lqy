@@ -22,7 +22,7 @@ public class BookEntity extends SerializableEntity {
 	private int currentChapterId;
 	private int readBegin;
 	private int unReadCount;
-	private String ext;//额 外信息
+	private ExtEntity ext;//额 外信息
 
 
 	public void setCurrentChapterId(int currentChapterId) {
@@ -168,11 +168,11 @@ public class BookEntity extends SerializableEntity {
 		this.readBegin = readBegin;
 	}
 
-	public String getExt() {
+	public ExtEntity getExt() {
 		return ext;
 	}
 
-	public void setExt(String ext) {
+	public void setExt(ExtEntity ext) {
 		this.ext = ext;
 	}
 

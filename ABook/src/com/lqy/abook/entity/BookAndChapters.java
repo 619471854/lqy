@@ -21,18 +21,6 @@ public class BookAndChapters {
 		book.setAuthor(author);
 	}
 
-	public BookAndChapters(String url, List<ChapterEntity> chapters) {
-		if (Util.isEmpty(url) || chapters == null || chapters.size() == 0) {
-			result = SearchResult.Failed;
-		} else {
-			result = SearchResult.InputName;
-			book = new BookEntity();
-			book.setDirectoryUrl(url);
-			book.setSite(Site.Other);
-			this.chapters = chapters;
-		}
-	}
-
 	public BookAndChapters(BookEntity book, List<ChapterEntity> chapters) {
 		if (book != null) {
 			this.book = book;

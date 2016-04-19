@@ -25,7 +25,7 @@ public abstract class ParserBase extends ParserUtil {
 	public abstract List<ChapterEntity> updateBookAndDict(BookEntity book);
 
 	// 根据小说主页地址获取 小说信息
-	public abstract boolean parserBookDetail(BookEntity detail);
+	public abstract boolean parserBookDetail(BookEntity book);
 
 	// 根据小说目录地址获取 目录
 	public abstract List<ChapterEntity> parserBookDict(String url);
