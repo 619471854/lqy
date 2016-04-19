@@ -92,7 +92,34 @@ public class ParserBaidu extends ParserBase {
 
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
-		return true;
+		try {
+			if (Util.isEmpty(detail.getName())) {
+				SimpleNodeIterator iterator = getParserResult2(detail.getDetailUrl(), "div itemscope");
+				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
+				if (iterator.hasMoreNodes()) {
+					String html = iterator.nextNode().toHtml();
+					detail.setName(matcher(html, "<font\\s*itemprop=\"name\">(.+)</font>"));
+					detail.setAuthor(matcher(html, "<span\\s*itemprop=\"author\"[^<]+<span>[^<]+<a[^<]+<font itemprop=\"name\">(.+)</font></a>"));
+					detail.setCover(matcher(html, "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\""));
+
+					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+					detail.setCompleted(matcher(html, config.completedReg).length() > 0);
+					detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
+					detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
+					detail.setUpdateTime(matcher(html, config.updateTimeReg2));
+				}
+			} else {
+				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"bookBox_r\"");
+				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
+				if (iterator.hasMoreNodes()) {
+					String html = iterator.nextNode().toHtml();
+					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	@Override

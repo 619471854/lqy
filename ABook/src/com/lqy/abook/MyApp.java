@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Handler;

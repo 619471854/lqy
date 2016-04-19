@@ -17,6 +17,7 @@ import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.Config;
+import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.WebServer;
@@ -30,16 +31,17 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		getBooks();
-		// testGetData();
+		//getBooks();
+		 testGetData();
 	}
 
 	private static void testGetData() {
 		new Thread() {
 			public void run() {
 				try {
-					String a = WebServer.getDataByUrlConnection("http://so.shenmaxiaoshuo.com/cse/search?s=1112742193063402114&q=完美世界", "utf-8");
-					MyLog.i(a);
+					 ArrayList<BookEntity> data = new ArrayList<BookEntity>();
+					 new ParserBaidu().parserSearch(data, "武神");
+					MyLog.i(data);
 				} catch (Exception e) {
 					MyLog.i(e);
 				}
