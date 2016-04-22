@@ -92,28 +92,40 @@ public class ParserBaidu extends ParserBase {
 
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
+
 		try {
 			if (Util.isEmpty(detail.getName())) {
-				SimpleNodeIterator iterator = getParserResult2(detail.getDetailUrl(), "div itemscope");
+				SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createStartFilter("div itemscope"), encodeType);
 				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
 					String html = iterator.nextNode().toHtml();
-					detail.setName(matcher(html, "<font\\s*itemprop=\"name\">(.+)</font>"));
-					detail.setAuthor(matcher(html, "<span\\s*itemprop=\"author\"[^<]+<span>[^<]+<a[^<]+<font itemprop=\"name\">(.+)</font></a>"));
-					detail.setCover(matcher(html, "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\""));
-
-					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
-					detail.setCompleted(matcher(html, config.completedReg).length() > 0);
-					detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
-					detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
-					detail.setUpdateTime(matcher(html, config.updateTimeReg2));
+					MyLog.i(html);
+					// detail.setName(matcher(html,
+					// "<font\\s*itemprop=\"name\">(.+)</font>"));
+					// detail.setAuthor(matcher(html,
+					// "<span\\s*itemprop=\"author\"[^<]+<span>[^<]+<a[^<]+<font itemprop=\"name\">(.+)</font></a>"));
+					// detail.setCover(matcher(html,
+					// "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\""));
+					//
+					// detail.setTip(matcher(html,
+					// config.tipsDetailReg).replaceAll(Config.tagReg,
+					// CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+					// detail.setCompleted(matcher(html,
+					// config.completedReg).length() > 0);
+					// detail.setNewChapter(matcher(html,
+					// config.newChapterReg2).trim().replaceAll("\\s", " "));
+					// detail.setWords(Util.toInt(matcher(html,
+					// config.wordsReg2)));
+					// detail.setUpdateTime(matcher(html,
+					// config.updateTimeReg2));
 				}
 			} else {
-				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"bookBox_r\"");
+				SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\"s-hover  xs-sum-short open\" data-action=\"summary\"");
 				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
-					String html = iterator.nextNode().toHtml();
-					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+					String html = iterator.nextNode().toPlainTextString();
+					html = html.replaceAll("\\s", CONSTANT.EMPTY);
+					detail.setTip(html);
 				}
 			}
 			return true;

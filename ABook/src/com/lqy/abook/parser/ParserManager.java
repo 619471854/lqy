@@ -10,7 +10,6 @@ import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.site.ParserOther;
-import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class ParserManager {
@@ -20,10 +19,11 @@ public class ParserManager {
 	private static List<ParserBase> getParsers(Site exclude) {
 		List<ParserBase> parsers = new ArrayList<ParserBase>();
 		for (Site s : Site.values()) {
-			if (s != Site.Other && s != exclude)
+			if (s != Site.Other && s != exclude && s != Site.Baidu)
 				parsers.add(s.getParser());
 		}
 		// parsers.add(new ParserQidian());
+
 		return parsers;
 	}
 

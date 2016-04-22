@@ -126,29 +126,32 @@ public class ParserQidian extends ParserBase {
 	public boolean updateBook(BookEntity book) {
 		try {
 			String html = WebServer.hcGetData(book.getDetailUrl(), encodeType);
-
-			SimpleNodeIterator iterator = parseHtml(html, createStartFilter("div class=\"updata_cont\" id=\"readV\""));
-			MyLog.i("ParserQidian updateBook getParserResult ok");
-
-			if (iterator.hasMoreNodes()) {
-				String html1 = iterator.nextNode().toHtml();
-				String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
-				// MyLog.i("ParserQidian updateBook newChapter="+newChapter);
-				if (newChapter.equals(book.getNewChapter())) {
-					return false;// 此书没有更新
-				}
-				book.setLoadStatus(LoadStatus.hasnew);
-				book.setNewChapter(newChapter);
-				book.setUpdateTime(matcher(html1, config.updateTimeReg2));
-
-				iterator = parseHtml(html, createEqualFilter("div class=\"info_box\""));
-				if (iterator.hasMoreNodes()) {
-					html = iterator.nextNode().toHtml();
-					book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
-					book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
-				}
-				return true;
+			int i = html.indexOf("<div class=\"updata_cont");
+			int j = html.indexOf("<div class=\"updata_cont", i + 10);
+			int k = html.indexOf("<div class=\"updata_cont", j + 10);
+			String html1;
+			if (html.substring(j, j + 60).contains("style=\"display")) {
+				int h = html.indexOf("<div class=\"author_tj", k);
+				html1 = html.substring(k, h);
+			} else {
+				html1 = html.substring(j, k);
 			}
+			String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
+			MyLog.i("ParserQidian updateBook newChapter=" + newChapter);
+			if (newChapter.equals(book.getNewChapter())) {
+				return false;// 此书没有更新
+			}
+			book.setLoadStatus(LoadStatus.hasnew);
+			book.setNewChapter(newChapter);
+			book.setUpdateTime(matcher(html1, config.updateTimeReg2));
+
+			SimpleNodeIterator iterator = parseHtml(html, createEqualFilter("div class=\"info_box\""));
+			if (iterator.hasMoreNodes()) {
+				html = iterator.nextNode().toHtml();
+				book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
+				book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
+			}
+			return true;
 		} catch (Exception e) {
 			MyLog.e(e);
 		}

@@ -31,8 +31,8 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		//getBooks();
-		 testGetData();
+		getBooks();
+		// testGetData();
 	}
 
 	private static void testGetData() {

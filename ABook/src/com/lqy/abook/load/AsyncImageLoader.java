@@ -7,14 +7,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.lqy.abook.tool.CONSTANT;
-import com.lqy.abook.tool.MyLog;
-import com.lqy.abook.tool.Util;
-
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.ImageView;
+
+import com.lqy.abook.tool.CONSTANT;
+import com.lqy.abook.tool.Util;
 
 public class AsyncImageLoader {
 	private HashMap<String, SoftReference<Drawable>> imageCache;

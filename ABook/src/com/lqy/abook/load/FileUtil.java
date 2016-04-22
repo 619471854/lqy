@@ -256,9 +256,9 @@ public class FileUtil {
 
 			// 带后缀名的地址的图片可以使用缓存图片，
 			if (MatcherTool.hasExtendName(url) && file.exists() && file.length() != 0) {
-				MyLog.i("已下载:" + url);
+			//	MyLog.i("已下载:" + url);
 			} else {
-				MyLog.i("开始下载:" + url);
+			//	MyLog.i("开始下载:" + url);
 				FileOutputStream fos = null;
 				InputStream is = null;
 
@@ -280,9 +280,9 @@ public class FileUtil {
 
 					tempFile.renameTo(file);
 
-					MyLog.i("下载完成！:" + url);
+				//	MyLog.i("下载完成！:" + url);
 				} catch (Exception e) {
-					MyLog.e(e.toString() + "下载时出现异常！:" + file.toString());
+				//	MyLog.e(e.toString() + "下载时出现异常！:" + file.toString());
 					return null;
 
 				} finally {
