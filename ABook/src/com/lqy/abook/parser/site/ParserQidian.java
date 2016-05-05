@@ -129,14 +129,13 @@ public class ParserQidian extends ParserBase {
 			int i = html.indexOf("<div class=\"updata_cont");
 			int j = html.indexOf("<div class=\"updata_cont", i + 10);
 			int k = html.indexOf("<div class=\"updata_cont", j + 10);
-			String html1;
-			if (html.substring(j, j + 60).contains("style=\"display")) {
-				int h = html.indexOf("<div class=\"author_tj", k);
-				html1 = html.substring(k, h);
-			} else {
-				html1 = html.substring(j, k);
-			}
+			int h = html.indexOf("<div class=\"author_tj", k);
+			String html1 = html.substring(k, h);
 			String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
+			if(newChapter.length()==0){
+				html1 = html.substring(j, k);
+				 newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
+			}
 			MyLog.i("ParserQidian updateBook newChapter=" + newChapter);
 			if (newChapter.equals(book.getNewChapter())) {
 				return false;// 此书没有更新

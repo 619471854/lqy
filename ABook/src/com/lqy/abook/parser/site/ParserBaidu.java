@@ -1,10 +1,15 @@
 package com.lqy.abook.parser.site;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.htmlparser.Node;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
@@ -71,18 +76,46 @@ public class ParserBaidu extends ParserBase {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
-			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i("ParserBaidu updateBookAndDict  此书没有更新");
-				return null;
-			}
-			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
-			if (chapters == null || chapters.size() == 0) {
-				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("ParserBaidu updateBookAndDict getChapters failed");
-				return null;// 此书更新失败
-			} else {
-				return chapters;
-			}
+			boolean hasBookid = book.getDirectoryUrl().contains("book_id");
+
+			String html = WebServer.hcGetData(book.getDirectoryUrl(), encodeType);
+			html = matcher(html, "var\\s*Novel\\s*=\\s*\\{\\s*listData:\\s*(\\{[\\s\\S]+\\}),\\s*speed\\s*:\\s*\\{");
+			Type type = new TypeToken<Map<String, Object>>() {
+			}.getType();
+			Map<String, Object> data = new Gson().fromJson(html, type);
+			book.setName(Util.toString(data.get("title")));
+			book.setCover(Util.toString(data.get("coverImage")).replaceAll(config.amp, "&"));
+			book.setType(Util.toString(data.get("category")));
+			book.setAuthor(Util.toString(data.get("author")));
+			book.setSite(site);
+			book.setTip(Util.toString(data.get("summary")));
+			book.setWords(Util.toInt(data.get("total_wordsum")));
+			long time = Util.toLongOr_1(data.get("last_chapter_update_time"));
+			if (time != CONSTANT._1)
+				time *= 1000;
+			book.setUpdateTime(Util.formatDate(time, 10));
+			book.setNewChapter(Util.toString(data.get("last_chapter_title")).trim());
+			book.setCompleted(Util.toString(data.get("status")).contains("完"));// 未测试
+			List<Map<String, String>> list = (List<Map<String, String>>) data.get("group");
+
+			// String dicturl =
+			// "http://m.baidu.com/tc?srd=1&appui=alaxs&ajax=4&id=wisenovel&pi="
+			// + page + "&order=asc&gid=" + id;
+			// book.setDirectoryUrl("http://m.baidu.com/tc?appui=alaxs&srct=zw&gid="
+			// + id + "&srd=1&src=" + src);
+			// if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
+			// MyLog.i("ParserBaidu updateBookAndDict  此书没有更新");
+			// return null;
+			// }
+			// List<ChapterEntity> chapters =
+			// parserBookDict(book.getDirectoryUrl());
+			// if (chapters == null || chapters.size() == 0) {
+			// book.setLoadStatus(LoadStatus.failed);
+			// MyLog.i("ParserBaidu updateBookAndDict getChapters failed");
+			// return null;// 此书更新失败
+			// } else {
+			// return chapters;
+			// }
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -92,56 +125,89 @@ public class ParserBaidu extends ParserBase {
 
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
-
 		try {
-			if (Util.isEmpty(detail.getName())) {
-				SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createStartFilter("div itemscope"), encodeType);
-				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
-				if (iterator.hasMoreNodes()) {
-					String html = iterator.nextNode().toHtml();
-					MyLog.i(html);
-					// detail.setName(matcher(html,
-					// "<font\\s*itemprop=\"name\">(.+)</font>"));
-					// detail.setAuthor(matcher(html,
-					// "<span\\s*itemprop=\"author\"[^<]+<span>[^<]+<a[^<]+<font itemprop=\"name\">(.+)</font></a>"));
-					// detail.setCover(matcher(html,
-					// "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\""));
-					//
-					// detail.setTip(matcher(html,
-					// config.tipsDetailReg).replaceAll(Config.tagReg,
-					// CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
-					// detail.setCompleted(matcher(html,
-					// config.completedReg).length() > 0);
-					// detail.setNewChapter(matcher(html,
-					// config.newChapterReg2).trim().replaceAll("\\s", " "));
-					// detail.setWords(Util.toInt(matcher(html,
-					// config.wordsReg2)));
-					// detail.setUpdateTime(matcher(html,
-					// config.updateTimeReg2));
-				}
-			} else {
-				SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\"s-hover  xs-sum-short open\" data-action=\"summary\"");
-				MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
-				if (iterator.hasMoreNodes()) {
-					String html = iterator.nextNode().toPlainTextString();
-					html = html.replaceAll("\\s", CONSTANT.EMPTY);
-					detail.setTip(html);
-				}
+			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\" s-hover  xs-sum-short\" data-action=\"summary\"");
+			MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
+			if (iterator.hasMoreNodes()) {
+				String html = iterator.nextNode().toPlainTextString();
+				html = html.replaceAll("全部", CONSTANT.EMPTY);
+				html = html.replaceAll("收起", CONSTANT.EMPTY);
+				html = html.replaceAll("\\s", CONSTANT.EMPTY);
+				// MyLog.i(html);
+				detail.setTip(html);
 			}
 			return true;
 		} catch (Exception e) {
+			MyLog.i(e);
 			return false;
 		}
 	}
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
-		return null;
+		try {
+			String html = WebServer.hcGetData(url, encodeType);
+			return parserBookDictByHtml(html, new BookEntity());
+		} catch (Exception e) {
+			MyLog.e(e);
+			return null;
+		}
 	}
 
 	@Override
 	public String getChapterDetail(String url) {
 		return null;
+	}
+
+	public List<ChapterEntity> parserBookDictByHtml(String html, BookEntity book) throws Exception {
+		// html = matcher(html,
+		// "var\\s*Novel\\s*=\\s*\\{\\s*listData:\\s*(\\{[\\s\\S]+\\}),\\s*speed\\s*:\\s*\\{");
+		// Type type = new TypeToken<Map<String, Object>>() {
+		// }.getType();
+		// Map<String, Object> data = new Gson().fromJson(html, type);
+		// int count=Util.toInt(data.get("chapter_count"));
+		// if (book != null) {// 获取书的信息
+		// book.setName(Util.toString(data.get("title")));
+		// book.setCover(Util.toString(data.get("coverImage")).replaceAll(config.amp,
+		// "&"));
+		// book.setType(Util.toString(data.get("category")));
+		// book.setAuthor(Util.toString(data.get("author")));
+		// book.setSite(site);
+		// book.setTip(Util.toString(data.get("summary")));
+		// book.setWords(Util.toInt(data.get("total_wordsum")));
+		// long time = Util.toLongOr_1(data.get("last_chapter_update_time"));
+		// if (time != CONSTANT._1)
+		// time *= 1000;
+		// book.setUpdateTime(Util.formatDate(time, 10));
+		// book.setNewChapter(Util.toString(data.get("last_chapter_title")).trim());
+		// book.setCompleted(Util.toString(data.get("status")).contains("完"));//
+		// 未测试
+		// }
+		// if()
+		// List<Map<String, String>> list = (List<Map<String, String>>)
+		// data.get("group");
+		// MyLog.i("parserBookDictByHtml ok " + book.toString());
+		// List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
+		// initChapterList(list, chapters);
+		// for (int i = 0; i < array.length; i++) {
+		//
+		// }
+		// return chapters;
+		return null;
+	}
+
+	private void initChapterList(List<Map<String, String>> data, List<ChapterEntity> chapters) {
+		ChapterEntity e;
+		for (Map<String, String> map : data) {
+			e = new ChapterEntity();
+			if (e != null) {
+				e.setName(Util.toString(map.get("text")).trim());
+				e.setUrl(Util.toString(map.get("href")));
+				e.setId(chapters.size());
+				if (!Util.isEmpty(e.getName()))
+					chapters.add(e);
+			}
+		}
 	}
 
 	protected boolean processSearchNode(List<BookEntity> books, Node node, String[] searchKey) throws Exception {
