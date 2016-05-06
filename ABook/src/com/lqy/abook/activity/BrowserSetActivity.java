@@ -25,6 +25,7 @@ public class BrowserSetActivity extends MenuActivity {
 		final SharedPreferences sp = getSharedPreferences(CONSTANT.SP_BROWSER, 0);
 		boolean useDefaultUrl = sp.getBoolean("useDefaultUrl", false);
 		boolean interceptPic = sp.getBoolean("interceptPic", false);
+		boolean interceptAdvert = sp.getBoolean("interceptAdvert", false);
 		// 动时默认打开上次浏览网页
 		MySwitch urlSwitch = (MySwitch) findViewById(R.id.browser_set_start_url);
 		urlSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -42,6 +43,17 @@ public class BrowserSetActivity extends MenuActivity {
 			}
 		});
 		picSwitch.setChecked(interceptPic);
+
+		// 是否禁止过滤广告
+		MySwitch advertSwitch = (MySwitch) findViewById(R.id.browser_set_advert);
+		advertSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				BrowserActivity.interceptAdvert = !isChecked;
+				sp.edit().putBoolean("interceptAdvert", !isChecked).commit();
+			}
+		});
+		advertSwitch.setChecked(!interceptAdvert);
+
 	}
 
 	public void sendButtonClick(View v) {

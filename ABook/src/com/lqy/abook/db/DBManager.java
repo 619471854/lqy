@@ -120,7 +120,7 @@ public class DBManager {
 	/**
 	 * 当前书排最前面
 	 */
-	synchronized public void updateBookSort(int bookId) {
+	synchronized public void updateBookSort(long bookId) {
 		try {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();

@@ -28,7 +28,7 @@ public class MyWebChromeClient extends WebChromeClient {
 	@Override
 	public void onProgressChanged(WebView view, int progress) {
 		// 加载进度
-		MyLog.web("onProgressChanged " + progress);
+		//MyLog.web("onProgressChanged " + progress);
 	}
 
 	@Override

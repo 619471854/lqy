@@ -18,7 +18,7 @@
         <TextView
             android:id="@+id/toolbar_title"
             style="@style/toolbar_title"
-            android:text="设置" />
+            android:text="浏览器设置" />
     </RelativeLayout>
 
     <View
@@ -41,7 +41,9 @@
             android:onClick="sendButtonClick"
             android:text="清空历史纪录" />
 
-        <View style="@style/item_line" />
+        <View
+            style="@style/item_line"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/browser_set_clear_cache"
@@ -49,60 +51,140 @@
             android:onClick="sendButtonClick"
             android:text="清除浏览器缓存"
             android:visibility="gone" />
+    </LinearLayout>
 
-        <View
-            style="@style/item_line"
-            android:visibility="gone" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/read_menu_bg"
+        android:orientation="vertical" >
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_height"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:paddingBottom="7dp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp" >
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="启动时默认打开上次浏览网页"
-                android:textColor="#ff7e6b5a"
-                android:textSize="16sp" />
+            android:paddingRight="10dp"
+            android:paddingTop="7dp" >
 
             <com.lqy.abook.widget.MySwitch
                 android:id="@+id/browser_set_start_url"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:id="@+id/browser_set_start_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/browser_set_start_url"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="默认显示上次浏览网页"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/browser_set_start_title"
+                android:layout_marginTop="0dp"
+                android:layout_toLeftOf="@id/browser_set_start_url"
+                android:text="如果打开，启动浏览器时将显示上次浏览网页,否则显示百度首页"
+                android:textColor="@color/read_status"
+                android:textSize="12sp" />
+        </RelativeLayout>
 
         <View style="@style/item_line" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_height"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:paddingBottom="7dp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp" >
+            android:paddingRight="10dp"
+            android:paddingTop="7dp" >
+
+            <com.lqy.abook.widget.MySwitch
+                android:id="@+id/browser_set_advert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp" />
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/browser_set_advert_title"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_toLeftOf="@id/browser_set_advert"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="禁止加载图片"
-                android:textColor="#ff7e6b5a"
+                android:text="智能过滤广告"
+                android:textColor="@color/text_black"
                 android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/browser_set_advert_title"
+                android:layout_marginTop="0dp"
+                android:layout_toLeftOf="@id/browser_set_advert"
+                android:text="可以过滤广告，不过有些网站可能会出错"
+                android:textColor="@color/read_status"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <View style="@style/item_line" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingBottom="7dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="7dp" >
 
             <com.lqy.abook.widget.MySwitch
                 android:id="@+id/browser_set_pic"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:id="@+id/browser_set_pic_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/browser_set_pic"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="禁止加载图片"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/browser_set_pic_title"
+                android:layout_marginTop="0dp"
+                android:layout_toLeftOf="@id/browser_set_pic"
+                android:text="流量即金钱，注意：设置此项后需要重启浏览器界面才生效"
+                android:textColor="@color/read_status"
+                android:textSize="12sp" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -21,6 +21,7 @@ import com.lqy.abook.activity.CoverActivity;
 import com.lqy.abook.activity.DirectoryActivity;
 import com.lqy.abook.activity.MainActivity;
 import com.lqy.abook.activity.ReadActivity;
+import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.AsyncImageLoader;
@@ -187,7 +188,13 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 			public void onClick(DialogInterface dialog, int which) {
 				Intent intent;
 				switch (which) {
-				case 0:// 更新本书
+				case 0:// 置顶
+					books.remove(e);
+					books.add(0, e);
+					notifyDataSetChanged();
+					new BookDao().updateBookSort(e.getId());
+					break;
+				case 1:// 更新本书
 					if (!NetworkUtils.isNetConnectedRefreshWhereNot()) {
 						Util.toast(activity, R.string.net_not_connected);
 					} else if (activity.update(e)) {
@@ -195,18 +202,18 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 						view_status.setImageResource(R.drawable.status_refresh);
 					}
 					break;
-				case 1:// 查看详情
+				case 2:// 查看详情
 					intent = new Intent(activity, CoverActivity.class);
 					intent.putExtra("book", e);
 					intent.putExtra("onlyRead", true);
 					activity.startActivity(intent);
 					break;
-				case 2:// 查看目录
+				case 3:// 查看目录
 					intent = new Intent(activity, DirectoryActivity.class);
 					Cache.setBook(e);
 					activity.startActivity(intent);
 					break;
-				case 3:
+				case 4:
 					if (Util.isEmpty(e.getDirectoryUrl())) {
 						Util.dialog(activity, "未找到原网页");
 					} else {
@@ -218,7 +225,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 						activity.animationRightToLeft();
 					}
 					break;
-				case 4:
+				case 5:
 					intent = new Intent(activity, BrowserActivity.class);
 					String key = e.getName() + " " + e.getAuthor();
 					intent.putExtra("title", key);
@@ -227,7 +234,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
 					break;
-				case 5:// 删除
+				case 6:// 删除
 					delete(e);
 					break;
 

@@ -14,6 +14,7 @@
     <string name="ok">确定</string>
 
     <string-array name="book_menu">
+        <item>置顶</item>
         <item>更新本书</item>
         <item>查看详情</item>
         <item>查看目录</item>

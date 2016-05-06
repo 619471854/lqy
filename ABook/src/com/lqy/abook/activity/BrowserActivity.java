@@ -1,5 +1,7 @@
 package com.lqy.abook.activity;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -53,6 +56,7 @@ public class BrowserActivity extends MenuActivity {
 	private int backClickCount = 0;// 点击后退按钮次数
 	private HistoryDao dao = new HistoryDao();
 	public static boolean changeInterceptPic = false;// 改变了是否禁止加载图片的设置
+	public static boolean interceptAdvert = false;// 是否禁止过滤广告
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -277,10 +281,26 @@ public class BrowserActivity extends MenuActivity {
 	}
 
 	private WebViewClient client = new WebViewClient() {
+		private String host;// 域名
 
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
 			super.onPageStarted(view, url, favicon);
+			if (interceptAdvert)
+				host = null;
+			else
+				try {
+					host = new URI(url).getHost();
+					String[] hosts = host.split("\\.");
+					if (host != null && hosts.length == 3)// 只取域名的中间部分
+						host = hosts[1];
+					if (host.length() == 0)
+						host = null;
+					else
+						MyLog.web("当前网页的域名中间部分为：" + host);
+				} catch (URISyntaxException e) {
+				}
+
 			MyLog.web("onPageStarted " + url);
 			showTitle(url, url);
 		}
@@ -306,19 +326,34 @@ public class BrowserActivity extends MenuActivity {
 		}
 
 		public void onLoadResource(WebView view, String url) {
-			MyLog.web("onLoadResource " + url);
+			// MyLog.web("onLoadResource " + url);
 		};
 
 		@SuppressLint("NewApi")
 		public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 			// api 11-21
-			MyLog.web("WebResourceResponse " + url);
-			if (url != null && url.contains("t.zg71.com")) {
-				url = null;
-				MyLog.web("WebResourceResponse null");
-			} else {
+			try {
+				if (!interceptAdvert && host != null && !url.contains(host)) {
+					MyLog.web("shouldInterceptRequest1 forbid " + url);
+					return new WebResourceResponse("image/png", "UTF-8", null);
+				}
+			} catch (Exception e) {
 			}
 			return super.shouldInterceptRequest(view, url);
+		}
+
+		@SuppressLint("NewApi")
+		public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+
+			try {
+				String url = request.getUrl().toString();
+				if (!interceptAdvert && host != null && !url.contains(host)) {
+					MyLog.web("shouldInterceptRequest2 forbid " + url);
+					return new WebResourceResponse("image/png", "UTF-8", null);
+				}
+			} catch (Exception e) {
+			}
+			return super.shouldInterceptRequest(view, request);
 		}
 
 		@Override

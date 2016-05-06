@@ -88,7 +88,7 @@ public class ParserOther extends ParserBase {
 				if ("/".equals(path) || index < 1)
 					baseUrl = url;
 				else
-					baseUrl = url = url.substring(0, index);
+					baseUrl = url.substring(0, index);
 			} catch (Exception e2) {
 			}
 			if (Util.isEmpty(baseUrl)) {
@@ -113,6 +113,8 @@ public class ParserOther extends ParserBase {
 					continue;
 				name = name.trim().replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s*", " ");
 				if (Util.isEmpty(name))
+					continue;
+				if (matcher(name, "([\\u4E00-\\u9FA5]+)").length() == 0)// 没有中文
 					continue;
 				if (Util.isEmpty(chapterUrl) || chapterUrl.startsWith("javascript") || chapterUrl.startsWith("#"))
 					continue;
