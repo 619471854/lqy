@@ -24,8 +24,8 @@ import com.lqy.abook.widget.MyAlertDialog;
 
 public class TurnUtil implements GestureDetector.OnGestureListener {
 	private PageWidget mPageWidget;
-	private Bitmap lastPageBitmap, curPageBitmap;
-	private Canvas lastPageCanvas, curPageCanvas;
+	private Bitmap bmp;
+	private Canvas canvas;
 	private BookPageFactory pagefactory;
 	private GestureDetector mGestureDetector;
 
@@ -34,27 +34,21 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 	private boolean isDrag = false;
 	private boolean isForbid = false;// 翻页到底了不处理touch事件
 
-	public TurnUtil(ReadActivity activity, PageWidget pageWidget,FontMode mode, int fontSize) {
+	public TurnUtil(ReadActivity activity, PageWidget pageWidget, FontMode mode, int fontSize) {
 		this.mPageWidget = pageWidget;
-		
+
 		sw = GlobalConfig.getScreenWidth();
 		sh = GlobalConfig.getScreenHeight() + GlobalConfig.getStatusBarHeight();
 		pagefactory = new BookPageFactory(activity, sw, sh);
 		pagefactory.setFontMode(mode);
 		pagefactory.setFontSize(fontSize);
 
-		lastPageBitmap = Bitmap.createBitmap(sw, sh, Bitmap.Config.ARGB_8888);
-		curPageBitmap = Bitmap.createBitmap(sw, sh, Bitmap.Config.ARGB_8888);
-		lastPageCanvas = new Canvas(lastPageBitmap);
-		curPageCanvas = new Canvas(curPageBitmap);
+		bmp = Bitmap.createBitmap(sw, sh, Bitmap.Config.ARGB_8888);
+		canvas = new Canvas(bmp);
 		// mPageWidget默认显示lastPageBitmap
 		mPageWidget.setScreen(sw, sh);
-		pagefactory.draw(lastPageCanvas);
-		pagefactory.draw(curPageCanvas);
-		mPageWidget.setBitmaps(lastPageBitmap, curPageBitmap);
-		// 为了显示curPageBitmap，设置成点击右上角翻到下一页时的状态
-		mPageWidget.calcCornerXY(sw, 0);
-		mPageWidget.setTouch(-sw, 1);
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
 		// 手势
 		mGestureDetector = new GestureDetector(activity, TurnUtil.this);
 		mGestureDetector.setIsLongpressEnabled(false); // 禁用长按监听
@@ -70,24 +64,24 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 
 	public void setFontMode(FontMode mode) {
 		pagefactory.setFontMode(mode);
-		pagefactory.draw(curPageCanvas);
-		mPageWidget.setBitmaps(lastPageBitmap, curPageBitmap);
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
 		mPageWidget.invalidate();
 	}
 
-	public boolean showChapterText(ChapterEntity chapter, long bookId,int readBegin) {
+	public boolean showChapterText(ChapterEntity chapter, long bookId, int readBegin) {
 		boolean isSuccess = false;
 		if (chapter == null)
-			pagefactory.openBook(null, TextType.NOTDIR,0);
+			pagefactory.openBook(null, TextType.NOTDIR, 0);
 		else if (chapter.isVip())
-			pagefactory.openBook(null, TextType.VIP,0);
+			pagefactory.openBook(null, TextType.VIP, 0);
 		else {
 			MyLog.i("showChapterText " + chapter.getName());
 			String path = FileUtil.getBooksPath(bookId) + File.separator + FileUtil.getChapterName(chapter.getName());
-			isSuccess = pagefactory.openBook(path, TextType.PATH,readBegin);
+			isSuccess = pagefactory.openBook(path, TextType.PATH, readBegin);
 		}
-		pagefactory.draw(curPageCanvas);
-		mPageWidget.setBitmaps(lastPageBitmap, curPageBitmap);
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
 
 		mPageWidget.invalidate();
 		return isSuccess;
@@ -95,8 +89,8 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 
 	public void setFontSize(int fontSize) {
 		pagefactory.setFontSize(fontSize);
-		pagefactory.draw(curPageCanvas);
-		mPageWidget.setBitmaps(lastPageBitmap, curPageBitmap);
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
 		mPageWidget.invalidate();
 	}
 
@@ -109,7 +103,6 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		time = System.currentTimeMillis();
 		mPageWidget.calcCornerXY(x, y);
 
-		pagefactory.draw(lastPageCanvas);
 		if (mPageWidget.DragToRight()) {
 			try {
 				pagefactory.prePage();
@@ -118,7 +111,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			if (pagefactory.isfirstPage()) {
 				return false;
 			}
-			pagefactory.draw(curPageCanvas);
+			pagefactory.draw(canvas);
 		} else {
 			try {
 				pagefactory.nextPage();
@@ -127,9 +120,9 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			if (pagefactory.islastPage()) {
 				return false;
 			}
-			pagefactory.draw(curPageCanvas);
+			pagefactory.draw(canvas);
 		}
-		mPageWidget.setBitmaps(lastPageBitmap, curPageBitmap);
+		mPageWidget.pageBmp(bmp);
 		return true;
 	}
 
@@ -238,10 +231,10 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		Activity a = ReadActivity.getInstance();
 		LinearLayout lay = new LinearLayout(a);
 		ImageView v = new ImageView(a);
-		v.setImageBitmap(lastPageBitmap);
+		v.setImageBitmap(bmp);
 		lay.addView(v, new LinearLayout.LayoutParams(400, -2));
 		v = new ImageView(a);
-		v.setImageBitmap(curPageBitmap);
+		v.setImageBitmap(bmp);
 		lay.addView(v, new LinearLayout.LayoutParams(400, -2));
 		new MyAlertDialog(a).setView(lay).show();
 	}

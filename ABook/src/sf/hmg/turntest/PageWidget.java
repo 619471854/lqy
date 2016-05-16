@@ -26,8 +26,8 @@ public class PageWidget extends View {
 	private int mCornerY = 0;
 	private Path mPath0;
 	private Path mPath1;
-	Bitmap mCurPageBitmap = null; // 当前页
-	Bitmap mNextPageBitmap = null;
+	Bitmap lastPageBitmap = null; // 当前页
+	Bitmap curPageBitmap = null;
 
 	PointF mTouch = new PointF(); // 拖拽点
 	PointF mBezierStart1 = new PointF(); // 贝塞尔曲线起始点
@@ -287,9 +287,19 @@ public class PageWidget extends View {
 		canvas.restore();
 	}
 
-	public void setBitmaps(Bitmap bm1, Bitmap bm2) {
-		mCurPageBitmap = bm1;
-		mNextPageBitmap = bm2;
+	/**
+	 * 更新当前页
+	 */
+	public void setCurrentBitmap(Bitmap curBmp) {
+		curPageBitmap = curBmp;
+	}
+
+	/**
+	 * 翻页
+	 */
+	public void pageBmp(Bitmap curBmp) {
+		lastPageBitmap = curPageBitmap;
+		curPageBitmap = curBmp;
 	}
 
 	public void setScreen(int w, int h) {
@@ -300,13 +310,17 @@ public class PageWidget extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		canvas.drawColor(0xFFAAAAAA);
-		calcPoints();
-		drawCurrentPageArea(canvas, mCurPageBitmap, mPath0);
-		drawNextPageAreaAndShadow(canvas, mNextPageBitmap);
-		drawCurrentPageShadow(canvas);
-		drawCurrentBackArea(canvas, mCurPageBitmap);
-
-		// MyLog.i("onDraw "+mTouch.x+" "+mCornerX+" "+mTouch.y+" "+mCornerY);
+		if (isScroll && lastPageBitmap != null) {
+			calcPoints();
+			drawCurrentPageArea(canvas, lastPageBitmap, mPath0);
+			drawNextPageAreaAndShadow(canvas, curPageBitmap);
+			drawCurrentPageShadow(canvas);
+			drawCurrentBackArea(canvas, lastPageBitmap);
+			MyLog.i("onDraw " + mTouch.x + " " + mCornerX + " " + mTouch.y + " " + mCornerY);
+		} else {
+			canvas.drawBitmap(curPageBitmap, 0, 0, mPaint);
+			MyLog.i("onDraw isScroll=false");
+		}
 	}
 
 	/**
@@ -489,12 +503,25 @@ public class PageWidget extends View {
 			int y = mScroller.getCurrY();
 			mTouch.x = x;
 			mTouch.y = y;
-			// MyLog.i("computeScroll " + mTouch.x + " " + mTouch.y+" "+mCornerX+" "+mCornerY);
+			// MyLog.i("computeScroll " + mTouch.x + " " +
+			// mTouch.y+" "+mCornerX+" "+mCornerY);
 			postInvalidate();
+		} else {
+			isScroll = false;
+			// MyLog.i("computeScroll");
+			lastPageBitmap = null;
 		}
 	}
 
+	@Override
+	public void invalidate() {
+		super.invalidate();
+	}
+
+	private boolean isScroll = false;
+
 	private void startAnimation(int delayMillis) {
+		isScroll = true;
 		int dx, dy;
 		// dx 水平方向滑动的距离，负值会使滚动向左滚动
 		// dy 垂直方向滑动的距离，负值会使滚动向上滚动
@@ -517,6 +544,7 @@ public class PageWidget extends View {
 		// MyLog.i("abortAnimation");
 		if (!mScroller.isFinished()) {
 			mScroller.abortAnimation();
+			isScroll = false;
 		}
 	}
 
