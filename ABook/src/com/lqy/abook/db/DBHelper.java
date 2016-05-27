@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DBNAME = "abook.db";
-	private static final int VERSION = 1;
+	private static final int VERSION = 2;
 
 	private static final String CREATE_TABLE_BOOK = "create table " + BookDao.table_name + " (" + BookDao.column_id + " integer primary key autoincrement,"
 			+ BookDao.column_name + " text not null," + BookDao.column_cover + " text," + BookDao.column_type + " text," + BookDao.column_author + " text,"
@@ -15,8 +15,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			+ BookDao.column_isCompleted + " boolean," + BookDao.column_sortTime + " integer ," + BookDao.column_currentChapterId + " integer ,"
 			+ BookDao.column_readBegin + " integer," + BookDao.column_ext + " text );";
 
-	private static final String CREATE_TABLE_HISTORY = "create table " + HistoryDao.table_name + " (" + HistoryDao.column_url + " text primary key,"
-			+ HistoryDao.column_title + " text not null," + HistoryDao.column_updateTime + " integer  );";
+	private static final String CREATE_TABLE_HISTORY = "create table " + HistoryDao.table_name + " (" + HistoryDao.column_updateTime + " integer primary key,"
+			+ HistoryDao.column_title + " text not null," + HistoryDao.column_url + " text  );";
 
 	private static final String CREATE_TABLE_FAVORITE = "create table " + FavoriteDao.table_name + " (" + FavoriteDao.column_id
 			+ " integer primary key autoincrement," + FavoriteDao.column_url + " text," + FavoriteDao.column_title + " text not null);";
@@ -34,6 +34,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		if(oldVersion!=newVersion){
+			db.execSQL("drop table "+HistoryDao.table_name);
+			db.execSQL(CREATE_TABLE_HISTORY);
+		}
 	}
 
 	private static DBHelper instance;

@@ -25,8 +25,9 @@ public class HistoryDao {
 		} else {
 			new Thread() {
 				public void run() {
-					long id = DBManager.getInstance().saveHistory(title, url);
-					MyLog.e("saveHistory id= " + id);
+					int time = (int) (System.currentTimeMillis() / 1000);
+					long id = DBManager.getInstance().saveHistory(title, url, time);
+					MyLog.i("saveHistory ok id= " + id);
 				}
 			}.start();
 		}
@@ -59,8 +60,8 @@ public class HistoryDao {
 				cal.set(Calendar.MINUTE, 0);
 				cal.set(Calendar.SECOND, 0);
 				cal.setTimeInMillis(cal.getTimeInMillis() / 1000 * 1000);
-				long endtime = System.currentTimeMillis() + 1;
-				long startTime = cal.getTimeInMillis() - 1;
+				int endtime =(int)( System.currentTimeMillis() /1000)+ 1;
+				int startTime = (int)(cal.getTimeInMillis()/1000) - 1;
 				List<FavoriteEntity> child = dbm.getHistoryList(startTime, endtime);
 				if (child.size() > 0) {
 					data.add(new HistoryGroupEntity("今天", child));
@@ -68,7 +69,7 @@ public class HistoryDao {
 				// 获取最近7天的记录
 				cal.add(Calendar.DAY_OF_MONTH, -6);
 				endtime = startTime + 1;
-				startTime = cal.getTimeInMillis() - 1;
+				startTime = (int)(cal.getTimeInMillis()/1000) - 1;
 				child = dbm.getHistoryList(startTime, endtime);
 				if (child.size() > 0) {
 					data.add(new HistoryGroupEntity("近7天", child));
@@ -77,7 +78,7 @@ public class HistoryDao {
 				cal.add(Calendar.DAY_OF_MONTH, 6);
 				cal.add(Calendar.MONTH, -1);
 				endtime = startTime + 1;
-				startTime = cal.getTimeInMillis() - 1;
+				startTime =(int)(cal.getTimeInMillis()/1000) - 1;
 				child = dbm.getHistoryList(startTime, endtime);
 				if (child.size() > 0) {
 					data.add(new HistoryGroupEntity("近1个月", child));
@@ -103,7 +104,8 @@ public class HistoryDao {
 			public void run() {
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MONTH, -3);
-				DBManager.getInstance().deleteOverdueHistory(cal.getTimeInMillis());
+				int time = (int) (cal.getTimeInMillis() / 1000);
+				DBManager.getInstance().deleteOverdueHistory(time);
 			}
 		}.start();
 	}

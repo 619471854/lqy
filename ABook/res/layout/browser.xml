@@ -127,6 +127,14 @@
         android:orientation="vertical" >
 
         <TextView
+            android:id="@+id/browser_full"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="全屏显示" />
+
+        <View style="@style/item_line" />
+        
+        <TextView
             android:id="@+id/browser_recommendation"
             style="@style/item_text"
             android:onClick="sendButtonClick"

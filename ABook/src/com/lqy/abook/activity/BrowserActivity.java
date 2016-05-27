@@ -57,6 +57,7 @@ public class BrowserActivity extends MenuActivity {
 	private HistoryDao dao = new HistoryDao();
 	public static boolean changeInterceptPic = false;// 改变了是否禁止加载图片的设置
 	public static boolean interceptAdvert = false;// 是否禁止过滤广告
+	private String host;// 域名
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,8 @@ public class BrowserActivity extends MenuActivity {
 	}
 
 	private ImageView btn_more;
+	private View lay_top;
+	private View lay_bottom;
 	private View lay_more;
 	private View btn_last;
 	private View btn_next;
@@ -79,6 +82,8 @@ public class BrowserActivity extends MenuActivity {
 		view_url = (EditText) findViewById(R.id.browser_url);
 		btn_more = (ImageView) findViewById(R.id.browser_more);
 		lay_more = findViewById(R.id.browser_more_lay);
+		lay_top = findViewById(R.id.browser_top);
+		lay_bottom = findViewById(R.id.browser_bottom);
 		btn_last = findViewById(R.id.browser_last);
 		btn_next = findViewById(R.id.browser_next);
 		btn_refresh = findViewById(R.id.browser_refresh);
@@ -281,7 +286,6 @@ public class BrowserActivity extends MenuActivity {
 	}
 
 	private WebViewClient client = new WebViewClient() {
-		private String host;// 域名
 
 		@Override
 		public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -308,6 +312,7 @@ public class BrowserActivity extends MenuActivity {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			sendMsgOnThread(WHAT_OVERRIDEURL);
+			host = null;
 			view.loadUrl(url);
 			MyLog.web("shouldOverrideUrlLoading " + url);
 			return true;
@@ -404,6 +409,8 @@ public class BrowserActivity extends MenuActivity {
 				if (historyLength != 0)// 0表示第一次加载
 					btn_last.setEnabled(true);
 				btn_next.setEnabled(false);
+
+				host = null;
 			}
 			webView.loadUrl(url);
 		} catch (Exception e) {
@@ -437,6 +444,12 @@ public class BrowserActivity extends MenuActivity {
 	public void sendButtonClick(View v) {
 		Intent intent;
 		switch (v.getId()) {
+		case R.id.browser_full:// 刷新
+			lay_top.setVisibility(View.GONE);
+			lay_bottom.setVisibility(View.GONE);
+			hideMoreLay();
+			Util.toast(_this, "按“Home”除外的任何实体按键可以显示菜单项");
+			break;
 		case R.id.browser_refresh:// 刷新
 			if (view_url.isFocused()) {
 				String value = view_url.getText().toString();
@@ -581,6 +594,13 @@ public class BrowserActivity extends MenuActivity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (lay_top.getVisibility() == View.GONE) {
+			MyLog.i("onKeyUp 显示菜单");
+			// 按任何键可以显示菜单
+			lay_top.setVisibility(View.VISIBLE);
+			lay_bottom.setVisibility(View.VISIBLE);
+			return true;
+		}
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 			if (lay_more.getVisibility() == View.VISIBLE) {
 				hideMoreLay();

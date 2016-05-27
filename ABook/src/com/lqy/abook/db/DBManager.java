@@ -180,7 +180,6 @@ public class DBManager {
 			values.put(BookDao.column_newChapter, book.getNewChapter());
 			values.put(BookDao.column_directoryUrl, book.getDirectoryUrl());
 			values.put(BookDao.column_isCompleted, book.isCompleted() ? 1 : 0);
-			values.put(BookDao.column_sortTime, System.currentTimeMillis());
 			values.put(BookDao.column_currentChapterId, book.getCurrentChapterId());
 			values.put(BookDao.column_readBegin, book.getReadBegin());
 			values.put(BookDao.column_ext, Util.toString(book.getExt()));
@@ -221,7 +220,7 @@ public class DBManager {
 	/**
 	 * 获取历史纪录,最多1千条
 	 */
-	synchronized public List<FavoriteEntity> getHistoryList(long startTime, long endtime) {
+	synchronized public List<FavoriteEntity> getHistoryList(int startTime, int endtime) {
 		List<FavoriteEntity> data = new ArrayList<FavoriteEntity>();
 		try {
 			FavoriteEntity e;
@@ -240,9 +239,8 @@ public class DBManager {
 		}
 		return data;
 	}
-
 	/**
-	 * 获取历史纪录,最多1千条
+	 * 获取最后历史纪录
 	 */
 	synchronized public FavoriteEntity getLastestHistory() {
 		FavoriteEntity e = null;
@@ -264,13 +262,13 @@ public class DBManager {
 	/**
 	 * 保存一条历史纪录
 	 */
-	synchronized public long saveHistory(String title, String url) {
+	synchronized public long saveHistory(String title, String url,int time) {
 		try {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put(HistoryDao.column_title, title);
 			values.put(HistoryDao.column_url, url);
-			values.put(HistoryDao.column_updateTime, System.currentTimeMillis());
+			values.put(HistoryDao.column_updateTime,time);
 			return db.replace(HistoryDao.table_name, null, values);
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -281,7 +279,7 @@ public class DBManager {
 	/**
 	 * 删除多余的数据
 	 */
-	public void deleteOverdueHistory(long endtime) {
+	public void deleteOverdueHistory(int endtime) {
 		try {
 			String whereClause = HistoryDao.column_updateTime + " < " + endtime;
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -292,7 +290,7 @@ public class DBManager {
 	}
 
 	/**
-	 * 删除所以数据
+	 * 删除所有数据
 	 */
 	public void emptyHistory() {
 		try {
