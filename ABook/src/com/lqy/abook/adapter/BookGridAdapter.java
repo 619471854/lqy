@@ -227,9 +227,8 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					break;
 				case 5:
 					intent = new Intent(activity, BrowserActivity.class);
-					String key = e.getName() + " " + e.getAuthor();
-					intent.putExtra("title", key);
-					intent.putExtra("url", "https://www.baidu.com/s?wd=" + key);
+					intent.putExtra("title", e.getName());
+					intent.putExtra("url", "https://www.baidu.com/s?wd=" + e.getName());
 					intent.putExtra("class", activity.getClass().getName());
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
