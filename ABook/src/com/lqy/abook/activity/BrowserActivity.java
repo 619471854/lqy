@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
@@ -444,11 +445,12 @@ public class BrowserActivity extends MenuActivity {
 	public void sendButtonClick(View v) {
 		Intent intent;
 		switch (v.getId()) {
-		case R.id.browser_full:// 刷新
+		case R.id.browser_full:// 全屏
 			lay_top.setVisibility(View.GONE);
 			lay_bottom.setVisibility(View.GONE);
 			hideMoreLay();
 			Util.toast(_this, "按“Home”除外的任何实体按键可以显示菜单项");
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			break;
 		case R.id.browser_refresh:// 刷新
 			if (view_url.isFocused()) {
@@ -540,9 +542,8 @@ public class BrowserActivity extends MenuActivity {
 			hideMoreLay();
 			break;
 		case R.id.browser_exit:// 退出
-			// hideMoreLay();
-			// cancelButtonClick(null);
-			getHtml(null);
+			hideMoreLay();
+			cancelButtonClick(null);
 			break;
 		default:
 			break;
@@ -592,6 +593,7 @@ public class BrowserActivity extends MenuActivity {
 	 */
 	private long clickBackTime = 0;
 
+
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (lay_top.getVisibility() == View.GONE) {
@@ -599,6 +601,7 @@ public class BrowserActivity extends MenuActivity {
 			// 按任何键可以显示菜单
 			lay_top.setVisibility(View.VISIBLE);
 			lay_bottom.setVisibility(View.VISIBLE);
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			return true;
 		}
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {

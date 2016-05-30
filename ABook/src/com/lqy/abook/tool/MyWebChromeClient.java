@@ -1,18 +1,23 @@
 package com.lqy.abook.tool;
 
 import android.content.DialogInterface;
+import android.view.View;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
+import com.lqy.abook.R;
 import com.lqy.abook.activity.BrowserActivity;
 import com.lqy.abook.widget.MyAlertDialog;
 
 public class MyWebChromeClient extends WebChromeClient {
 	private BrowserActivity activity;
+	private ProgressBar progressBar;
 
 	public MyWebChromeClient(BrowserActivity con) {
 		this.activity = con;
+		progressBar = (ProgressBar) con.findViewById(R.id.browser_progress);
 	}
 
 	// @Override
@@ -28,7 +33,14 @@ public class MyWebChromeClient extends WebChromeClient {
 	@Override
 	public void onProgressChanged(WebView view, int progress) {
 		// 加载进度
-		//MyLog.web("onProgressChanged " + progress);
+		if (progress == 100) {
+			progressBar.setVisibility(View.GONE);
+		} else {
+			progressBar.setProgress(progress);
+			if (progressBar.getVisibility() == View.GONE)
+				progressBar.setVisibility(View.VISIBLE);
+		}
+		// MyLog.web("onProgressChanged " + progress);
 	}
 
 	@Override

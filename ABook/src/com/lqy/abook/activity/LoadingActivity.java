@@ -16,11 +16,8 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.site.ParserBaidu;
-import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.tool.MyLog;
-import com.lqy.abook.tool.WebServer;
 
 public class LoadingActivity extends MenuActivity {
 

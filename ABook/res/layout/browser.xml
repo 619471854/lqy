@@ -54,22 +54,6 @@
         android:layout_marginBottom="46dp"
         android:background="@drawable/line" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_below="@id/browser_top"
-        android:background="@drawable/line" />
-
-    <ProgressBar
-        android:id="@+id/browser_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_below="@id/browser_top"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:max="100"
-        android:progress="50"
-        android:progressDrawable="@drawable/progressbar_color"/>
-
     <LinearLayout
         android:id="@+id/browser_bottom"
         android:layout_width="match_parent"
@@ -121,8 +105,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/browser_bottom"
+        android:layout_below="@id/browser_top" />
+
+    <ProgressBar
+        android:id="@+id/browser_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
         android:layout_below="@id/browser_top"
-        android:layout_marginTop="2dp" />
+        android:max="100"
+        android:progress="50"
+        android:progressDrawable="@drawable/progressbar_color" />
 
     <LinearLayout
         android:id="@+id/browser_more_lay"

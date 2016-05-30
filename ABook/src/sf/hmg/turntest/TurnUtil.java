@@ -33,8 +33,10 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 	private int sh;
 	private boolean isDrag = false;
 	private boolean isForbid = false;// 翻页到底了不处理touch事件
+	private ReadActivity activity;
 
 	public TurnUtil(ReadActivity activity, PageWidget pageWidget, FontMode mode, int fontSize) {
+		this.activity=activity;
 		this.mPageWidget = pageWidget;
 
 		sw = GlobalConfig.getScreenWidth();
@@ -43,7 +45,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		pagefactory.setFontMode(mode);
 		pagefactory.setFontSize(fontSize);
 
-		bmp = Bitmap.createBitmap(sw, sh, Bitmap.Config.ARGB_8888);
+		bmp = Bitmap.createBitmap(sw, sh, Bitmap.Config.RGB_565);
 		canvas = new Canvas(bmp);
 		// mPageWidget默认显示lastPageBitmap
 		mPageWidget.setScreen(sw, sh);
@@ -111,6 +113,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			if (pagefactory.isfirstPage()) {
 				return false;
 			}
+			mPageWidget.pageBmp();
 			pagefactory.draw(canvas);
 		} else {
 			try {
@@ -120,9 +123,11 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			if (pagefactory.islastPage()) {
 				return false;
 			}
+			mPageWidget.pageBmp();
 			pagefactory.draw(canvas);
 		}
-		mPageWidget.pageBmp(bmp);
+		
+		activity.updateTime();
 		return true;
 	}
 

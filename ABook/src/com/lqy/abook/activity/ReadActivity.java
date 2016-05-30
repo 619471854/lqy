@@ -290,6 +290,11 @@ public class ReadActivity extends MenuActivity {
 
 	}
 
+	public void updateTime() {
+		Calendar cal = Calendar.getInstance();
+		view_time.setText(String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
+	}
+
 	private void showInfo() {
 		if (view_time == null) {
 			view_time = (TextView) findViewById(R.id.read_time);

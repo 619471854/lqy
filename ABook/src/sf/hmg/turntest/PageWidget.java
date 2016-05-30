@@ -294,12 +294,8 @@ public class PageWidget extends View {
 		curPageBitmap = curBmp;
 	}
 
-	/**
-	 * 翻页
-	 */
-	public void pageBmp(Bitmap curBmp) {
-		lastPageBitmap = curPageBitmap;
-		curPageBitmap = curBmp;
+	public void pageBmp() {
+		lastPageBitmap = curPageBitmap.copy(Bitmap.Config.RGB_565, true);
 	}
 
 	public void setScreen(int w, int h) {
