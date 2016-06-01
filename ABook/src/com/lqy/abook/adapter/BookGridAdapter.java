@@ -4,13 +4,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -202,18 +207,21 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 						view_status.setImageResource(R.drawable.status_refresh);
 					}
 					break;
-				case 2:// 查看详情
+				case 2:// 修改名字
+					editName(e);
+					break;
+				case 3:// 查看详情
 					intent = new Intent(activity, CoverActivity.class);
 					intent.putExtra("book", e);
 					intent.putExtra("onlyRead", true);
 					activity.startActivity(intent);
 					break;
-				case 3:// 查看目录
+				case 4:// 查看目录
 					intent = new Intent(activity, DirectoryActivity.class);
 					Cache.setBook(e);
 					activity.startActivity(intent);
 					break;
-				case 4:
+				case 5:
 					if (Util.isEmpty(e.getDirectoryUrl())) {
 						Util.dialog(activity, "未找到原网页");
 					} else {
@@ -225,7 +233,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 						activity.animationRightToLeft();
 					}
 					break;
-				case 5:
+				case 6:
 					intent = new Intent(activity, BrowserActivity.class);
 					intent.putExtra("title", e.getName());
 					intent.putExtra("url", "https://www.baidu.com/s?wd=" + e.getName());
@@ -233,7 +241,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
 					break;
-				case 6:// 删除
+				case 7:// 删除
 					delete(e);
 					break;
 
@@ -252,6 +260,43 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 				activity.delete(e);
 			}
 		});
+	}
+
+	/**
+	 * 修改名字
+	 */
+	private void editName(final BookEntity e) {
+		final EditText et = new EditText(activity);
+		et.setBackgroundColor(Color.WHITE);
+		if (!Util.isEmpty(e.getName())) {
+			et.setText(e.getName());
+			et.setSelection(e.getName().length());
+		}
+		new MyAlertDialog(activity).setTitle("请输入书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String newName = et.getText().toString().trim();
+				if (!Util.isEmpty(newName)) {
+					if (!newName.equals(e.getName())) {
+						e.setName(newName);
+						new BookDao().updateBookName(e.getId(), newName);
+						notifyDataSetChanged();
+					}
+					Util.dialog(activity, "保存成功");
+				} else {
+					editName(e);
+					Util.toast(activity, "名字不能为空");
+				}
+			}
+		}).setNegativeButton("取消", null).show(); // 打开键盘
+		new Handler().postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.showSoftInput(et, 0);
+			}
+		}, 100);
 	}
 
 	class ViewHolder {

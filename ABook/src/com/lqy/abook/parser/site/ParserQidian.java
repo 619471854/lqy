@@ -132,9 +132,9 @@ public class ParserQidian extends ParserBase {
 			int h = html.indexOf("<div class=\"author_tj", k);
 			String html1 = html.substring(k, h);
 			String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
-			if(newChapter.length()==0){
+			if (newChapter.length() == 0) {
 				html1 = html.substring(j, k);
-				 newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
+				newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
 			}
 			MyLog.i("ParserQidian updateBook newChapter=" + newChapter);
 			if (newChapter.equals(book.getNewChapter())) {
@@ -282,7 +282,7 @@ public class ParserQidian extends ParserBase {
 		if (Util.isEmpty(id))
 			id = matcher(url, "http://www\\.qidian\\.com/Book/(\\d+)\\.aspx");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://read\\.qidian\\.com/BookReader/(\\w+)\\.aspx");
+			id = matcher(url, "http://read\\.qidian\\.com/BookReader/([\\w-]+)\\.aspx");
 			if (Util.isEmpty(id))
 				return null;
 			id = null;
@@ -290,17 +290,17 @@ public class ParserQidian extends ParserBase {
 			url = String.format(config.directoryUrlReg, id, 1);
 		}
 		BookEntity book = new BookEntity();
-		if (id != null)
-			book.setDetailUrl("http://www.qidian.com/Book/" + id + ".aspx");
 		book.setDirectoryUrl(url);
-		if (parserBookDetail(book)) {
-			book.setSite(site);
-			List<ChapterEntity> chaters = null;
-			if (id == null) {
-				chaters = parserBookDict(html);
-			} else {
-				chaters = parserBookDict(url);
+		if (id != null) {
+			book.setDetailUrl("http://www.qidian.com/Book/" + id + ".aspx");
+			if (parserBookDetail(book)) {
+				book.setSite(site);
+				List<ChapterEntity> chaters = parserBookDict(url);
+				return new BookAndChapters(book, chaters);
 			}
+		} else {
+			book.setSite(site);
+			List<ChapterEntity> chaters = parserBookDict(url);
 			return new BookAndChapters(book, chaters);
 		}
 		return null;

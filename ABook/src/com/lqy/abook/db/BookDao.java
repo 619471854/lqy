@@ -71,6 +71,13 @@ public class BookDao {
 	}
 
 	/**
+	 * 修改名字
+	 */
+	public boolean updateBookName(long bookId, String bookName) {
+		return DBManager.getInstance().updateBookName(bookId, bookName);
+	}
+
+	/**
 	 * 删除本书
 	 */
 	public void deleteBook(long bookId) {

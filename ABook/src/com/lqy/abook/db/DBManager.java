@@ -192,6 +192,21 @@ public class DBManager {
 	}
 
 	/**
+	 * 修改名字
+	 */
+	synchronized public boolean updateBookName(long bookId, String bookName) {
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put(BookDao.column_name, bookName);
+			int result = db.update(BookDao.table_name, values, BookDao.column_id + "=" + bookId, null);
+			return result > 0;
+		} catch (Exception e) {
+		}
+		return false;
+	}
+
+	/**
 	 * 删除一本书
 	 */
 	synchronized public void deleteBook(long bookId) {
@@ -239,6 +254,7 @@ public class DBManager {
 		}
 		return data;
 	}
+
 	/**
 	 * 获取最后历史纪录
 	 */
@@ -262,13 +278,13 @@ public class DBManager {
 	/**
 	 * 保存一条历史纪录
 	 */
-	synchronized public long saveHistory(String title, String url,int time) {
+	synchronized public long saveHistory(String title, String url, int time) {
 		try {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
 			ContentValues values = new ContentValues();
 			values.put(HistoryDao.column_title, title);
 			values.put(HistoryDao.column_url, url);
-			values.put(HistoryDao.column_updateTime,time);
+			values.put(HistoryDao.column_updateTime, time);
 			return db.replace(HistoryDao.table_name, null, values);
 		} catch (Exception e) {
 			MyLog.e(e);
