@@ -2,15 +2,12 @@ package com.lqy.abook.parser;
 
 import java.util.List;
 
-import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.tags.BodyTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
-import com.lqy.abook.tool.WebServer;
 
 public abstract class ParserBase2 extends ParserBase {
 

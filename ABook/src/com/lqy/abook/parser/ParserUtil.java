@@ -1,7 +1,5 @@
 package com.lqy.abook.parser;
 
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +10,6 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
-import com.lqy.abook.tool.Util;
 
 public abstract class ParserUtil {
 	protected String encodeType;
@@ -87,6 +84,20 @@ public abstract class ParserUtil {
 			MyLog.e(e);
 		}
 		return null;
+	}
+
+	protected static int getMatcherCount(String html, String reg) {
+		int count = 0;
+		try {
+			Pattern p = Pattern.compile(reg);
+			Matcher m = p.matcher(html);
+			while (m.find()) {
+				count += m.group(1).trim().length();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return count;
 	}
 
 }

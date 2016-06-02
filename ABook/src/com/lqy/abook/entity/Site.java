@@ -7,13 +7,16 @@ import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.parser.site.ParserSM;
+import com.lqy.abook.parser.site.ParserShuyue;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu, Qidian;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue;
 
 	public static Site getDefault() {
 		return Other;
 	}
+
+	public static Site[] searchSite = new Site[] { Site.SM, Site.Shuyue, Site._17K, Site._16K, Site.Qidian };
 
 	public static Site valueOf(int index) {
 		try {
@@ -43,6 +46,8 @@ public enum Site {
 			return new ParserBaidu();
 		case Qidian:
 			return new ParserQidian();
+		case Shuyue:
+			return new ParserShuyue();
 		default:
 			return new ParserOther();
 		}
@@ -60,6 +65,8 @@ public enum Site {
 			return "百度书城";
 		case Qidian:
 			return "起点中文网";
+		case Shuyue:
+			return "书阅屋";
 		default:
 			return "未知网站";
 		}

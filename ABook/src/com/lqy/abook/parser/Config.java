@@ -159,6 +159,30 @@ public class Config {
 		return qidian;
 	}
 
+	private static Config shuyue;
+
+	public static Config getShuyueConfig() {
+		if (shuyue == null) {
+			shuyue = new Config();
+			shuyue.searchUrl = "http://zhannei.baidu.com/cse/search?s=2855222735713672313&q=";
+			shuyue.searchFilter = "div class=\"result-item result-game-item\"";
+			shuyue.detailUrlReg = null;
+			shuyue.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";
+			shuyue.directoryUrlReg = null;
+			shuyue.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
+			shuyue.keyReg = null;// 搜索到的关键词
+			shuyue.authorReg = "作者：</span>\\s*<span>\\s*(((?!</span>)[\\s\\S])+)</span>";
+			shuyue.typeReg = "类型：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">([^<]+)</span>";
+			shuyue.wordsReg = null;
+			shuyue.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
+			shuyue.tipsDetailReg = null;
+			shuyue.newChapterReg = "<a\\s*cpos=\"newchapter\"[^>]+>([^<]+)</a>";
+			shuyue.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d-\\d\\d-\\d\\d)</span>";
+			shuyue.completedReg = null;
+		}
+		return shuyue;
+	}
+
 	private static Config _520;
 
 	public static Config get18KConfig() {
