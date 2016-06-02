@@ -43,12 +43,13 @@
         android:orientation="horizontal"
         android:padding="5dp" >
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/search_edittext"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/transparent"
+            android:completionThreshold="1"
             android:drawablePadding="0dp"
             android:gravity="center_vertical"
             android:hint="请输入书名或者作者或者书名 作者"

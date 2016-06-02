@@ -16,6 +16,7 @@
     <string-array name="book_menu">
         <item>置顶</item>
         <item>更新本书</item>
+        <item>修改名字</item>
         <item>查看详情</item>
         <item>查看目录</item>
         <item>查看原网页</item>

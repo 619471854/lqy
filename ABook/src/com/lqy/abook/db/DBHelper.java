@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DBNAME = "abook.db";
-	private static final int VERSION = 2;
+	private static final int VERSION = 6;
 
 	private static final String CREATE_TABLE_BOOK = "create table " + BookDao.table_name + " (" + BookDao.column_id + " integer primary key autoincrement,"
 			+ BookDao.column_name + " text not null," + BookDao.column_cover + " text," + BookDao.column_type + " text," + BookDao.column_author + " text,"
@@ -21,6 +21,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	private static final String CREATE_TABLE_FAVORITE = "create table " + FavoriteDao.table_name + " (" + FavoriteDao.column_id
 			+ " integer primary key autoincrement," + FavoriteDao.column_url + " text," + FavoriteDao.column_title + " text not null);";
 
+	private static final String CREATE_TABLE_SEARCH = "create table " + SearchDao.table_name + " (" + SearchDao.column_name + " text primary key ,"
+			+ SearchDao.column_time + " integer);";
+
 	public DBHelper(Context context) {
 		super(context, DBNAME, null, VERSION);// 默认
 	}
@@ -30,13 +33,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(CREATE_TABLE_BOOK);
 		db.execSQL(CREATE_TABLE_HISTORY);
 		db.execSQL(CREATE_TABLE_FAVORITE);
-
+		db.execSQL(CREATE_TABLE_SEARCH);
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if(oldVersion!=newVersion){
-			db.execSQL("drop table "+HistoryDao.table_name);
+		if (oldVersion != newVersion) {
+			db.execSQL("drop table " + HistoryDao.table_name);
 			db.execSQL(CREATE_TABLE_HISTORY);
+		}
+		if (oldVersion < 6) {
+			db.execSQL("drop table " + SearchDao.table_name);
+			db.execSQL(CREATE_TABLE_SEARCH);
 		}
 	}
 

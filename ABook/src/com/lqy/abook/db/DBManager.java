@@ -375,4 +375,49 @@ public class DBManager {
 		return -1;
 	}
 
+	/**
+	 * 查询搜索记录
+	 */
+	synchronized public List<String> getSearchList(long time) {
+		List<String> data = new ArrayList<String>();
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			Cursor c = db.query(SearchDao.table_name, null, SearchDao.column_time + " > " + time, null, null, null, null);
+			while (c.moveToNext()) {
+				data.add(c.getString(c.getColumnIndex(SearchDao.column_name)));
+			}
+			c.close();
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return data;
+	}
+
+	/**
+	 * 添加查询搜索记录
+	 */
+	synchronized public long addSearchHistory(String name, long time) {
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			values.put(SearchDao.column_name, name);
+			values.put(SearchDao.column_time, time);
+			return db.replace(SearchDao.table_name, null, values);
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return -1;
+	}
+
+	/**
+	 * 清空搜索记录
+	 */
+	synchronized public void emptySearchHistory() {
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			db.delete(SearchDao.table_name, null, null);
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+	}
 }
