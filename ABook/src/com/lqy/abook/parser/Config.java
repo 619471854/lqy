@@ -177,7 +177,7 @@ public class Config {
 			shuyue.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
 			shuyue.tipsDetailReg = null;
 			shuyue.newChapterReg = "<a\\s*cpos=\"newchapter\"[^>]+>([^<]+)</a>";
-			shuyue.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d-\\d\\d-\\d\\d)</span>";
+			shuyue.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
 			shuyue.completedReg = null;
 		}
 		return shuyue;

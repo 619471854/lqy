@@ -183,8 +183,10 @@ public class ReadActivity extends MenuActivity {
 		case 3:// 切换网站
 			hideLoadingDialog();
 			asynGetData();
+			break;
 		case 4: // 获取目录失败，请换源下载
 			turnUtil.showChapterText(null, book.getId(), 0);
+			break;
 		default:
 
 			break;
@@ -230,6 +232,9 @@ public class ReadActivity extends MenuActivity {
 				Cache.setBook(otherSiteBook);
 				chapter = null;
 				showLoadingDialog(null);
+
+				turnUtil.setLoading();
+
 				new Thread() {
 					public void run() {
 						dao.updateBook(book);

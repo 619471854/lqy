@@ -312,10 +312,10 @@ public class PageWidget extends View {
 			drawNextPageAreaAndShadow(canvas, curPageBitmap);
 			drawCurrentPageShadow(canvas);
 			drawCurrentBackArea(canvas, lastPageBitmap);
-			MyLog.i("onDraw " + mTouch.x + " " + mCornerX + " " + mTouch.y + " " + mCornerY);
+			//MyLog.i("onDraw " + mTouch.x + " " + mCornerX + " " + mTouch.y + " " + mCornerY);
 		} else {
 			canvas.drawBitmap(curPageBitmap, 0, 0, mPaint);
-			MyLog.i("onDraw isScroll=false");
+			//MyLog.i("onDraw isScroll=false");
 		}
 	}
 

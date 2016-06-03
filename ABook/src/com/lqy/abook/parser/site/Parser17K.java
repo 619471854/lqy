@@ -200,12 +200,12 @@ public class Parser17K extends ParserBase2 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url2, String html) {
+	public BookAndChapters parserBrowser(String url, String html) {
 		// http://www.17k.com/list/40082.html
 		// http://h5.17k.com/list/391013.html
-		String id = matcher(url2, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");
+		String id = matcher(url, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");
 		if (Util.isEmpty(id)) {
-			id = matcher(url2, "^http://h5\\.17k\\.com/list/(\\d+)\\.html$");
+			id = matcher(url, "^http://h5\\.17k\\.com/list/(\\d+)\\.html$");
 		}
 		if (Util.isEmpty(id))
 			return null;
@@ -217,7 +217,7 @@ public class Parser17K extends ParserBase2 {
 		if (parserBookDetail(book)) {
 			book.setSite(site);
 			List<ChapterEntity> chaters = null;
-			if (url2.equals(directUrl)) {
+			if (url.equals(directUrl)) {
 				chaters = parserBookDict(html);
 			} else {
 				chaters = parserBookDict(directUrl);

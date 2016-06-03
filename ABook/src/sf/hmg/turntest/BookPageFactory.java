@@ -118,6 +118,9 @@ public class BookPageFactory {
 		toLast = false;
 		return false;
 	}
+	public void setLoading() {
+		textType = TextType.LOADING;
+	}
 
 	protected byte[] readParagraphBack(int nFromPos) {
 		int nEnd = nFromPos;

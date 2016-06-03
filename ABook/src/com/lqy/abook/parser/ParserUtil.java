@@ -29,6 +29,34 @@ public abstract class ParserUtil {
 		return parser.parse(filter).elements();
 	}
 
+	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
+		try {
+			SimpleNodeIterator iterator = parseUrl(url, filter, encodeType);
+			if (iterator.hasMoreNodes()) {
+				return iterator.nextNode();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
+	}
+
+	protected static Node parseNodeByHtml(String html, NodeFilter filter) {
+		try {
+			SimpleNodeIterator iterator = parseHtml(html, filter);
+			if (iterator.hasMoreNodes()) {
+				return iterator.nextNode();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
+	}
+
+	public static String toHtml(Node node) {
+		return node == null ? null : node.toHtml();
+	}
+
 	public static String matcher(String html, String reg) {
 		try {
 			Pattern p = Pattern.compile(reg);

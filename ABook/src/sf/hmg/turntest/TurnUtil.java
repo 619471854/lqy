@@ -36,7 +36,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 	private ReadActivity activity;
 
 	public TurnUtil(ReadActivity activity, PageWidget pageWidget, FontMode mode, int fontSize) {
-		this.activity=activity;
+		this.activity = activity;
 		this.mPageWidget = pageWidget;
 
 		sw = GlobalConfig.getScreenWidth();
@@ -66,6 +66,13 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 
 	public void setFontMode(FontMode mode) {
 		pagefactory.setFontMode(mode);
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
+		mPageWidget.invalidate();
+	}
+
+	public void setLoading() {
+		pagefactory.setLoading();
 		pagefactory.draw(canvas);
 		mPageWidget.setCurrentBitmap(bmp);
 		mPageWidget.invalidate();
@@ -126,7 +133,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			mPageWidget.pageBmp();
 			pagefactory.draw(canvas);
 		}
-		
+
 		activity.updateTime();
 		return true;
 	}
