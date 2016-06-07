@@ -14,7 +14,6 @@ import android.os.Environment;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MatcherTool;
-import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 /**

@@ -192,4 +192,5 @@ public class ParserOther extends ParserBase {
 
 		return new BookAndChapters(book, chapters);
 	}
+
 }

@@ -18,12 +18,15 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
+import com.lqy.abook.img.ShowMoreImageActivity;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public class DirectoryActivity extends MenuActivity {
 	private ListView listView;
@@ -54,7 +57,13 @@ public class DirectoryActivity extends MenuActivity {
 		listView = (ListView) findViewById(android.R.id.list);
 		listView.setVisibility(View.GONE);
 
-		view_title.setText(book.getName() + "-" + book.getSite().getName());
+		String title = book.getSite().getName();
+		if (!Util.isEmpty(title)) {
+			title = book.getName() + "-" + title;
+		} else {
+			title = book.getName();
+		}
+		view_title.setText(title);
 
 		getData();
 	}
@@ -130,7 +139,12 @@ public class DirectoryActivity extends MenuActivity {
 						try {
 							book.setReadBegin(0);
 							Cache.setCurrentChapter(adapter.getItem(arg2));
-							Intent intent = new Intent(_this, ReadActivity.class);
+							Intent intent;
+							if (book.getSite() == Site.Pic) {
+								intent = new Intent(_this, ShowMoreImageActivity.class);
+							} else {
+								intent = new Intent(_this, ReadActivity.class);
+							}
 							intent.putExtra("class", _this.getClass().getName());
 							// intent.putExtra("book", book);
 							// intent.putExtra("chapter", e);

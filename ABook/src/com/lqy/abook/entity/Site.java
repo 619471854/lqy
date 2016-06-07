@@ -5,18 +5,27 @@ import com.lqy.abook.parser.site.Parser16K;
 import com.lqy.abook.parser.site.Parser17K;
 import com.lqy.abook.parser.site.ParserBaidu;
 import com.lqy.abook.parser.site.ParserOther;
+import com.lqy.abook.parser.site.ParserPic;
 import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.parser.site.ParserSM;
 import com.lqy.abook.parser.site.ParserShuyue;
+import com.lqy.abook.tool.CONSTANT;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic;
 
 	public static Site getDefault() {
 		return Other;
 	}
 
 	public static Site[] searchSite = new Site[] { Site.SM, Site.Shuyue, Site._17K, Site._16K, Site.Qidian };
+
+	/**
+	 * 是否支持更新
+	 */
+	public boolean supportUpdated() {
+		return this != Site.Pic;
+	}
 
 	public static Site valueOf(int index) {
 		try {
@@ -48,6 +57,8 @@ public enum Site {
 			return new ParserQidian();
 		case Shuyue:
 			return new ParserShuyue();
+		case Pic:
+			return new ParserPic();
 		default:
 			return new ParserOther();
 		}
@@ -67,8 +78,10 @@ public enum Site {
 			return "起点中文网";
 		case Shuyue:
 			return "书阅屋";
+		case Pic:
+			return CONSTANT.EMPTY;
 		default:
-			return "未知网站";
+			return CONSTANT.EMPTY;
 		}
 	}
 

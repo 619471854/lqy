@@ -28,5 +28,11 @@
         <item>下载本章及后续章节</item>
         <item>手工选择下载点</item>
     </string-array>
+    <string-array name="save_menu">
+        <item>保存为文字小说</item>
+        <item>保存为图片小说</item>
+        <item>保存为单章文字小说</item>
+        <item>保存为单章图片小说</item>
+    </string-array>
 
 </resources>

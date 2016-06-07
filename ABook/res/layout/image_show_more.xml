@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical" >
+
+    <com.lqy.abook.img.ImageViewPager
+        android:id="@+id/image_show_more_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/toolbar_height" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:layout_marginTop="@dimen/toolbar_height"
+        android:background="@drawable/line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            style="@style/toolbar_btn_img"
+            android:onClick="cancelButtonClick"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            style="@style/toolbar_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="1/1" />
+
+        <ImageView
+            android:id="@+id/toolbar_last"
+            style="@style/toolbar_btn_img"
+            android:src="@drawable/btn_last_selector" />
+
+        <ImageView
+            android:id="@+id/toolbar_next"
+            style="@style/toolbar_btn_img"
+            android:src="@drawable/btn_next_selector" />
+
+        <TextView
+            android:id="@+id/toolbar_del"
+            style="@style/toolbar_btn_txt"
+            android:onClick="delPicClick"
+            android:text="删除"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/image_show_more_toast"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="加载中.."
+        android:textColor="@color/text_black"
+        android:textSize="22sp" />
+
+</FrameLayout>

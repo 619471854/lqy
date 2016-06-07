@@ -380,14 +380,20 @@ public class MainActivity extends MenuActivity {
 			updateBookCount = books.size();
 		}
 		for (BookEntity book : books) {
-			asynUpdateBook(book, 0, onlyCheck);
+			if (book.supportUpdated())
+				asynUpdateBook(book, 0, onlyCheck);
+			else if (!onlyCheck)
+				updateBookCount--;
 		}
 		if (!onlyCheck)
 			refresh(false);
 	}
 
 	public boolean update(BookEntity book) {
-		if (isLoading()) {
+		if (!book.supportUpdated()) {
+			Util.dialog(_this, "本书不支持更新");
+			return false;
+		} else if (isLoading()) {
 			Util.dialog(_this, "正在更新，请稍后");
 			return false;
 		} else {

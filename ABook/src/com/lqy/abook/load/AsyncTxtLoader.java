@@ -15,7 +15,9 @@ import com.lqy.abook.activity.ReadActivity;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.img.ShowMoreImageActivity;
 import com.lqy.abook.parser.ParserManager;
+import com.lqy.abook.parser.site.ParserPic;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -110,6 +112,23 @@ public class AsyncTxtLoader {
 	}
 
 	/**
+	 * 下载当前章节
+	 */
+	public boolean loadCurrentChapterUrls(final ShowMoreImageActivity activity, final BookEntity book, final ChapterEntity chapter, final int what,
+			final boolean isReload) {
+		if (book != null && chapter != null) {
+			new Thread() {
+				public void run() {
+					List<String> urls = downloadUrls(book, chapter, isReload);
+					activity.sendMsgOnThread(what, urls);
+				}
+			}.start();
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * 下载本书部分章节
 	 */
 	public boolean load(CoverActivity activity, BookEntity book, List<ChapterEntity> chapters, int what) {
@@ -121,6 +140,10 @@ public class AsyncTxtLoader {
 	}
 
 	public boolean load(ReadActivity activity, BookEntity book, List<ChapterEntity> chapters, int what, int index, int limit) {
+		return load(activity, book, chapters, what, index, limit, false);
+	}
+
+	public boolean load(ShowMoreImageActivity activity, BookEntity book, List<ChapterEntity> chapters, int what, int index, int limit) {
 		return load(activity, book, chapters, what, index, limit, false);
 	}
 
@@ -263,7 +286,7 @@ public class AsyncTxtLoader {
 		try {
 			String text = null;
 			if (!isReload)
-				text = FileUtil.readByLine(FileUtil.getBooksPath(book.getId()) + File.separator + FileUtil.getChapterName(chapter.getName()));
+				text = LoadManager.getChapterContent(book.getId(), chapter.getName());
 			boolean success = false;
 			if (Util.isEmpty(text)) {
 				text = ParserManager.getChapterDetail(book, chapter.getUrl());
@@ -281,6 +304,26 @@ public class AsyncTxtLoader {
 			}
 			chapter.setLoadStatus(success ? LoadStatus.completed : LoadStatus.failed);
 			return text;
+
+		} catch (Exception e) {
+			MyLog.e(e);
+			return null;
+		}
+	}
+
+	private List<String> downloadUrls(BookEntity book, ChapterEntity chapter, boolean isReload) {
+		try {
+			List<String> urls = LoadManager.getPicUrls(book.getId(), chapter.getName());
+			if (urls == null || urls.size() == 0) {
+				urls = new ParserPic().parserUrl(book, chapter.getUrl());
+				if (urls == null || urls.size() == 0) {
+					urls = null;
+				} else {
+					LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
+				}
+			}
+			chapter.setLoadStatus(urls != null ? LoadStatus.completed : LoadStatus.failed);
+			return urls;
 
 		} catch (Exception e) {
 			MyLog.e(e);

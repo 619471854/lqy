@@ -6,7 +6,7 @@ public class BookEntity extends SerializableEntity {
 
 	private long id = CONSTANT._1;
 	private String cover;
-	private String name;//not null
+	private String name;// not null
 	private String type;
 	private String author;
 	private int matchWords;
@@ -16,18 +16,24 @@ public class BookEntity extends SerializableEntity {
 	private int words;
 	private String updateTime;
 	private String newChapter;
-	private String directoryUrl;//not null
+	private String directoryUrl;// not null
 	private boolean isCompleted;
 	private LoadStatus loadStatus = LoadStatus.notLoaded;
 	private int currentChapterId;
 	private int readBegin;
 	private int unReadCount;
-	private ExtEntity ext;//额 外信息
+	private ExtEntity ext;// 额 外信息
 
+	/**
+	 * 是否支持更新
+	 */
+	public boolean supportUpdated() {
+		return site != null && site.supportUpdated();
+	}
 
 	public void setCurrentChapterId(int currentChapterId) {
 		this.currentChapterId = currentChapterId;
-		this.readBegin=0;
+		this.readBegin = 0;
 	}
 
 	public long getId() {
@@ -153,6 +159,7 @@ public class BookEntity extends SerializableEntity {
 	public int getCurrentChapterId() {
 		return currentChapterId;
 	}
+
 	public int getUnReadCount() {
 		return unReadCount;
 	}
@@ -164,6 +171,7 @@ public class BookEntity extends SerializableEntity {
 	public int getReadBegin() {
 		return readBegin;
 	}
+
 	public void setReadBegin(int readBegin) {
 		this.readBegin = readBegin;
 	}

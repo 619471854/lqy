@@ -29,6 +29,8 @@ import com.lqy.abook.activity.ReadActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
+import com.lqy.abook.img.ShowMoreImageActivity;
 import com.lqy.abook.load.AsyncImageLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.tool.CONSTANT;
@@ -154,8 +156,11 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 		} else {
 			holder.status.setVisibility(View.GONE);
 		}
-		// 延迟加载图片
-		asyncImageLoader.loadDrawable(holder.cover, book.getCover(), R.drawable.book_cover_default);
+		if (book.getSite() == Site.Pic) {
+			holder.cover.setImageResource(R.drawable.book_cover_pic);
+		} else { // 延迟加载图片
+			asyncImageLoader.loadDrawable(holder.cover, book.getCover(), R.drawable.book_cover_default);
+		}
 		holder.cover.setId(booksIndex);
 		holder.cover.setOnClickListener(new View.OnClickListener() {
 
@@ -163,10 +168,17 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 			public void onClick(View v) {
 				try {
 					MyLog.i("main books click " + v.getId());
-					Cache.setBook(books.get(v.getId()));
-					Intent intent = new Intent(activity, ReadActivity.class);
-					activity.startActivity(intent);
-					activity.animationRightToLeft();
+					BookEntity e = books.get(v.getId());
+					Cache.setBook(e);
+					if (e.getSite() == Site.Pic) {
+						Intent intent = new Intent(activity, ShowMoreImageActivity.class);
+						activity.startActivity(intent);
+						activity.animationRightToLeft();
+					} else {
+						Intent intent = new Intent(activity, ReadActivity.class);
+						activity.startActivity(intent);
+						activity.animationRightToLeft();
+					}
 				} catch (Exception e) {
 				}
 			}
@@ -188,7 +200,13 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 	}
 
 	private void showArrayDialog(final ImageView view_status, final BookEntity e) {
-		new MyAlertDialog(activity).setTitle(e.getName() + "-" + e.getSite().getName()).setItems(R.array.book_menu, new OnClickListener() {
+		String title = e.getSite().getName();
+		if (!Util.isEmpty(title)) {
+			title = e.getName() + "-" + title;
+		} else {
+			title = e.getName();
+		}
+		new MyAlertDialog(activity).setTitle(title).setItems(R.array.book_menu, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Intent intent;

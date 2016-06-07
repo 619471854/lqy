@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
+import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.JavascriptInterface;
@@ -29,6 +30,7 @@ import android.widget.TextView;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
+import com.lqy.abook.adapter.SaveBook;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.db.FavoriteDao;
 import com.lqy.abook.db.HistoryDao;
@@ -49,9 +51,6 @@ public class BrowserActivity extends MenuActivity {
 	private static final int WHAT_INIT = 0;
 	private static final int WHAT_HISTORY = 1;
 	private static final int WHAT_OVERRIDEURL = 2;
-	private static final int WHAT_SAVEBOOK1 = 3;
-	private static final int WHAT_SAVEBOOK2 = 4;
-	private static final int WHAT_SAVEBOOK3 = 5;
 
 	private int historyLength = 0;// 历史网页数量
 	private int backClickCount = 0;// 点击后退按钮次数
@@ -59,6 +58,7 @@ public class BrowserActivity extends MenuActivity {
 	public static boolean changeInterceptPic = false;// 改变了是否禁止加载图片的设置
 	public static boolean interceptAdvert = false;// 是否禁止过滤广告
 	private String host;// 域名
+	private SaveBook saveUtils;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class BrowserActivity extends MenuActivity {
 	private View btn_last;
 	private View btn_next;
 	private View btn_refresh;
-	private WebView webView;
+	public WebView webView;
 	private EditText view_url;
 
 	private void init() {
@@ -107,7 +107,7 @@ public class BrowserActivity extends MenuActivity {
 				return false;
 			}
 		});
-
+		saveUtils = new SaveBook(this);
 		// if (true) {
 		// loadUrl("http://m.shenmaxiaoshuo.com/ml-45980/");
 		// return;
@@ -178,6 +178,8 @@ public class BrowserActivity extends MenuActivity {
 
 	@Override
 	protected void dealMsg(int what, int arg1, Object o) {
+		if (saveUtils.dealMsg(what, arg1, o))
+			return;
 		switch (what) {
 		case WHAT_INIT:
 			FavoriteEntity history = (FavoriteEntity) o;
@@ -204,86 +206,9 @@ public class BrowserActivity extends MenuActivity {
 			btn_next.setEnabled(false);
 			backClickCount = 0;
 			break;
-		case WHAT_SAVEBOOK1:// 添加到书架
-			MyLog.i("savebook1");
-			showLoadingDialog("正在获取小说目录");
-			String[] params = (String[]) o;
-			ParserManager.parserBrowser(_this, webView.getUrl(), params[1], params[0], WHAT_SAVEBOOK2);
-			break;
-		case WHAT_SAVEBOOK2:// 添加到书架
-			MyLog.i("savebook2 ", o);
-			saveBook((BookAndChapters) o);
-			break;
-		case WHAT_SAVEBOOK3:// 添加到书架成功，启动首页
-			MyLog.i("savebook3 ", o);
-			if (MainActivity.getInstance() == null) {
-				startActivity(new Intent(_this, LoadingActivity.class));
-				finish();
-			} else {
-				MainActivity.isAddBook = true;
-				Intent intent = new Intent(_this, MainActivity.class);
-				intent.putExtra("book", (BookEntity) o);
-				startActivity(intent);
-				animationRightToLeft();
-				finish();
-			}
-			break;
 		default:
 			break;
 		}
-	}
-
-	/**
-	 * 添加到书架
-	 */
-	private void saveBook(final BookAndChapters result) {
-		if (result == null || result.getResult() == BookAndChapters.SearchResult.Failed) {
-			Util.dialog(_this, "获取目录失败");
-		} else if (result.getResult() == BookAndChapters.SearchResult.Search) {
-			String msg = "不能获取到目录，是否去搜索小说《" + result.getBook().getName() + "》";
-			Util.dialog(_this, msg, new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					Intent intent = new Intent(_this, SearchActivity.class);
-					intent.putExtra("search", result.getBook().getName() + " " + result.getBook().getAuthor());
-					startActivity(intent);
-				}
-			});
-		} else if (result.getResult() == BookAndChapters.SearchResult.InputName) {
-			final EditText et = new EditText(_this);
-			et.setBackgroundColor(Color.WHITE);
-			new MyAlertDialog(_this).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					String name = et.getText().toString().trim();
-					if (!Util.isEmpty(name)) {
-						result.getBook().setName(name);
-						saveBook(result.getBook(), result.getChapters());
-					}
-				}
-			}).setNegativeButton("取消", null).show();
-		} else {
-			saveBook(result.getBook(), result.getChapters());
-		}
-	}
-
-	/**
-	 * 添加到书架
-	 */
-	private void saveBook(final BookEntity book, final List<ChapterEntity> chapters) {
-		showLoadingDialog("正在保存小说");
-		new Thread() {
-			public void run() {
-				if (new BookDao().addBook(book)) {
-					LoadManager.saveDirectory(book.getId(), chapters);
-					book.setUnReadCount(chapters.size());
-					sendMsgOnThread(WHAT_SAVEBOOK3, book);
-				} else {
-					sendErrorOnThread("保存小说失败");
-				}
-			};
-		}.start();
 	}
 
 	private WebViewClient client = new WebViewClient() {
@@ -379,9 +304,9 @@ public class BrowserActivity extends MenuActivity {
 		}
 
 		@JavascriptInterface
-		public void saveBook(String cookie, String html) {
-			MyLog.save(html);
-			sendMsgOnThread(WHAT_SAVEBOOK1, new String[] { cookie, html });
+		public void saveBook(int what, String cookie, String html) {
+			// MyLog.save(html);
+			sendMsgOnThread( what, new String[] { cookie, html });
 		}
 
 		@JavascriptInterface
@@ -401,7 +326,7 @@ public class BrowserActivity extends MenuActivity {
 		loadUrl(url);
 	}
 
-	private void loadUrl(String url) {
+	public void loadUrl(String url) {
 		MyLog.web("loadUrl " + url);
 		try {
 			if (url.startsWith("http")) {
@@ -433,13 +358,6 @@ public class BrowserActivity extends MenuActivity {
 				title = "无标题";
 			view_url.setText(title);
 		}
-	}
-
-	private void getHtml(String cb) {
-		if (Util.isEmpty(cb))
-			loadUrl("javascript:window.local_obj.showSource(document.getElementsByTagName('html')[0].innerHTML);");
-		else
-			loadUrl("javascript:window.local_obj." + cb + "(document.getElementsByTagName('html')[0].innerHTML);");
 	}
 
 	public void sendButtonClick(View v) {
@@ -478,19 +396,7 @@ public class BrowserActivity extends MenuActivity {
 			loadUrl("javascript:history.forward();");
 			break;
 		case R.id.browser_save:// 加入书架
-			Util.dialog(_this, "请确认目前显示的是小说目录页。\n(部分网页不能获取到小说目录，只能在线看小说)", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// Intent intent = new Intent(_this, LoadingActivity.class);
-					// intent.putExtra("title", webView.getTitle());
-					// intent.putExtra("url", webView.getUrl());
-					// startActivity(intent);
-					// saveBook()
-					// getHtml("saveBook");
-					loadUrl("javascript:window.local_obj.saveBook(document.cookie,document.getElementsByTagName('html')[0].innerHTML);");
-				}
-			});
+			saveUtils.saveBookClick(0);
 			break;
 		case R.id.browser_favorite_add:// 加入收藏夹
 			boolean re = new FavoriteDao().saveFavorite(webView.getTitle(), webView.getUrl());
@@ -592,7 +498,6 @@ public class BrowserActivity extends MenuActivity {
 	 * 返回键处理
 	 */
 	private long clickBackTime = 0;
-
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {

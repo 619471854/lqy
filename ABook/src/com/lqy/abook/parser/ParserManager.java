@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lqy.abook.MenuActivity;
+import com.lqy.abook.adapter.SaveBook;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
@@ -78,7 +79,7 @@ public class ParserManager {
 	 * 根据小说目录地址获取 目录
 	 */
 	public static List<ChapterEntity> getDict(BookEntity book) {
-		if (book.getSite() == Site.Other) {
+		if (book.getSite() == Site.Other||book.getSite() == Site.Pic) {
 			return new ParserOther().parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 		} else
 			return book.getSite().getParser().parserBookDict(book.getDirectoryUrl());
@@ -98,18 +99,22 @@ public class ParserManager {
 	 * 通过url与html解析小说目录
 	 */
 	public static void parserBrowser(final MenuActivity activity, String url, final String html, final String cookie, final int what) {
-		if (Util.isEmpty(url) || Util.isEmpty(html))
+		if (Util.isEmpty(url) || Util.isEmpty(html)) {
 			activity.sendMsgOnThread(what);
+			return;
+		}
 
 		final String url2 = URLDecoder.decode(url);
 		new Thread() {
 			public void run() {
 				BookAndChapters result = null;
-				List<ParserBase> parsers = getParsers(null);
-				for (ParserBase parser : parsers) {
-					result = parser.parserBrowser(url2, html);
-					if (result != null) {
-						break;
+				if (what == SaveBook.WHAT_SAVEBOOK1) {
+					List<ParserBase> parsers = getParsers(null);
+					for (ParserBase parser : parsers) {
+						result = parser.parserBrowser(url2, html);
+						if (result != null) {
+							break;
+						}
 					}
 				}
 				if (result == null) {
