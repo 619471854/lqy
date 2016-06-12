@@ -20,7 +20,8 @@ public class ParserPic extends ParserOther {
 			String type = book.getExt() != null ? book.getExt().getEncodeType() : null;
 			String html = WebServer.getDataOnCookie(url, cookie, type);
 
-			return parserImgs(html);
+			MyLog.i("parserUrl ok  " + html.length());
+			return parserImgs(url, html);
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -28,17 +29,19 @@ public class ParserPic extends ParserOther {
 		return null;
 	}
 
-	public List<String> parserImgs(String html) {
+	public List<String> parserImgs(String url, String html) {
 		try {
 			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(ImageTag.class));
+			// 获取域名
+			String baseUrl = getDomain(url);
 			List<String> urls = new ArrayList<String>();
 			while (iterator.hasMoreNodes()) {
 				ImageTag node = (ImageTag) iterator.nextNode();
-				if (!Util.isEmpty(node.getImageURL()) && node.getImageURL() == node.extractImageLocn()) {
-					urls.add(node.getImageURL());
+				if (!Util.isEmpty(node.getImageURL()) && node.getImageURL().equals(node.extractImageLocn())) {
+					urls.add(addDomain(baseUrl, node.getImageURL()));
 				}
 			}
-			MyLog.i("ParserOther  parserImgs ok  " + urls.size());
+			MyLog.i("parserImgs  parserImgs ok  " + urls.size());
 			return urls;
 		} catch (Exception e) {
 			MyLog.e(e);

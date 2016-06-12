@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
     android:orientation="vertical" >
 
     <com.lqy.abook.img.ImageViewPager
-        android:id="@+id/image_show_more_pager"
+        android:id="@+id/image_show_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/toolbar_height" />
@@ -34,19 +34,27 @@
             style="@style/toolbar_title"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:ellipsize="middle"
+            android:ellipsize="none"
             android:singleLine="true"
-            android:text="1/1" />
+            android:text="" />
 
         <ImageView
             android:id="@+id/toolbar_last"
             style="@style/toolbar_btn_img"
+            android:layout_marginRight="20dp"
             android:src="@drawable/btn_last_selector" />
 
         <ImageView
             android:id="@+id/toolbar_next"
             style="@style/toolbar_btn_img"
+            android:layout_marginRight="20dp"
             android:src="@drawable/btn_next_selector" />
+
+        <ImageView
+            android:id="@+id/read_menu_directory"
+            style="@style/toolbar_btn_img"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/directory" />
 
         <TextView
             android:id="@+id/toolbar_del"
@@ -57,7 +65,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/image_show_more_toast"
+        android:id="@+id/image_show_toast"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -65,4 +73,49 @@
         android:textColor="@color/text_black"
         android:textSize="22sp" />
 
-</FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingBottom="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <ProgressBar
+            android:id="@+id/image_show_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/progressbar_color" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="1.5dp"
+            android:background="@color/read_status" />
+
+        <TextView
+            android:id="@+id/image_show_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/image_show_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@id/image_show_num"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="@color/read_status"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

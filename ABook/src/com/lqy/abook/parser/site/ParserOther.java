@@ -81,26 +81,7 @@ public class ParserOther extends ParserBase {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			ChapterEntity e;
 			// 获取域名
-			String baseUrl = null;
-			try {
-				String path = new URI(url).getPath();
-				int index = url.indexOf(path);
-				if ("/".equals(path) || index < 1)
-					baseUrl = url;
-				else
-					baseUrl = url.substring(0, index);
-			} catch (Exception e2) {
-			}
-			if (Util.isEmpty(baseUrl)) {
-				baseUrl = url.replace("http://", CONSTANT.EMPTY).replace("https://", CONSTANT.EMPTY);
-				int index = baseUrl.indexOf("/");
-				if (index == -1) {
-					baseUrl = CONSTANT.EMPTY;
-				} else {
-					baseUrl = url.substring(0, url.length() - (baseUrl.length() - index));
-				}
-			}
-			MyLog.i("ParserOther ParserBrowser baseUrl= " + baseUrl);
+			String baseUrl = getDomain(url);
 
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();
@@ -119,13 +100,7 @@ public class ParserOther extends ParserBase {
 				if (Util.isEmpty(chapterUrl) || chapterUrl.startsWith("javascript") || chapterUrl.startsWith("#"))
 					continue;
 
-				if (!Util.isEmpty(baseUrl) && !chapterUrl.startsWith("http")) {
-					if (chapterUrl.startsWith("/")) {
-						chapterUrl = baseUrl + chapterUrl;
-					} else {
-						chapterUrl = baseUrl + "/" + chapterUrl;
-					}
-				}
+				chapterUrl=addDomain(baseUrl, chapterUrl);
 
 				e = new ChapterEntity();
 				e.setName(name);

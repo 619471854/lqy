@@ -1,6 +1,5 @@
 package com.lqy.abook.img;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,19 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
 import com.lqy.abook.activity.DirectoryActivity;
-import com.lqy.abook.activity.SiteSwitchActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
-import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
@@ -29,15 +27,13 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
 
-public class ShowMoreImageActivity extends MenuActivity {
+public class ShowImageActivity extends MenuActivity {
 	// private ViewPager pager;
-	private int pagerPosition = 0;
 	private List<String> urls;
 	private static final String STATE_POSITION = "STATE_POSITION";
 
 	private ImageViewPager pager;
 	private ImagePagerAdapter adapter;
-	private TextView view_title;
 	private TextView view_toast;
 	private View view_del;
 	private View view_last;
@@ -54,10 +50,6 @@ public class ShowMoreImageActivity extends MenuActivity {
 
 		init();
 		asynGetData();
-		pagerPosition = book.getReadBegin();
-		if (savedInstanceState != null) {
-			pagerPosition = savedInstanceState.getInt(STATE_POSITION);
-		}
 	}
 
 	private void init() {
@@ -70,8 +62,7 @@ public class ShowMoreImageActivity extends MenuActivity {
 		chapter = Cache.getCurrentChapter();
 
 		// 界面初始化
-		view_title = (TextView) findViewById(R.id.toolbar_title);
-		view_toast = (TextView) findViewById(R.id.image_show_more_toast);
+		view_toast = (TextView) findViewById(R.id.image_show_toast);
 		view_del = findViewById(R.id.toolbar_del);
 		view_last = findViewById(R.id.toolbar_last);
 		view_next = findViewById(R.id.toolbar_next);
@@ -79,7 +70,7 @@ public class ShowMoreImageActivity extends MenuActivity {
 		view_last.setEnabled(false);
 		view_next.setEnabled(false);
 
-		view_title.setText(book.getName());
+		setProgress();
 	}
 
 	public void updateReadLoation(int readBegin) {
@@ -87,13 +78,41 @@ public class ShowMoreImageActivity extends MenuActivity {
 		dao.updateReadLoation(book.getId(), book.getCurrentChapterId(), readBegin);
 	}
 
+	private TextView view_title;
+	private TextView view_num;
+	private ProgressBar view_progress;
+
+	private void setProgress() {
+		if (view_title == null) {
+			view_title = (TextView) findViewById(R.id.image_show_title);
+			view_num = (TextView) findViewById(R.id.image_show_num);
+			view_progress = (ProgressBar) findViewById(R.id.image_show_progress);
+		}
+		if (chapter != null) {
+			int cur = Cache.getCurrentChapterIndex();
+			if (urls == null || urls.size() == 0) {
+				view_progress.setProgress(0);
+				view_title.setText(chapter.getName());
+				view_num.setText((cur + 1) + "/" + Cache.getChapters().size());
+			} else {
+				int pos = pager != null ? pager.getCurrentItem() : 0;
+				view_progress.setProgress((pos + 1) * 100 / urls.size());
+				view_title.setText(chapter.getName());
+				view_num.setText((cur + 1) + "/" + Cache.getChapters().size());
+			}
+		} else {
+			view_title.setText(CONSTANT.EMPTY);
+		}
+	}
+
 	private void asynGetData() {
 		if (!NetworkUtils.isNetConnectedRefreshWhereNot()) {
 			Util.toast(_this, R.string.net_not_connected);
 		}
-		updateReadLoation(book.getReadBegin());
 		view_toast.setVisibility(View.VISIBLE);
 		view_toast.setText("加载中..");
+		if (pager != null)
+			pager.setVisibility(View.GONE);
 		new Thread() {
 			public void run() {
 				if (chapter == null) {// 获取章节
@@ -136,9 +155,6 @@ public class ShowMoreImageActivity extends MenuActivity {
 			chapter = Cache.getCurrentChapter();
 
 			asynGetData();
-
-			if (Cache.getChapters().size() > 0)
-				view_next.setEnabled(true);
 			break;
 		case 1:// 获取章节内容成功
 			render((List<String>) o);
@@ -166,24 +182,64 @@ public class ShowMoreImageActivity extends MenuActivity {
 			break;
 		}
 	}
-private boolean hasDel=false;11
+
+	private int delCount = 0;
+
+	@Override
+	protected void onDestroy() {
+		if (delCount > 0) {
+			deleteChapter();
+		}
+		super.onDestroy();
+	}
+
+	private void deleteChapter() {
+		List<ChapterEntity> chapters = Cache.getChapters();
+		LoadManager.asynSaveDirectory(book.getId(), chapters);
+		delCount = 0;
+
+		if (book.getCurrentChapterId() >= chapters.size())
+			book.setCurrentChapterId(chapters.size() - 1);
+		book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
+	}
+
 	private void render(List<String> imgs) {
 		if (imgs == null || imgs.size() == 0) {
 			// 如果没有图片，删除该章节
 			Cache.getChapters().remove(chapter);
+			delCount++;
 			if (Cache.exitChapters()) {
 				chapter = Cache.getCurrentChapter();
 				asynGetData();
 				MyLog.i("自动删除了一章  剩余" + Cache.getChapters().size());
+
+				if (delCount > 10) {
+					LoadManager.asynSaveDirectory(book.getId(), Cache.getChapters());
+					delCount = 0;
+				}
 			} else {
 				view_toast.setVisibility(View.VISIBLE);
 				view_toast.setText("没有内容");
 				view_last.setEnabled(false);
 				view_next.setEnabled(false);
+				deleteChapter();
 			}
-			LoadManager.asynSaveDirectory(book.getId(), Cache.getChapters());
 			return;
 		}
+		if (delCount > 0) {
+			deleteChapter();
+		}
+		// 按钮状态
+		int cur = book.getCurrentChapterId();
+		if (cur > 0)
+			view_last.setEnabled(true);
+		else
+			view_last.setEnabled(false);
+		if (cur < Cache.getChapters().size() - 1)
+			view_next.setEnabled(true);
+		else
+			view_next.setEnabled(false);
+
 		view_toast.setVisibility(View.GONE);
 		if (urls == null) {
 			urls = new ArrayList<String>();
@@ -192,31 +248,27 @@ private boolean hasDel=false;11
 		urls.addAll(imgs);
 
 		if (pager == null) {
-			pager = (ImageViewPager) findViewById(R.id.image_show_more_pager);
+			pager = (ImageViewPager) findViewById(R.id.image_show_pager);
 			adapter = new ImagePagerAdapter(this, urls, book.getId());
 			adapter.setErrorPageListener(new ErrorPageListener(pager));// 加载失败或加载中的拖动事件
 			pager.setAdapter(adapter);
-			pager.setCurrentItem(pagerPosition);
 			pager.setOnPageChangeListener(new ViewPagerChangeListener());
 		} else {
 			adapter.notifyDataSetChanged();
 		}
-		pagerPosition = 0;
-		pager.setCurrentItem(0, false);
-		view_title.setText(chapter.getName() + "    1/" + urls.size());
+		pager.setVisibility(View.VISIBLE);
+		int pagerPosition = book.getReadBegin();
+		pagerPosition = pagerPosition >= urls.size() ? 0 : pagerPosition;
+		pager.setCurrentItem(pagerPosition, false);
+		setProgress();
 
-	}
-
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt(STATE_POSITION, pager.getCurrentItem());
 	}
 
 	private class ViewPagerChangeListener implements OnPageChangeListener {
 		public void onPageSelected(int arg0) {
-			int currentIndex = pager.getCurrentItem();
-			view_title.setText(chapter.getName() + "    " + (currentIndex + 1) + "/" + urls.size());
-			book.setReadBegin(currentIndex);
+			int pagerPosition = pager.getCurrentItem();
+			setProgress();
+			updateReadLoation(pagerPosition);
 		}
 
 		public void onPageScrollStateChanged(int arg0) {
@@ -243,9 +295,9 @@ private boolean hasDel=false;11
 	public void sendButtonClick(View v) {
 		switch (v.getId()) {
 		case R.id.toolbar_last:
-			if (Cache.toNextChapter()) {
+			if (Cache.toLastChapter()) {
 				chapter = Cache.getCurrentChapter();
-				book.setReadBegin(0);
+				updateReadLoation(0);
 				asynGetData();
 			}
 			view_last.setEnabled(Cache.hasLastChapter());
@@ -255,12 +307,19 @@ private boolean hasDel=false;11
 		case R.id.toolbar_next:
 			if (Cache.toNextChapter()) {
 				chapter = Cache.getCurrentChapter();
-				book.setReadBegin(0);
+				updateReadLoation(0);
 				asynGetData();
 			}
 			view_last.setEnabled(true);
 			view_next.setEnabled(Cache.hasNextChapter());
 			view_del.setVisibility(View.GONE);
+			break;
+		case R.id.read_menu_directory:
+			Intent intent = new Intent(_this, DirectoryActivity.class);
+			intent.putExtra("class", _this.getClass().getName());
+			startActivity(intent);
+			finish();
+			animationRightToLeft();
 			break;
 		case R.id.toolbar_del:
 			Util.dialog(_this, "确定要删除吗？", new DialogInterface.OnClickListener() {
@@ -284,8 +343,39 @@ private boolean hasDel=false;11
 		if (chapter == null || chapter.getId() != Cache.getCurrentChapterIndex()) {
 			// 切换章节
 			chapter = Cache.getCurrentChapter();
-			book.setReadBegin(0);
+			updateReadLoation(0);
 			asynGetData();
 		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putInt(STATE_POSITION, pager.getCurrentItem());
+		outState.putSerializable("book", Cache.getBook());
+		if (Cache.exitChapters())
+			outState.putSerializable("chapters", Cache.getChapters());
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		book = (BookEntity) savedInstanceState.get("book");
+		ArrayList<ChapterEntity> chapters = (ArrayList<ChapterEntity>) savedInstanceState.get("chapters");
+		if (book == null) {
+			finish();
+			return;
+		}
+		Cache.setBook(book);
+		Cache.setChapters(chapters);
+
+		if (pager != null) {
+			int pagerPosition = savedInstanceState.getInt(STATE_POSITION);
+			if (pagerPosition < chapters.size())
+				pager.setCurrentItem(pagerPosition);
+			setProgress();
+			updateReadLoation(pagerPosition);
+		}
+
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 }

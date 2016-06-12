@@ -1,5 +1,6 @@
 package com.lqy.abook.parser;
 
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +11,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public abstract class ParserUtil {
 	protected String encodeType;
@@ -19,7 +21,7 @@ public abstract class ParserUtil {
 	}
 
 	protected static SimpleNodeIterator parseHtml(String html, NodeFilter filter) throws Exception {
-		Parser parser = new Parser(html);
+		Parser parser = Parser.createParser(html, null);
 		return parser.parse(filter).elements();
 	}
 
@@ -27,6 +29,42 @@ public abstract class ParserUtil {
 		Parser parser = new Parser(url);
 		parser.setEncoding(encodeType);
 		return parser.parse(filter).elements();
+	}
+
+	// 获取域名
+	protected static String getDomain(String url) {
+		String baseUrl = null;
+		try {
+			String path = new URI(url).getPath();
+			int index = url.indexOf(path);
+			if ("/".equals(path) || index < 1)
+				baseUrl = url;
+			else
+				baseUrl = url.substring(0, index);
+		} catch (Exception e2) {
+		}
+		if (Util.isEmpty(baseUrl)) {
+			baseUrl = url.replace("http://", CONSTANT.EMPTY).replace("https://", CONSTANT.EMPTY);
+			int index = baseUrl.indexOf("/");
+			if (index == -1) {
+				baseUrl = CONSTANT.EMPTY;
+			} else {
+				baseUrl = url.substring(0, url.length() - (baseUrl.length() - index));
+			}
+		}
+		MyLog.i("getDomain= " + baseUrl);
+		return baseUrl;
+	}
+
+	protected static String addDomain(String baseUrl, String url) {
+		if (!Util.isEmpty(baseUrl) && !Util.isEmpty(url) && !url.startsWith("http")) {
+			if (url.startsWith("/")) {
+				url = baseUrl + url;
+			} else {
+				url = baseUrl + "/" + url;
+			}
+		}
+		return url;
 	}
 
 	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {

@@ -19,7 +19,7 @@ import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.entity.Site;
-import com.lqy.abook.img.ShowMoreImageActivity;
+import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.LoadManager;
@@ -141,7 +141,7 @@ public class DirectoryActivity extends MenuActivity {
 							Cache.setCurrentChapter(adapter.getItem(arg2));
 							Intent intent;
 							if (book.getSite() == Site.Pic) {
-								intent = new Intent(_this, ShowMoreImageActivity.class);
+								intent = new Intent(_this, ShowImageActivity.class);
 							} else {
 								intent = new Intent(_this, ReadActivity.class);
 							}
@@ -150,7 +150,8 @@ public class DirectoryActivity extends MenuActivity {
 							// intent.putExtra("chapter", e);
 							startActivity(intent);
 							finish();
-							if (ReadMenuActivity.class.getName().equals(getIntent().getStringExtra("class")))
+							if (ReadMenuActivity.class.getName().equals(getIntent().getStringExtra("class"))
+									|| ShowImageActivity.class.getName().equals(getIntent().getStringExtra("class")))
 								animationLeftToRight();
 							else
 								animationRightToLeft();

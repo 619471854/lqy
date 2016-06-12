@@ -15,7 +15,7 @@ import com.lqy.abook.activity.ReadActivity;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.img.ShowMoreImageActivity;
+import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.parser.site.ParserPic;
 import com.lqy.abook.tool.CONSTANT;
@@ -114,7 +114,7 @@ public class AsyncTxtLoader {
 	/**
 	 * 下载当前章节
 	 */
-	public boolean loadCurrentChapterUrls(final ShowMoreImageActivity activity, final BookEntity book, final ChapterEntity chapter, final int what,
+	public boolean loadCurrentChapterUrls(final ShowImageActivity activity, final BookEntity book, final ChapterEntity chapter, final int what,
 			final boolean isReload) {
 		if (book != null && chapter != null) {
 			new Thread() {
@@ -143,7 +143,7 @@ public class AsyncTxtLoader {
 		return load(activity, book, chapters, what, index, limit, false);
 	}
 
-	public boolean load(ShowMoreImageActivity activity, BookEntity book, List<ChapterEntity> chapters, int what, int index, int limit) {
+	public boolean load(ShowImageActivity activity, BookEntity book, List<ChapterEntity> chapters, int what, int index, int limit) {
 		return load(activity, book, chapters, what, index, limit, false);
 	}
 

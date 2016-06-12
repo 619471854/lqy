@@ -30,7 +30,7 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.entity.Site;
-import com.lqy.abook.img.ShowMoreImageActivity;
+import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.load.AsyncImageLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.tool.CONSTANT;
@@ -171,7 +171,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					BookEntity e = books.get(v.getId());
 					Cache.setBook(e);
 					if (e.getSite() == Site.Pic) {
-						Intent intent = new Intent(activity, ShowMoreImageActivity.class);
+						Intent intent = new Intent(activity, ShowImageActivity.class);
 						activity.startActivity(intent);
 						activity.animationRightToLeft();
 					} else {
