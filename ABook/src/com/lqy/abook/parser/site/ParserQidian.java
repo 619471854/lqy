@@ -27,7 +27,7 @@ import com.lqy.abook.tool.Util;
 import com.lqy.abook.tool.WebServer;
 
 public class ParserQidian extends ParserBase {
-	protected static Config config = Config.getQidianConfig();
+	private static Config config = Config.getQidianConfig();
 
 	public ParserQidian() {
 		encodeType = "utf-8";

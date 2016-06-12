@@ -17,7 +17,7 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class Parser17K extends ParserBase2 {
-	protected static Config config = Config.get17KConfig();
+	private static Config config = Config.get17KConfig();
 
 	public Parser17K() {
 		encodeType = "gbk";

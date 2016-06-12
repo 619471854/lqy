@@ -24,7 +24,7 @@ import com.lqy.abook.tool.WebServer;
 
 public class ParserBaidu extends ParserBase {
 
-	protected static Config config = Config.getBaiduConfig();
+	private static Config config = Config.getBaiduConfig();
 
 	public ParserBaidu() {
 		encodeType = "utf-8";

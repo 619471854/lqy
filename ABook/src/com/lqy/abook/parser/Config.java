@@ -182,6 +182,30 @@ public class Config {
 		}
 		return shuyue;
 	}
+	private static Config _00ks;
+
+	public static Config get00ksConfig() {
+		if (_00ks == null) {
+			_00ks = new Config();
+			_00ks.searchUrl = "http://so.00ksw.com/cse/search?click=1&entry=1&s=10977942222484467615&nsid=&q=";
+			_00ks.searchFilter = "div class=\"result-item result-game-item\"";
+			_00ks.detailUrlReg = null;
+			_00ks.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";
+			_00ks.directoryUrlReg = null;
+			_00ks.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
+			_00ks.keyReg = null;// 搜索到的关键词
+			_00ks.authorReg = "作者：</span>\\s*<span>\\s*(((?!</span>)[\\s\\S])+)</span>";
+			_00ks.typeReg = "类型：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">([^<]+)</span>";
+			_00ks.wordsReg = null;
+			_00ks.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
+			_00ks.tipsDetailReg = null;
+			_00ks.newChapterReg = "<a\\s*cpos=\"newchapter\"[^>]+>([^<]+)</a>";
+			_00ks.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
+			_00ks.completedReg = null;
+		}
+		return _00ks;
+	}
+
 
 	private static Config _520;
 

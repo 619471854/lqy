@@ -18,7 +18,7 @@ import com.lqy.abook.tool.Util;
 import com.lqy.abook.tool.WebViewParser;
 
 public class Parser16K extends ParserBase {
-	protected static Config config = Config.get16KConfig();
+	private static Config config = Config.get16KConfig();
 
 	public Parser16K() {
 		encodeType = "gbk";

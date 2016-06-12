@@ -1,6 +1,5 @@
 package com.lqy.abook.parser.site;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 

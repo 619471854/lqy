@@ -19,7 +19,7 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class ParserSM extends ParserBase2 {
-	protected static Config config = Config.getSMConfig();
+	private static Config config = Config.getSMConfig();
 
 	public ParserSM() {
 		encodeType = "utf-8";
