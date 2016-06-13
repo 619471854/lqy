@@ -8,8 +8,7 @@
     <com.lqy.abook.img.ImageViewPager
         android:id="@+id/image_show_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/toolbar_height" />
+        android:layout_height="match_parent"/>
 
     <View
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:background="@color/bg"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -41,27 +39,27 @@
         <ImageView
             android:id="@+id/toolbar_last"
             style="@style/toolbar_btn_img"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:src="@drawable/btn_last_selector" />
 
         <ImageView
             android:id="@+id/toolbar_next"
             style="@style/toolbar_btn_img"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:src="@drawable/btn_next_selector" />
 
         <ImageView
-            android:id="@+id/read_menu_directory"
+            android:id="@+id/toolbar_irectory"
             style="@style/toolbar_btn_img"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
             android:src="@drawable/directory" />
 
-        <TextView
+        <ImageView
             android:id="@+id/toolbar_del"
-            style="@style/toolbar_btn_txt"
-            android:onClick="delPicClick"
-            android:text="删除"
-            android:visibility="gone" />
+            style="@style/toolbar_btn_img"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/delete" />
     </LinearLayout>
 
     <TextView

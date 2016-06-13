@@ -37,8 +37,9 @@ public class ParserPic extends ParserOther {
 			List<String> urls = new ArrayList<String>();
 			while (iterator.hasMoreNodes()) {
 				ImageTag node = (ImageTag) iterator.nextNode();
-				if (!Util.isEmpty(node.getImageURL()) && node.getImageURL().equals(node.extractImageLocn())) {
-					urls.add(addDomain(baseUrl, node.getImageURL()));
+				String imgUrl = node.getImageURL();
+				if (!Util.isEmpty(imgUrl) && imgUrl.equals(node.extractImageLocn()) && !imgUrl.equals(".gif")) {
+					urls.add(addDomain(url,baseUrl, imgUrl));
 				}
 			}
 			MyLog.i("parserImgs  parserImgs ok  " + urls.size());

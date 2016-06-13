@@ -14,6 +14,7 @@ import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserBaidu;
@@ -36,8 +37,8 @@ public class LoadingActivity extends MenuActivity {
 		new Thread() {
 			public void run() {
 				try {
-					 ArrayList<BookEntity> data = new ArrayList<BookEntity>();
-					 new ParserBaidu().parserSearch(data, "武神");
+					ArrayList<BookEntity> data = new ArrayList<BookEntity>();
+					new ParserBaidu().parserSearch(data, "武神");
 					MyLog.i(data);
 				} catch (Exception e) {
 					MyLog.i(e);
@@ -95,6 +96,9 @@ public class LoadingActivity extends MenuActivity {
 			if (book.getCurrentChapterId() >= chapters.size())
 				book.setCurrentChapterId(chapters.size() - 1);
 			book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
+
+			if (book.getSite() == Site.Pic)
+				return;
 			// 更新章节状态
 			File file;
 			String path = FileUtil.getBooksPath(book.getId());

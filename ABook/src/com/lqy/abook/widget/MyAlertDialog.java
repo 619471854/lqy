@@ -110,6 +110,11 @@ public class MyAlertDialog extends AlertDialog.Builder {
 		return this;
 	}
 
+	public MyAlertDialog setTitleSingleLine(boolean singleLine) {
+		view_title.setSingleLine(singleLine);
+		return this;
+	}
+
 	@Override
 	public MyAlertDialog setTitle(int titleId) {
 		view_title.setText(titleId);

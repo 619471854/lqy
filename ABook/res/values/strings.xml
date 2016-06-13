@@ -34,5 +34,16 @@
         <item>保存为单章文字小说</item>
         <item>保存为单章图片小说</item>
     </string-array>
+    <string-array name="delete_chapter_menu">
+        <item>删除本章之前的所有章节</item>
+        <item>删除本章之后的所有章节</item>
+    </string-array>
+    <string-array name="delete_pic_menu">
+        <item>删除此图片</item>
+        <item>删除之前的所有图片</item>
+        <item>删除之后的所有图片</item>
+        <item>删除本章的所有图片</item>
+        <item>删除地址不包含字符串的所有图片</item>
+    </string-array>
 
 </resources>

@@ -56,15 +56,30 @@ public abstract class ParserUtil {
 		return baseUrl;
 	}
 
-	protected static String addDomain(String baseUrl, String url) {
-		if (!Util.isEmpty(baseUrl) && !Util.isEmpty(url) && !url.startsWith("http")) {
-			if (url.startsWith("/")) {
-				url = baseUrl + url;
+	/**
+	 * 获取子页面地址：如果地址以‘/’开头，则加上domain，否则加上当前页面地址
+	 */
+	protected static String addDomain(String currentUrl, String domain, String childUrl) {
+		if (Util.isEmpty(childUrl))
+			return null;
+		if (childUrl.startsWith("http"))
+			return childUrl;
+		if (childUrl.startsWith("/")) {
+			if (!Util.isEmpty(domain)) {
+				childUrl = domain + childUrl;
 			} else {
-				url = baseUrl + "/" + url;
+				if (currentUrl.endsWith("/"))
+					childUrl = currentUrl + childUrl.substring(0);
+				else
+					childUrl = currentUrl + childUrl;
 			}
+		} else {
+			if (currentUrl.endsWith("/"))
+				childUrl = currentUrl + childUrl;
+			else
+				childUrl = currentUrl + "/" + childUrl;
 		}
-		return url;
+		return childUrl;
 	}
 
 	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {

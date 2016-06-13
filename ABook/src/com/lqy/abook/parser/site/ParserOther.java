@@ -51,6 +51,41 @@ public class ParserOther extends ParserBase {
 				MyLog.i("ParserOther updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
+				if (!Util.isEmpty(book.getFirstUrl())) {
+					int position = -1;
+					for (ChapterEntity e : chapters) {
+						if (book.getFirstUrl().equals(e.getUrl())) {
+							position = e.getId();
+							break;
+						}
+					}
+					if (position > 0) {
+						for (int i = 0; i < position; i++) {
+							chapters.remove(0);
+						}
+						for (int i = 0; i < chapters.size(); i++) {
+							chapters.get(i).setId(i);
+						}
+					}
+				}
+				if (!Util.isEmpty(book.getLastestUrl())) {
+					int position = chapters.size();
+					for (ChapterEntity e : chapters) {
+						if (book.getLastestUrl().equals(e.getUrl())) {
+							position = e.getId();
+							break;
+						}
+					}
+					if (position < chapters.size() - 1) {
+						for (int i = chapters.size() - 1; i > position; i--) {
+							chapters.remove(i);
+						}
+
+						for (int i = 0; i < chapters.size(); i++) {
+							chapters.get(i).setId(i);
+						}
+					}
+				}
 				return chapters;
 			}
 		} catch (Exception e) {
@@ -99,7 +134,7 @@ public class ParserOther extends ParserBase {
 				if (Util.isEmpty(chapterUrl) || chapterUrl.startsWith("javascript") || chapterUrl.startsWith("#"))
 					continue;
 
-				chapterUrl=addDomain(baseUrl, chapterUrl);
+				chapterUrl = addDomain(url, baseUrl, chapterUrl);
 
 				e = new ChapterEntity();
 				e.setName(name);

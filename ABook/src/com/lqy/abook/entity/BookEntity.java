@@ -24,6 +24,36 @@ public class BookEntity extends SerializableEntity {
 	private int unReadCount;
 	private ExtEntity ext;// 额 外信息
 
+	public boolean isPicLoadOver() {
+		return ext != null && ext.isPicLoadOver();
+	}
+
+	public void setPicLoadOver(boolean isPicLoadOver) {
+		if (ext == null)
+			ext = new ExtEntity();
+		ext.setPicLoadOver(isPicLoadOver);
+	}
+
+	public String getFirstUrl() {
+		return ext == null ? null : ext.getFirstUrl();
+	}
+
+	public void setFirstUrl(String firstUrl) {
+		if (ext == null)
+			ext = new ExtEntity();
+		ext.setFirstUrl(firstUrl);
+	}
+
+	public String getLastestUrl() {
+		return ext == null ? null : ext.getLastestUrl();
+	}
+
+	public void setLastestUrl(String lastestUrl) {
+		if (ext == null)
+			ext = new ExtEntity();
+		ext.setLastestUrl(lastestUrl);
+	}
+
 	/**
 	 * 是否支持更新
 	 */

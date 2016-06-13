@@ -1,6 +1,5 @@
 package com.lqy.abook.load;
 
-import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.parser.ParserManager;
-import com.lqy.abook.parser.site.ParserPic;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -111,22 +109,6 @@ public class AsyncTxtLoader {
 		return false;
 	}
 
-	/**
-	 * 下载当前章节
-	 */
-	public boolean loadCurrentChapterUrls(final ShowImageActivity activity, final BookEntity book, final ChapterEntity chapter, final int what,
-			final boolean isReload) {
-		if (book != null && chapter != null) {
-			new Thread() {
-				public void run() {
-					List<String> urls = downloadUrls(book, chapter, isReload);
-					activity.sendMsgOnThread(what, urls);
-				}
-			}.start();
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * 下载本书部分章节
@@ -195,8 +177,8 @@ public class AsyncTxtLoader {
 						int loadedCount = loadedCountMap.get(bookId);
 						int totalCount = totalCountMap.get(bookId);
 						activity.sendMsgOnThread(what, loadedCount * 100 / totalCount, null);
+						Thread.sleep(300);
 					}
-					Thread.sleep(300);
 				} catch (Exception e) {
 					MyLog.e(e);
 				}
@@ -304,26 +286,6 @@ public class AsyncTxtLoader {
 			}
 			chapter.setLoadStatus(success ? LoadStatus.completed : LoadStatus.failed);
 			return text;
-
-		} catch (Exception e) {
-			MyLog.e(e);
-			return null;
-		}
-	}
-
-	private List<String> downloadUrls(BookEntity book, ChapterEntity chapter, boolean isReload) {
-		try {
-			List<String> urls = LoadManager.getPicUrls(book.getId(), chapter.getName());
-			if (urls == null || urls.size() == 0) {
-				urls = new ParserPic().parserUrl(book, chapter.getUrl());
-				if (urls == null || urls.size() == 0) {
-					urls = null;
-				} else {
-					LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
-				}
-			}
-			chapter.setLoadStatus(urls != null ? LoadStatus.completed : LoadStatus.failed);
-			return urls;
 
 		} catch (Exception e) {
 			MyLog.e(e);

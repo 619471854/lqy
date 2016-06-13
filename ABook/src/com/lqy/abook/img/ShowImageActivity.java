@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,14 +21,14 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.load.AsyncTxtLoader;
+import com.lqy.abook.entity.Site;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class ShowImageActivity extends MenuActivity {
 	// private ViewPager pager;
@@ -49,6 +52,7 @@ public class ShowImageActivity extends MenuActivity {
 		setContentView(R.layout.image_show_more);
 
 		init();
+
 		asynGetData();
 	}
 
@@ -69,8 +73,18 @@ public class ShowImageActivity extends MenuActivity {
 
 		view_last.setEnabled(false);
 		view_next.setEnabled(false);
+		view_del.setVisibility(View.INVISIBLE);
 
 		setProgress();
+
+		view_del.setOnLongClickListener(new View.OnLongClickListener() {
+
+			@Override
+			public boolean onLongClick(View v) {
+				deleteDialog();
+				return true;
+			}
+		});
 	}
 
 	public void updateReadLoation(int readBegin) {
@@ -118,9 +132,6 @@ public class ShowImageActivity extends MenuActivity {
 				if (chapter == null) {// 获取章节
 					List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
 					if (chapters == null || chapters.size() == 0) {
-						chapters = ParserManager.getDict(book);
-					}
-					if (chapters == null || chapters.size() == 0) {
 						// 获取目录失败，请换源下载
 						if (NetworkUtils.isNetConnected(null))
 							book.setLoadStatus(LoadStatus.failed);
@@ -133,13 +144,9 @@ public class ShowImageActivity extends MenuActivity {
 					}
 				} else {// 从本地获取
 					List<String> urls = LoadManager.getPicUrls(book.getId(), chapter.getName());
-					if (urls == null || urls.size() == 0) {
-						chapter.setLoadStatus(LoadStatus.failed);
-						sendMsgOnThread(2, null);
-					} else {
-						chapter.setLoadStatus(LoadStatus.completed);
-						sendMsgOnThread(1, urls);
-					}
+
+					chapter.setLoadStatus(LoadStatus.completed);
+					sendMsgOnThread(1, urls);
 				}
 			};
 		}.start();
@@ -159,20 +166,6 @@ public class ShowImageActivity extends MenuActivity {
 		case 1:// 获取章节内容成功
 			render((List<String>) o);
 			break;
-		case 2:// 下载
-				// chapter = Cache.getCurrentChapter();
-			List<ChapterEntity> chapters = Cache.getChapters();
-			if (chapters != null) {// 不会为空，否则chapter不存在，不会进入这里
-				// 下载本章
-				AsyncTxtLoader.getInstance().loadCurrentChapterUrls(this, book, Cache.getCurrentChapter(), 1, false);
-				// 下载后续章节
-				if (!AsyncTxtLoader.isRunning(book.getId())) {
-					int current = Cache.getCurrentChapterIndex();
-					int limit = current + CONSTANT.auto_load_size;
-					AsyncTxtLoader.getInstance().load(this, book, chapters, 5, current + 1, limit);
-				}
-			}
-			break;
 		case 4:
 			view_toast.setVisibility(View.VISIBLE);
 			view_toast.setText("获取目录失败");
@@ -188,12 +181,12 @@ public class ShowImageActivity extends MenuActivity {
 	@Override
 	protected void onDestroy() {
 		if (delCount > 0) {
-			deleteChapter();
+			deleteChapterResult();
 		}
 		super.onDestroy();
 	}
 
-	private void deleteChapter() {
+	private void deleteChapterResult() {
 		List<ChapterEntity> chapters = Cache.getChapters();
 		LoadManager.asynSaveDirectory(book.getId(), chapters);
 		delCount = 0;
@@ -203,31 +196,41 @@ public class ShowImageActivity extends MenuActivity {
 		book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
 	}
 
+	private boolean deleteChapter() {
+		// 如果没有图片，删除该章节
+		List<ChapterEntity> chapters = Cache.getChapters();
+		chapters.remove(chapter);
+		for (int i = 0; i < chapters.size(); i++) {
+			chapters.get(i).setId(i);
+		}
+		delCount++;
+		if (Cache.exitChapters()) {
+			chapter = Cache.getCurrentChapter();
+			asynGetData();
+			MyLog.i("自动删除了一章  剩余" + chapters.size());
+
+			if (delCount > 10) {
+				LoadManager.asynSaveDirectory(book.getId(), chapters);
+				delCount = 0;
+			}
+			return true;
+		} else {
+			view_toast.setVisibility(View.VISIBLE);
+			view_toast.setText("没有内容");
+			view_last.setEnabled(false);
+			view_next.setEnabled(false);
+			deleteChapterResult();
+			return false;
+		}
+	}
+
 	private void render(List<String> imgs) {
 		if (imgs == null || imgs.size() == 0) {
-			// 如果没有图片，删除该章节
-			Cache.getChapters().remove(chapter);
-			delCount++;
-			if (Cache.exitChapters()) {
-				chapter = Cache.getCurrentChapter();
-				asynGetData();
-				MyLog.i("自动删除了一章  剩余" + Cache.getChapters().size());
-
-				if (delCount > 10) {
-					LoadManager.asynSaveDirectory(book.getId(), Cache.getChapters());
-					delCount = 0;
-				}
-			} else {
-				view_toast.setVisibility(View.VISIBLE);
-				view_toast.setText("没有内容");
-				view_last.setEnabled(false);
-				view_next.setEnabled(false);
-				deleteChapter();
-			}
+			deleteChapter();
 			return;
 		}
 		if (delCount > 0) {
-			deleteChapter();
+			deleteChapterResult();
 		}
 		// 按钮状态
 		int cur = book.getCurrentChapterId();
@@ -241,6 +244,7 @@ public class ShowImageActivity extends MenuActivity {
 			view_next.setEnabled(false);
 
 		view_toast.setVisibility(View.GONE);
+		view_del.setVisibility(View.VISIBLE);
 		if (urls == null) {
 			urls = new ArrayList<String>();
 		}
@@ -249,12 +253,14 @@ public class ShowImageActivity extends MenuActivity {
 
 		if (pager == null) {
 			pager = (ImageViewPager) findViewById(R.id.image_show_pager);
-			adapter = new ImagePagerAdapter(this, urls, book.getId());
+			pager.setOnPageChangeListener(new ViewPagerChangeListener());
+			adapter = new ImagePagerAdapter(this, urls, book.getId(), chapter.getName());
 			adapter.setErrorPageListener(new ErrorPageListener(pager));// 加载失败或加载中的拖动事件
 			pager.setAdapter(adapter);
-			pager.setOnPageChangeListener(new ViewPagerChangeListener());
 		} else {
-			adapter.notifyDataSetChanged();
+			adapter = new ImagePagerAdapter(this, urls, book.getId(), chapter.getName());
+			adapter.setErrorPageListener(new ErrorPageListener(pager));// 加载失败或加载中的拖动事件
+			pager.setAdapter(adapter);
 		}
 		pager.setVisibility(View.VISIBLE);
 		int pagerPosition = book.getReadBegin();
@@ -279,19 +285,6 @@ public class ShowImageActivity extends MenuActivity {
 
 	}
 
-	public void delPicClick(View v) {
-		Util.dialog(_this, "确定要删除吗？", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				int pos = pager.getCurrentItem();
-				urls.remove(pos);
-				adapter.notifyDataSetChanged();
-
-				LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
-			}
-		});
-	};
-
 	public void sendButtonClick(View v) {
 		switch (v.getId()) {
 		case R.id.toolbar_last:
@@ -302,7 +295,7 @@ public class ShowImageActivity extends MenuActivity {
 			}
 			view_last.setEnabled(Cache.hasLastChapter());
 			view_next.setEnabled(true);
-			view_del.setVisibility(View.GONE);
+			view_del.setVisibility(View.INVISIBLE);
 			break;
 		case R.id.toolbar_next:
 			if (Cache.toNextChapter()) {
@@ -312,9 +305,9 @@ public class ShowImageActivity extends MenuActivity {
 			}
 			view_last.setEnabled(true);
 			view_next.setEnabled(Cache.hasNextChapter());
-			view_del.setVisibility(View.GONE);
+			view_del.setVisibility(View.INVISIBLE);
 			break;
-		case R.id.read_menu_directory:
+		case R.id.toolbar_irectory:
 			Intent intent = new Intent(_this, DirectoryActivity.class);
 			intent.putExtra("class", _this.getClass().getName());
 			startActivity(intent);
@@ -322,21 +315,144 @@ public class ShowImageActivity extends MenuActivity {
 			animationRightToLeft();
 			break;
 		case R.id.toolbar_del:
-			Util.dialog(_this, "确定要删除吗？", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					int pos = pager.getCurrentItem();
-					urls.remove(pos);
-					adapter.notifyDataSetChanged();
-
-					LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
-				}
-			});
+			deleteImgToast(0);
 			break;
 		default:
 			break;
 		}
 	};
+
+	private void deleteDialog() {
+		new MyAlertDialog(_this).setItems(R.array.delete_pic_menu, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				deleteImgToast(which);
+			}
+		}).show();
+	}
+
+	private void deleteImgToast(final int which) {
+		String[] arrays = getResources().getStringArray(R.array.delete_pic_menu);
+		Util.dialog(_this, "确定要" + arrays[which] + "吗？", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int w) {
+				deleteImg(which);
+			}
+		});
+	}
+
+	private void deleteImg(int which) {
+		int pos = pager.getCurrentItem();
+		switch (which) {
+		case 0:// 删除此图片
+			urls.remove(pos);
+			if (urls.size() == 0) {
+				deleteImg(3);
+			} else {
+				adapter.notifyDataSetChanged();
+				LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
+			}
+			break;
+		case 1:// 删除之前的所有图片
+			for (int i = 0; i < pos; i++) {
+				urls.remove(0);
+			}
+			if (urls.size() == 0) {
+				deleteImg(3);
+			} else {
+				adapter.notifyDataSetChanged();
+				LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
+			}
+			break;
+		case 2:// 删除之后的所有图片
+			for (int i = urls.size() - 1; i > pos; i--) {
+				urls.remove(i);
+			}
+			if (urls.size() == 0) {
+				deleteImg(3);
+			} else {
+				adapter.notifyDataSetChanged();
+				LoadManager.savePicUrls(book.getId(), chapter.getName(), urls);
+			}
+			break;
+		case 3:// 删除本章的所有图片
+			deleteChapter();
+			break;
+		case 4:// 匹配删除
+			deleteReg();
+			break;
+		}
+	}
+
+	/**
+	 * 匹配删除
+	 */
+	private void deleteReg() {
+		final EditText et = new EditText(_this);
+		et.setBackgroundColor(Color.WHITE);
+		int pos = pager.getCurrentItem();
+		final String url = urls.get(pos);
+		et.setText(url);
+		et.setSelection(et.getText().toString().trim().length());
+		new MyAlertDialog(_this).setTitleSingleLine(false).setTitle("以下显示了当前图片的地址，请保留部分地址再点击确定，将删除所有的地址与输入不匹配的图片").setView(et)
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						String value = et.getText().toString().trim();
+						if (value.equals(url)) {
+							Util.dialog(_this, "请输入更少的字符，否则会删除此外的所有图片");
+						} else if (!Util.isEmpty(value)) {
+							deleteReg(value);
+						}
+					}
+				}).setNegativeButton("取消", null).show();
+	}
+
+	private void deleteReg(final String urlReg) {
+		showLoadingDialog("删除中");
+		new Thread() {
+			public void run() {
+				long bookId = book.getId();
+				List<ChapterEntity> chapters = Cache.getChapters();
+				boolean hasDelChapter = false;
+				for (int i = 0; i < chapters.size(); i++) {
+					ChapterEntity chapter = chapters.get(i);
+					List<String> urls = LoadManager.getPicUrls(bookId, chapter.getName());
+					if (urls != null && urls.size() > 0) {
+						boolean hasDelUrl = false;
+						for (int j = 0; j < urls.size(); j++) {
+							if (!urls.get(j).contains(urlReg)) {
+								urls.remove(j);
+								j--;
+								hasDelUrl = true;
+							}
+						}
+						if (hasDelUrl && urls.size() > 0) {
+							LoadManager.savePicUrls(bookId, chapter.getName(), urls);
+						}
+					}
+					if (urls == null || urls.size() == 0) {
+						chapters.remove(i);
+						i--;
+						hasDelChapter = true;
+					}
+				}
+				if (hasDelChapter) {
+					LoadManager.saveDirectory(bookId, chapters);
+				}
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Util.toast(_this, "删除成功,请重新打开界面");
+						hideLoadingDialog();
+
+						finish();
+						animationRightToLeft();
+					}
+				});
+			};
+		}.start();
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {

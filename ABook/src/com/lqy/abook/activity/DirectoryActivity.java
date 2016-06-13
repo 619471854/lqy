@@ -3,11 +3,14 @@ package com.lqy.abook.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +30,7 @@ import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class DirectoryActivity extends MenuActivity {
 	private ListView listView;
@@ -160,6 +164,15 @@ public class DirectoryActivity extends MenuActivity {
 						}
 					}
 				});
+				if (book.getSite() == Site.Other || book.getSite() == Site.Pic) {
+					listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+						@Override
+						public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+							deleteDialog(arg2);
+							return true;
+						}
+					});
+				}
 				if (toLast) {
 					listView.setSelection(adapter.getCount() - 1);
 					toLast = false;
@@ -175,6 +188,53 @@ public class DirectoryActivity extends MenuActivity {
 
 			AsyncTxtLoader.getInstance().waitToOverAndRefresh(this, Cache.getBook().getId(), 1);
 		}
+	}
+
+	private void deleteDialog(final int position) {
+		new MyAlertDialog(_this).setItems(R.array.delete_chapter_menu, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				deleteToast(position, which);
+			}
+		}).show();
+	}
+
+	private void deleteToast(final int position, final int which) {
+		String[] arrays = getResources().getStringArray(R.array.delete_chapter_menu);
+		Util.dialog(_this, "删除后即使更新也不会恢复，确定要" + arrays[which] + "吗？", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int w) {
+				deleteChapter(position, which);
+			}
+		});
+	}
+
+	private void deleteChapter(int position, int which) {
+		List<ChapterEntity> chapters = Cache.getChapters();
+		switch (which) {
+		case 0:// 删除之前的
+			if(position==0)
+				return;
+			for (int i = 0; i < position; i++) {
+				chapters.remove(0);
+			}
+			book.setFirstUrl(chapters.get(0).getUrl());
+			break;
+		case 1:// 删除之后的
+			if(position== chapters.size() - 1)
+				return;
+			for (int i = chapters.size() - 1; i > position; i--) {
+				chapters.remove(i);
+			}
+			book.setLastestUrl(chapters.get(chapters.size() - 1).getUrl());
+			break;
+		}
+		for (int i = 0; i < chapters.size(); i++) {
+			chapters.get(i).setId(i);
+		}
+		adapter.notifyDataSetChanged();
+		new BookDao().updateBook(book);
+		LoadManager.asynSaveDirectory(book.getId(), chapters);
 	}
 
 	@Override

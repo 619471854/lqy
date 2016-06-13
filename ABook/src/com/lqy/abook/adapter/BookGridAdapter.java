@@ -165,10 +165,15 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 		holder.cover.setOnClickListener(new View.OnClickListener() {
 
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) {	
 				try {
 					MyLog.i("main books click " + v.getId());
 					BookEntity e = books.get(v.getId());
+					
+					if (e.getSite() == Site.Pic&&!e.isPicLoadOver()) {
+						Util.dialog(activity, "请先更新本书(长按本书可更新)");
+						return;
+					} 
 					Cache.setBook(e);
 					if (e.getSite() == Site.Pic) {
 						Intent intent = new Intent(activity, ShowImageActivity.class);
@@ -235,9 +240,13 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					break;
 				case 4:// 查看目录
-					intent = new Intent(activity, DirectoryActivity.class);
-					Cache.setBook(e);
-					activity.startActivity(intent);
+					if (e.getSite() == Site.Pic&&!e.isPicLoadOver()) {
+						Util.dialog(activity, "请先更新本书(长按本书可更新)");
+					} else {
+						intent = new Intent(activity, DirectoryActivity.class);
+						Cache.setBook(e);
+						activity.startActivity(intent);
+					}
 					break;
 				case 5:
 					if (Util.isEmpty(e.getDirectoryUrl())) {

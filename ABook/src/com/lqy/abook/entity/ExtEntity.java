@@ -7,6 +7,33 @@ public class ExtEntity extends SerializableEntity {
 
 	private String cookie;
 	private String encodeType;
+	private boolean isPicLoadOver;
+	private String firstUrl;//第一个章节的地址，用于删除之前的章节
+	private String lastestUrl;
+
+	public String getFirstUrl() {
+		return firstUrl;
+	}
+
+	public void setFirstUrl(String firstUrl) {
+		this.firstUrl = firstUrl;
+	}
+
+	public String getLastestUrl() {
+		return lastestUrl;
+	}
+
+	public void setLastestUrl(String lastestUrl) {
+		this.lastestUrl = lastestUrl;
+	}
+
+	public boolean isPicLoadOver() {
+		return isPicLoadOver;
+	}
+
+	public void setPicLoadOver(boolean isPicLoadOver) {
+		this.isPicLoadOver = isPicLoadOver;
+	}
 
 	public static ExtEntity valueOf(String json) {
 		if (Util.isEmpty(json))
@@ -23,6 +50,8 @@ public class ExtEntity extends SerializableEntity {
 		this.encodeType = encodeType;
 	}
 
+	public ExtEntity() {
+	}
 	public String getCookie() {
 		return cookie;
 	}

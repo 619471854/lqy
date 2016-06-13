@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView.ScaleType;
 
 import com.lqy.abook.R;
 import com.lqy.abook.load.FileUtil;
@@ -44,7 +43,7 @@ public class ImagePagerAdapter extends PagerAdapter {
 
 	private LoadState loadstate[];// 下载状态
 
-	public ImagePagerAdapter(Activity activity, List<String> urls, long bookId) {
+	public ImagePagerAdapter(Activity activity, List<String> urls, long bookId,String chapterName) {
 		this.images = urls;
 		this.activity = activity;
 		inflater = activity.getLayoutInflater();
@@ -52,17 +51,17 @@ public class ImagePagerAdapter extends PagerAdapter {
 		for (int i = 0; i < urls.size(); i++) {
 			loadstate[i] = LoadState.LOADING;
 		}
-		init(bookId);
+		init(bookId,chapterName);
 	}
 
-	private void init(long bookId) {
+	private void init(long bookId,String chapterName) {
 		options = new DisplayImageOptions.Builder()
 				// .showImageForEmptyUri(R.drawable.ic_empty).showImageOnFail(R.drawable.ic_error)
 				.resetViewBeforeLoading(true).cacheOnDisc(true).imageScaleType(ImageScaleType.EXACTLY).bitmapConfig(Bitmap.Config.ARGB_8888)
 				.displayer(new FadeInBitmapDisplayer(300)).build();
 
 		imageLoader = ImageLoader.getInstance();
-		cacheDir = new File(FileUtil.getBooksPath(bookId));
+		cacheDir = new File(FileUtil.getBooksPath(bookId),FileUtil.getChapterName(chapterName) );
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity).threadPriority(Thread.NORM_PRIORITY - 2)
 				.denyCacheImageMultipleSizesInMemory().discCacheFileNameGenerator(new Md5FileNameGenerator()).tasksProcessingOrder(QueueProcessingType.LIFO)
 				.writeDebugLogs() // Remove for release app
@@ -115,7 +114,7 @@ public class ImagePagerAdapter extends PagerAdapter {
 				view_lay.setVisibility(View.GONE);
 				loadstate[position] = LoadState.COMPLETED;
 				// 不放大图片
-				imageView.setScaleType(ScaleType.CENTER_INSIDE);
+				//imageView.setScaleType(ScaleType.CENTER_INSIDE);
 			}
 		});
 

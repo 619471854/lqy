@@ -22,6 +22,8 @@ import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
+import com.lqy.abook.load.AsyncPicLoader;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.FileUtil;
@@ -390,7 +392,16 @@ public class MainActivity extends MenuActivity {
 	}
 
 	public boolean update(BookEntity book) {
-		if (!book.supportUpdated()) {
+		if (book.getSite() == Site.Pic) {
+			if (new AsyncPicLoader().load(_this, book, 1)) {
+				btn_update.setVisibility(View.GONE);
+				btn_stop.setVisibility(View.VISIBLE);
+				updateBookCount = 1;
+				return true;
+			} else {
+				return false;
+			}
+		} else if (!book.supportUpdated()) {
 			Util.dialog(_this, "本书不支持更新");
 			return false;
 		} else if (isLoading()) {
@@ -442,5 +453,4 @@ public class MainActivity extends MenuActivity {
 			};
 		}.start();
 	}
-
 }

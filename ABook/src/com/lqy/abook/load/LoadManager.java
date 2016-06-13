@@ -37,7 +37,7 @@ public class LoadManager {
 
 		if (imgs == null || imgs.size() == 0) {
 			FileUtil.delFile(new File(path, FileUtil.BOOK_INDEX_NAME));
-			return true;
+			return false;
 		} else {
 			File file = new File(path);
 			if (!file.exists()) {
