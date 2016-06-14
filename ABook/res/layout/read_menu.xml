@@ -24,16 +24,24 @@
         <ImageView
             android:id="@+id/read_menu_next"
             style="@style/toolbar_btn_img"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/read_menu_directory"
             android:src="@drawable/btn_next_selector" />
 
         <ImageView
             android:id="@+id/read_menu_last"
             style="@style/toolbar_btn_img"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/read_menu_next"
             android:src="@drawable/btn_last_selector" />
+
+        <CheckBox
+            android:id="@+id/read_menu_voice"
+            style="@style/toolbar_btn_check"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/read_menu_last"
+            android:button="@drawable/btn_voice_selector" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -249,6 +257,7 @@
                 android:text="百度搜索此章节" />
 
             <View style="@style/item_line" />
+
             <TextView
                 android:id="@+id/read_menu_html"
                 style="@style/item_text"
@@ -256,6 +265,7 @@
                 android:text="打开原网页" />
 
             <View style="@style/item_line" />
+
             <TextView
                 android:id="@+id/read_menu_color"
                 style="@style/item_text"

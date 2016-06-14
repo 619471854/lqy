@@ -215,6 +215,8 @@ public class ReadMenuActivity extends MenuActivity {
 				menu_font.setChecked(false);
 			}
 			break;
+		case R.id.read_menu_voice:
+			break;
 		case R.id.read_menu_last:
 			if (Cache.toLastChapter() && ReadActivity.getInstance() != null)
 				ReadActivity.getInstance().changeChapter();

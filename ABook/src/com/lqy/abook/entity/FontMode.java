@@ -74,11 +74,15 @@ public class FontMode extends SerializableEntity {
 	public static FontMode valueOf(int _type, Context context) {
 		if (_type == Type.custom.ordinal()) {
 			SharedPreferences sp = context.getSharedPreferences(CONSTANT.SP_READ, 0);
-			FontMode mode = new FontMode();
-			mode.type = Type.custom;
-			mode.textColor = sp.getInt("textColor", CUSTOM_COLOR_TEXT);
-			mode.bgColor = sp.getInt("bgColor", CUSTOM_COLOR_BG);
-			return mode;
+			if (sp != null) {
+				FontMode mode = new FontMode();
+				mode.type = Type.custom;
+				mode.textColor = sp.getInt("textColor", CUSTOM_COLOR_TEXT);
+				mode.bgColor = sp.getInt("bgColor", CUSTOM_COLOR_BG);
+				return mode;
+			} else {
+				return FontMode.getCustomerDefault();
+			}
 		} else {
 			try {
 				Type type = Type.values()[_type];

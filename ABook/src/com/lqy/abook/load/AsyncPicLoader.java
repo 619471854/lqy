@@ -84,7 +84,7 @@ public class AsyncPicLoader {
 				}
 
 				activity.sendMsgOnThread(what);
-				isRunning=false;
+				isRunning = false;
 			};
 		}.start();
 		return true;
@@ -148,10 +148,14 @@ public class AsyncPicLoader {
 
 				String file = FileUtil.loadImageForUrl(url, path);
 				boolean hasDelete = false;
-				File f = new File(file);
-				if (f.length() < minLength) {
+				if (file == null) {
 					hasDelete = true;
-					f.delete();
+				} else {
+					File f = new File(file);
+					if (f.length() < minLength) {
+						hasDelete = true;
+						f.delete();
+					}
 				}
 				// 进度
 				synchronized (_o) {

@@ -139,6 +139,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme" />
 
+        <!-- 图片浏览-->
+        <activity
+            android:name="com.lqy.abook.img.ShowImageActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:theme="@style/ActivityTheme" />
+        
         <meta-data
             android:name="BaiduMobAd_STAT_ID"
             android:value="18bfbaab5a" />
