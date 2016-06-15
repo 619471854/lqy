@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.os.Message;
 
+import com.iflytek.cloud.SpeechUtility;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.CrashHandler;
@@ -33,6 +34,8 @@ public class MyApp extends Application {
 		crashHandler.init(getApplicationContext());
 		// 全局设置
 		globalConfig();
+		// 科大讯飞语音
+		SpeechUtility.createUtility(this, "appid=" + CONSTANT.speech_appid);
 
 		super.onCreate();
 	}

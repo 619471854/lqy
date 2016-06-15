@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/voice_open_pre" android:state_checked="true" />
+    <item android:drawable="@drawable/voice_open_dis" android:state_enabled="false"/>
+    <item android:drawable="@drawable/voice_open_pre" android:state_enabled="true" android:state_pressed="true"/>
     <item android:drawable="@drawable/voice_open_nor"/>
 
 </selector>

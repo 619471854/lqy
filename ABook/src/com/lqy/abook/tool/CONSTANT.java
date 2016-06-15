@@ -15,7 +15,8 @@ public class CONSTANT {
 
 	public static final int MSG_ERROR = -1;
 	public static final int _1 = -1;
-
+	public static final String speech_appid = "575fb71e";
+	
 	public static final String SP_READ = "read";
 	public static final String SP_BROWSER = "browser";
 	public static final String SP_CENTER = "center";
@@ -26,5 +27,6 @@ public class CONSTANT {
 	public static final String CHROME_USER_AGENT_PC = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36";
 	public static final int screen_light_min = 20;// 屏幕亮度
 	public static final int screen_light_max = 255;// 屏幕亮度
+	public static final int voice_speed = 50;//默认的语音速度
 
 }

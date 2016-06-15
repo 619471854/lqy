@@ -250,4 +250,25 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 		lay.addView(v, new LinearLayout.LayoutParams(400, -2));
 		new MyAlertDialog(a).setView(lay).show();
 	}
+
+	public String getVoiceText() {
+		String text = pagefactory.getVoiceText();
+		int i = 0;// 防止死循环，如果每章的内容都为""，可能会死循环
+		while (text == null && i < 10) {
+			i++;
+			try {
+				pagefactory.nextPage();
+			} catch (IOException e) {
+			}
+			if (pagefactory.islastPage()) {
+				return "此书已完结.....................................................................................";
+			}
+			text = pagefactory.getVoiceText();
+		}
+		pagefactory.draw(canvas);
+		mPageWidget.setCurrentBitmap(bmp);
+		mPageWidget.invalidate();
+
+		return text;
+	}
 }

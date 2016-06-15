@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.lqy.abook"
+    android:id="@+id/read_menu_light_lay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:background="@drawable/read_menu_bg"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            style="@style/item_text"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:clickable="false"
+            android:paddingLeft="0dp"
+            android:text="采用系统亮度" />
+
+        <com.lqy.abook.widget.MySwitch
+            android:id="@+id/read_menu_light_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <View style="@style/item_line" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/light_0" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/light_255" />
+
+        <SeekBar
+            android:id="@+id/read_menu_light_seek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:max="235"
+            android:thumb="@drawable/seekbar_image" />
+    </RelativeLayout>
+
+    <View style="@style/item_line" />
+
+    <RadioGroup
+        android:id="@+id/read_menu_mode_rg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:orientation="horizontal" >
+
+        <com.lqy.abook.widget.FontRadioButton
+            android:id="@+id/read_menu_mode_white"
+            style="@style/font_btn"
+            android:checked="true"
+            app:fontMode="white" />
+
+        <com.lqy.abook.widget.FontRadioButton
+            android:id="@+id/read_menu_mode_brown"
+            style="@style/font_btn"
+            app:fontMode="brown" />
+
+        <com.lqy.abook.widget.FontRadioButton
+            android:id="@+id/read_menu_mode_green"
+            style="@style/font_btn"
+            app:fontMode="green" />
+
+        <com.lqy.abook.widget.FontRadioButton
+            android:id="@+id/read_menu_mode_custom"
+            style="@style/font_btn"
+            android:layout_marginRight="0dp"
+            android:text="自定"
+            app:fontMode="custom" />
+    </RadioGroup>
+
+</LinearLayout>

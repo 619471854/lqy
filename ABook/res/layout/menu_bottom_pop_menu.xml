@@ -9,18 +9,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#d6d6d6"
+        android:background="#ededed"
         android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/item_height"
+            android:background="#fafafa"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="慢速"
+                android:textColor="#ff887766"
+                android:textSize="16sp" />
+
+            <SeekBar
+                android:id="@+id/read_menu_light_seek"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="100"
+                android:thumb="@drawable/seekbar_image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="10dp"
+                android:text="快速"
+                android:textColor="#ff887766"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/pop_cancel"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            style="@style/btn_txt_big"
             android:layout_marginTop="5dp"
-            android:clickable="true"
-            android:gravity="center"
-            android:text="@string/abolish"
-            android:textSize="18sp" />
+            android:background="@drawable/btn_gray"
+            android:text="退出听书模式" />
     </LinearLayout>
 
 </RelativeLayout>

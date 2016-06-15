@@ -6,7 +6,9 @@ import java.util.List;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.ToggleButton;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
@@ -28,33 +31,81 @@ import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
+import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.VoiceUtils;
 import com.lqy.abook.widget.FontRadioButton;
 import com.lqy.abook.widget.MySwitch;
 
 public class ReadMenuActivity extends MenuActivity {
 
+	private VoiceUtils voiceUtils;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.read_menu);
+
+		findView();
 		init();
+		voiceUtils = new VoiceUtils(this);
 	}
 
 	private LinearLayout menuLay_update;
 	private LinearLayout menuLay_bg;
 	private LinearLayout menuLay_font;
 	private LinearLayout menuLay_more;
+	private LinearLayout menuLay_voice;
+	private LinearLayout menuLay_bottom;
+	private LinearLayout menuLay_top;
 	private View menuLay;
 	private CheckBox menu_update;
 	private ImageView menu_stop;
 	private CheckBox menu_bg;
 	private CheckBox menu_font;
-	private MySwitch mySwitch;
-	private SeekBar seekbar;
+	private MySwitch mySwitch;// 是否系统亮度
+	private SeekBar seekbar_font;
+	private ToggleButton btn_voicePause;
+	private SeekBar seekbar_voice;
+	private View btn_voice;
 	private View btn_last;
 	private View btn_next;
+	private View btn_cancel;
+	private View btn_dir;
+
+	private void findView() {
+		btn_dir = findViewById(R.id.read_menu_directory);
+		btn_cancel = findViewById(R.id.read_menu_cancel);
+		btn_last = findViewById(R.id.read_menu_last);
+		btn_next = findViewById(R.id.read_menu_next);
+		btn_last.setEnabled(Cache.hasLastChapter());
+		btn_next.setEnabled(Cache.hasNextChapter());
+
+		menuLay_update = (LinearLayout) findViewById(R.id.read_menu_update_lay);
+		menuLay_bg = (LinearLayout) findViewById(R.id.read_menu_light_lay);
+		menuLay_font = (LinearLayout) findViewById(R.id.read_menu_font_lay);
+		menuLay_more = (LinearLayout) findViewById(R.id.read_menu_more_lay);
+		menuLay_voice = (LinearLayout) findViewById(R.id.read_menu_voice_lay);
+		menuLay_bottom = (LinearLayout) findViewById(R.id.read_menu_bottom_lay);
+		menuLay_top = (LinearLayout) findViewById(R.id.read_menu_top_lay);
+
+		menuLay_update.setVisibility(View.GONE);
+		menuLay_bg.setVisibility(View.GONE);
+		menuLay_font.setVisibility(View.GONE);
+		menuLay_more.setVisibility(View.GONE);
+		menuLay_voice.setVisibility(View.GONE);
+
+		menu_update = (CheckBox) findViewById(R.id.read_menu_update);
+		menu_stop = (ImageView) findViewById(R.id.read_menu_stop);
+		menu_bg = (CheckBox) findViewById(R.id.read_menu_bg);
+		menu_font = (CheckBox) findViewById(R.id.read_menu_font);
+		mySwitch = (MySwitch) findViewById(R.id.read_menu_light_check);
+		seekbar_font = (SeekBar) findViewById(R.id.read_menu_light_seek);
+		btn_voice = findViewById(R.id.read_menu_voice);
+		btn_voicePause = (ToggleButton) findViewById(R.id.read_voice_pause);
+		seekbar_voice = (SeekBar) findViewById(R.id.read_voice_speed);
+	}
 
 	private void init() {
 		// 获取初始值
@@ -69,25 +120,7 @@ public class ReadMenuActivity extends MenuActivity {
 		}
 		if (mode == null)
 			mode = FontMode.getDefault();
-		// 菜单
-		btn_last = findViewById(R.id.read_menu_last);
-		btn_next = findViewById(R.id.read_menu_next);
-		btn_last.setEnabled(Cache.hasLastChapter());
-		btn_next.setEnabled(Cache.hasNextChapter());
 
-		menuLay_update = (LinearLayout) findViewById(R.id.read_menu_update_lay);
-		menuLay_bg = (LinearLayout) findViewById(R.id.read_menu_light_lay);
-		menuLay_font = (LinearLayout) findViewById(R.id.read_menu_font_lay);
-		menuLay_more = (LinearLayout) findViewById(R.id.read_menu_more_lay);
-		menuLay_update.setVisibility(View.GONE);
-		menuLay_bg.setVisibility(View.GONE);
-		menuLay_font.setVisibility(View.GONE);
-		menuLay_more.setVisibility(View.GONE);
-
-		menu_update = (CheckBox) findViewById(R.id.read_menu_update);
-		menu_stop = (ImageView) findViewById(R.id.read_menu_stop);
-		menu_bg = (CheckBox) findViewById(R.id.read_menu_bg);
-		menu_font = (CheckBox) findViewById(R.id.read_menu_font);
 		// 选择当前的背景颜色设置按钮
 		RadioGroup fontModeRg = (RadioGroup) findViewById(R.id.read_menu_mode_rg);
 		fontModeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -129,9 +162,7 @@ public class ReadMenuActivity extends MenuActivity {
 			break;
 		}
 		// 亮度
-		mySwitch = (MySwitch) findViewById(R.id.read_menu_light_check);
-		seekbar = (SeekBar) findViewById(R.id.read_menu_light_seek);
-		seekbar.setMax(CONSTANT.screen_light_max - CONSTANT.screen_light_min);
+		seekbar_font.setMax(CONSTANT.screen_light_max - CONSTANT.screen_light_min);
 		mySwitch.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -139,10 +170,10 @@ public class ReadMenuActivity extends MenuActivity {
 					ReadActivity.getInstance().setLight(mySwitch.isChecked());
 			}
 		});
-		seekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+		seekbar_font.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 			public void onStopTrackingTouch(SeekBar seekBar) {
 				if (ReadActivity.getInstance() != null)
-					ReadActivity.getInstance().setLight(seekbar.getProgress() + CONSTANT.screen_light_min);
+					ReadActivity.getInstance().setLight(seekbar_font.getProgress() + CONSTANT.screen_light_min);
 			}
 
 			public void onStartTrackingTouch(SeekBar seekBar) {
@@ -151,13 +182,13 @@ public class ReadMenuActivity extends MenuActivity {
 
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				if (ReadActivity.getInstance() != null)
-					ReadActivity.getInstance().setLightNotSave(seekbar.getProgress() + CONSTANT.screen_light_min, mySwitch.isChecked());
+					ReadActivity.getInstance().setLightNotSave(seekbar_font.getProgress() + CONSTANT.screen_light_min, mySwitch.isChecked());
 			}
 		});
 		if (isSystemLight) {
 			mySwitch.setChecked(true);
 		} else
-			seekbar.setProgress(light);
+			seekbar_font.setProgress(light);
 		if (AsyncTxtLoader.isRunning(Cache.getBook().getId())) {
 			menu_update.setVisibility(View.GONE);
 			menu_stop.setVisibility(View.VISIBLE);
@@ -165,6 +196,30 @@ public class ReadMenuActivity extends MenuActivity {
 			menu_update.setVisibility(View.VISIBLE);
 			menu_stop.setVisibility(View.GONE);
 		}
+		// 语音
+		seekbar_voice.setMax(100);
+		seekbar_voice.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				voiceUtils.setVoiceSpeed(seekbar_voice.getProgress());
+			}
+
+			public void onStartTrackingTouch(SeekBar seekBar) {
+			}
+
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+			}
+		});
+		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_READ, 0);
+		seekbar_voice.setProgress(sp.getInt("speed", CONSTANT.voice_speed));
+
+		btn_voice.setOnLongClickListener(new View.OnLongClickListener() {
+
+			@Override
+			public boolean onLongClick(View v) {
+				voiceUtils.onlongClick(startVoiceCb);
+				return true;
+			}
+		});
 	}
 
 	public void sendButtonClick(View v) {
@@ -205,7 +260,15 @@ public class ReadMenuActivity extends MenuActivity {
 			if (ReadActivity.getInstance() != null)
 				ReadActivity.getInstance().cancelButtonClick(v);
 		case R.id.read_menu_conext:
-			if (menuLay == null) {
+			if (!btn_voice.isEnabled()) {// 正在播放语音
+				if (menuLay_voice.getVisibility() == View.GONE) {
+					menuLay_voice.setVisibility(View.VISIBLE);
+					menuLay_top.setVisibility(View.VISIBLE);
+				} else {
+					menuLay_voice.setVisibility(View.GONE);
+					menuLay_top.setVisibility(View.GONE);
+				}
+			} else if (menuLay == null) {
 				cancelButtonClick(v);
 			} else {
 				menuLay.setVisibility(View.GONE);
@@ -216,6 +279,20 @@ public class ReadMenuActivity extends MenuActivity {
 			}
 			break;
 		case R.id.read_menu_voice:
+			voiceUtils.startVoice(startVoiceCb);
+			break;
+		case R.id.read_voice_exit:
+			voiceUtils.stopVoice();
+			cancelButtonClick(null);
+			break;
+		case R.id.read_voice_pause:
+			if (btn_voicePause.isChecked())
+				voiceUtils.resumeVoice();
+			else
+				voiceUtils.pauseVoice();
+			break;
+		case R.id.read_voice_voicer:
+			voiceUtils.setVoicer();
 			break;
 		case R.id.read_menu_last:
 			if (Cache.toLastChapter() && ReadActivity.getInstance() != null)
@@ -299,8 +376,40 @@ public class ReadMenuActivity extends MenuActivity {
 		}
 	}
 
+	private CallBackListener startVoiceCb = new CallBackListener() {
+		@Override
+		public void callBack(String... params) {
+			btn_cancel.setVisibility(View.INVISIBLE);
+			btn_dir.setVisibility(View.INVISIBLE);
+			btn_voice.setEnabled(false);
+			if (menuLay != null)
+				menuLay.setVisibility(View.GONE);
+			menuLay_bottom.setVisibility(View.GONE);
+			menuLay_top.setVisibility(View.GONE);
+		}
+	};
+
 	public void cancelButtonClick(View v) {
 		finish();
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (!btn_voice.isEnabled()) {// 正在播放语音
+				if (menuLay_voice.getVisibility() == View.GONE) {
+					menuLay_voice.setVisibility(View.VISIBLE);
+					menuLay_top.setVisibility(View.VISIBLE);
+				} else {
+					menuLay_voice.setVisibility(View.GONE);
+					menuLay_top.setVisibility(View.GONE);
+				}
+				return true;
+			} else {
+				return super.onKeyUp(keyCode, event);
+			}
+		}
+		return super.onKeyUp(keyCode, event);
 	}
 
 	private void showMenuLay(View _menuLay) {
@@ -490,5 +599,18 @@ public class ReadMenuActivity extends MenuActivity {
 			}
 			finish();
 		}
+	}
+
+	public String getVoiceText() {
+		if (ReadActivity.getInstance() != null)
+			return ReadActivity.getInstance().getVoiceText(voiceUtils);
+		finish();
+		return null;
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		voiceUtils.onDestroy();
 	}
 }

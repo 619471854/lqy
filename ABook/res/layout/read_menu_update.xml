@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/read_menu_update_lay"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="2dp"
+    android:layout_marginLeft="2dp"
+    android:background="@drawable/read_menu_bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/read_menu_update1"
+        style="@style/item_text"
+        android:drawableLeft="@drawable/update_nor"
+        android:onClick="sendButtonClick"
+        android:text="重新下载本章" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_update2"
+        style="@style/item_text"
+        android:drawableLeft="@drawable/download"
+        android:onClick="sendButtonClick"
+        android:text="下载本章及后续章节" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_update3"
+        style="@style/item_text"
+        android:drawableLeft="@drawable/changesrc"
+        android:onClick="sendButtonClick"
+        android:text="手工选择下载点" />
+
+</LinearLayout>

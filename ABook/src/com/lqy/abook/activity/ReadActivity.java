@@ -34,6 +34,7 @@ import com.lqy.abook.tool.LightUtils;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.VoiceUtils;
 
 public class ReadActivity extends MenuActivity {
 	private TurnUtil turnUtil;
@@ -46,6 +47,8 @@ public class ReadActivity extends MenuActivity {
 	private SharedPreferences sp;
 	private static ReadActivity instance;
 	private BookDao dao = new BookDao();
+
+	private VoiceUtils voiceUtils;
 
 	public static ReadActivity getInstance() {
 		if (instance == null || instance.isFinishing())
@@ -117,6 +120,8 @@ public class ReadActivity extends MenuActivity {
 		if (chapter != null && chapter.isVip()) {
 			// 此章是VIP章节，请换源下载
 			turnUtil.showChapterText(chapter, book.getId(), 0);
+			if (voiceUtils != null)
+				voiceUtils.startVoiceAfterGetChapter();
 			showInfo();
 			return;
 		}
@@ -186,6 +191,8 @@ public class ReadActivity extends MenuActivity {
 			break;
 		case 4: // 获取目录失败，请换源下载
 			turnUtil.showChapterText(null, book.getId(), 0);
+			if (voiceUtils != null)
+				voiceUtils.startVoiceAfterGetChapter();
 			break;
 		default:
 
@@ -198,6 +205,8 @@ public class ReadActivity extends MenuActivity {
 	 */
 	public void updateText() {
 		turnUtil.showChapterText(chapter, book.getId(), book.getReadBegin());
+		if (voiceUtils != null)
+			voiceUtils.startVoiceAfterGetChapter();
 		showInfo();
 	}
 
@@ -405,5 +414,10 @@ public class ReadActivity extends MenuActivity {
 		} else {
 			LightUtils.setScreenBrightness(_this, light);
 		}
+	}
+
+	public String getVoiceText(VoiceUtils voiceUtils) {
+		this.voiceUtils = voiceUtils;
+		return turnUtil.getVoiceText();
 	}
 }

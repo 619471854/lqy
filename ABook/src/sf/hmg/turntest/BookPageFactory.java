@@ -21,6 +21,7 @@ import com.lqy.abook.load.Cache;
 import com.lqy.abook.tool.DisplayUtil;
 import com.lqy.abook.tool.GlobalConfig;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.Util;
 
 public class BookPageFactory {
 	private ReadActivity activity;
@@ -43,6 +44,7 @@ public class BookPageFactory {
 	private int m_statusColor = 0xff9f8268;// 进度条等颜色
 	private int m_backColor = 0xffe7cfad; // 背景颜色
 	private int m_textColor = 0xff423829;
+	private final int m_textSelectedColor = 0xaaaaaaaa;//选中行颜色
 	private int marginWidth = 20; // 左右与边缘的距离
 	private int marginTop = 40; // 上下与边缘的距离
 	private int marginBottom = 40; // 上下与边缘的距离
@@ -57,6 +59,9 @@ public class BookPageFactory {
 	// private int m_nLineSpaceing = 5;
 
 	private Paint mPaint;
+
+	private int paragraphStartLine = -1; // 当前正在听书的段落起始行
+	private int paragraphEndLine = -1; // 当前正在听书的段落结束行
 
 	public BookPageFactory(ReadActivity activity, int w, int h) {
 		this.activity = activity;
@@ -118,6 +123,7 @@ public class BookPageFactory {
 		toLast = false;
 		return false;
 	}
+
 	public void setLoading() {
 		textType = TextType.LOADING;
 	}
@@ -210,6 +216,8 @@ public class BookPageFactory {
 	}
 
 	protected Vector<String> pageDown() {
+		paragraphStartLine = -1;
+		paragraphEndLine = -1;
 		String strParagraph = "";
 		Vector<String> lines = new Vector<String>();
 		while (lines.size() < mLineCount && m_mbBufEnd < m_mbBufLen) {
@@ -235,7 +243,10 @@ public class BookPageFactory {
 			}
 			while (strParagraph.length() > 0) {
 				int nSize = mPaint.breakText(strParagraph, true, mVisibleWidth, null);
-				lines.add(strParagraph.substring(0, nSize));
+				String line = strParagraph.substring(0, nSize);
+				if (nSize >= strParagraph.length())
+					line = line + "\n";// 用于判断段落
+				lines.add(line);
 				strParagraph = strParagraph.substring(nSize);
 				if (lines.size() >= mLineCount) {
 					break;
@@ -354,6 +365,45 @@ public class BookPageFactory {
 			ReadActivity.getInstance().updateReadLoation(m_mbBufBegin);
 	}
 
+	/**
+	 * 获取当前行，不能返回空字符串
+	 */
+	public String getVoiceText() {
+		if (m_mbBuf == null || textType != textType.PATH) {// 文件未找到
+			if (textType == textType.NOTDIR) {
+				return "获取目录失败，请换源下载";
+			} else if (textType == textType.LOADING || textType == textType.DEFAULT) {
+				return "加载中，请稍等";
+			} else if (textType == textType.VIP) {
+				return "此章是VIP章节，请换源下载";
+			} else {
+				return "获取章节失败";
+			}
+		}
+		if (m_lines.size() == 0)
+			m_lines = pageDown();
+
+		// 获取一个段落
+		StringBuilder sb = new StringBuilder();
+		String line;
+		paragraphStartLine = paragraphEndLine + 1;
+		paragraphEndLine = paragraphStartLine;
+		int start = paragraphStartLine;
+		while (start < m_lines.size() - 1) {
+			line = m_lines.get(start);
+			sb.append(line);
+			start++;
+			if (line.indexOf("\n") != -1) {
+				break;
+			}
+		}
+		paragraphEndLine = start - 1;
+
+		if (sb.length() == 0)
+			return null;
+		return sb.toString();
+	}
+
 	public void draw(Canvas c) {
 		if (m_book_bg == null)
 			c.drawColor(m_backColor);
@@ -375,14 +425,27 @@ public class BookPageFactory {
 			return;
 		}
 		mPaint.setTextAlign(Align.LEFT);
-		mPaint.setColor(m_textColor);
 		if (m_lines.size() == 0)
 			m_lines = pageDown();
+
+		int lineHeight = (int) (lineSpacingMultiplier * m_fontSize);
+		
+		if (paragraphStartLine != -1 && paragraphEndLine != -1) {
+			mPaint.setColor(m_textSelectedColor);
+			int p=(int)( m_fontSize *(lineSpacingMultiplier-0.7)/2);//0.7取的标准线处于字体的大概位置，实际上有更复杂的算法
+			int top = marginTop + lineHeight * paragraphStartLine + p;
+			int bottom = marginTop + lineHeight * paragraphEndLine + lineHeight +p;
+			c.drawRect(0, top, mWidth, bottom, mPaint);
+			mPaint.setColor(m_textColor);
+		}
+		mPaint.setColor(m_textColor);
+
 		if (m_lines.size() > 0) {
 			MyLog.i("drawImg " + m_lines.get(0));
 			int y = marginTop;
-			int lineHeight = (int) (lineSpacingMultiplier * m_fontSize);
-			for (String strLine : m_lines) {
+			int size = m_lines.size();
+			for (int i = 0; i < size; i++) {
+				String strLine = m_lines.get(i);
 				y += lineHeight;
 				c.drawText(strLine, marginWidth, y, mPaint);
 			}
@@ -423,8 +486,8 @@ public class BookPageFactory {
 				for (int x = 0; x < mWidth;) {
 					for (int y = 0; y < mHeight;) {
 						if (y + h > mHeight || x + w > mWidth) {
-							Rect s = new Rect(0, 0, mWidth - x,mHeight - y);
-							Rect d = new Rect(x, y, mWidth , mHeight);
+							Rect s = new Rect(0, 0, mWidth - x, mHeight - y);
+							Rect d = new Rect(x, y, mWidth, mHeight);
 							c.drawBitmap(m_book_bg, s, d, null);
 						} else {
 							c.drawBitmap(m_book_bg, x, y, null);

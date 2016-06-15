@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/read_menu_voice_lay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@drawable/read_menu_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ToggleButton
+            android:id="@+id/read_voice_pause"
+            style="@style/toolbar_btn_check"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:checked="true"
+            android:onClick="sendButtonClick"
+            android:textColor="#877667"
+            android:textOff="开始"
+            android:textOn="暂停"
+            android:textSize="16sp" />
+
+        <View
+            style="@style/item_line"
+            android:layout_width="1px"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/read_voice_voicer"
+            style="@style/toolbar_btn_txt"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="选择发音人" />
+    </LinearLayout>
+
+    <View style="@style/item_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@drawable/read_menu_bg"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="慢速"
+            android:textColor="#aaaaaa"
+            android:textSize="16sp" />
+
+        <SeekBar
+            android:id="@+id/read_voice_speed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="100"
+            android:thumb="@drawable/seekbar_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="10dp"
+            android:text="快速"
+            android:textColor="#aaaaaa"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/read_voice_exit"
+        style="@style/btn_txt_big"
+        android:layout_height="@dimen/toolbar_height"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/btn_gray"
+        android:text="退出听书模式"
+        android:textColor="#877667" />
+
+</LinearLayout>

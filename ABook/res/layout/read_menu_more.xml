@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/read_menu_more_lay"
+    android:layout_width="150dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_marginBottom="2dp"
+    android:layout_marginRight="2dp"
+    android:background="@drawable/read_menu_bg"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/read_menu_baidu"
+        style="@style/item_text"
+        android:onClick="sendButtonClick"
+        android:text="百度搜索此章节" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_html"
+        style="@style/item_text"
+        android:onClick="sendButtonClick"
+        android:text="打开原网页" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_color"
+        style="@style/item_text"
+        android:onClick="sendButtonClick"
+        android:text="自定义颜色" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_del_cache"
+        style="@style/item_text"
+        android:onClick="sendButtonClick"
+        android:text="删除已读章节" />
+
+    <View style="@style/item_line" />
+
+    <TextView
+        android:id="@+id/read_menu_del_all"
+        style="@style/item_text"
+        android:onClick="sendButtonClick"
+        android:text="删除所有章节" />
+
+</LinearLayout>
