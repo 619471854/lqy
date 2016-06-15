@@ -44,7 +44,7 @@ public class BookPageFactory {
 	private int m_statusColor = 0xff9f8268;// 进度条等颜色
 	private int m_backColor = 0xffe7cfad; // 背景颜色
 	private int m_textColor = 0xff423829;
-	private final int m_textSelectedColor = 0xaaaaaaaa;//选中行颜色
+	private final int m_textSelectedColor = 0xaaaaaaaa;// 选中行颜色
 	private int marginWidth = 20; // 左右与边缘的距离
 	private int marginTop = 40; // 上下与边缘的距离
 	private int marginBottom = 40; // 上下与边缘的距离
@@ -389,7 +389,7 @@ public class BookPageFactory {
 		paragraphStartLine = paragraphEndLine + 1;
 		paragraphEndLine = paragraphStartLine;
 		int start = paragraphStartLine;
-		while (start < m_lines.size() - 1) {
+		while (start < m_lines.size()) {
 			line = m_lines.get(start);
 			sb.append(line);
 			start++;
@@ -429,12 +429,12 @@ public class BookPageFactory {
 			m_lines = pageDown();
 
 		int lineHeight = (int) (lineSpacingMultiplier * m_fontSize);
-		
+
 		if (paragraphStartLine != -1 && paragraphEndLine != -1) {
 			mPaint.setColor(m_textSelectedColor);
-			int p=(int)( m_fontSize *(lineSpacingMultiplier-0.7)/2);//0.7取的标准线处于字体的大概位置，实际上有更复杂的算法
+			int p = (int) (m_fontSize * (lineSpacingMultiplier - 0.7) / 2);// 0.7取的标准线处于字体的大概位置，实际上有更复杂的算法
 			int top = marginTop + lineHeight * paragraphStartLine + p;
-			int bottom = marginTop + lineHeight * paragraphEndLine + lineHeight +p;
+			int bottom = marginTop + lineHeight * paragraphEndLine + lineHeight + p;
 			c.drawRect(0, top, mWidth, bottom, mPaint);
 			mPaint.setColor(m_textColor);
 		}
