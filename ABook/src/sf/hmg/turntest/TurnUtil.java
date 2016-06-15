@@ -20,6 +20,7 @@ import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.GlobalConfig;
 import com.lqy.abook.tool.MyLog;
+import com.lqy.abook.tool.VoiceUtils;
 import com.lqy.abook.widget.MyAlertDialog;
 
 public class TurnUtil implements GestureDetector.OnGestureListener {
@@ -261,7 +262,7 @@ public class TurnUtil implements GestureDetector.OnGestureListener {
 			} catch (IOException e) {
 			}
 			if (pagefactory.islastPage()) {
-				return "此书已完结.....................................................................................";
+				return VoiceUtils.bookOver;
 			}
 			text = pagefactory.getVoiceText();
 		}

@@ -22,6 +22,9 @@ import com.lqy.abook.widget.MyAlertDialog;
 
 public class VoiceUtils {
 
+	public static final String bookOver = "此书已完结";
+	private boolean isOver = false;
+
 	private boolean isRunning;
 	private ReadMenuActivity activity;
 	private SpeechSynthesizer mTts;
@@ -33,6 +36,7 @@ public class VoiceUtils {
 	private String[] mCloudVoicersEntries;
 	private String[] mCloudVoicersValue;
 	private int selectedNum = 0;
+	private boolean isLocated = false;// 本地听书还是在线听书
 
 	public VoiceUtils(ReadMenuActivity activity) {
 		this.activity = activity;
@@ -121,6 +125,7 @@ public class VoiceUtils {
 	}
 
 	public void startVoice(CallBackListener cb, String text, boolean isLocated) {
+		this.isLocated = isLocated;
 		if (text == null) {
 			text = activity.getVoiceText();
 		}
@@ -129,6 +134,10 @@ public class VoiceUtils {
 			startVoice(cb, "加载中，请稍等", isLocated);
 			return;
 		}
+		if (bookOver.equals(text))
+			isOver = true;
+		else
+			isOver = false;
 		if (mTts == null) {
 			mTts = SpeechSynthesizer.createSynthesizer(activity, mTtsInitListener);
 		}
@@ -263,7 +272,8 @@ public class VoiceUtils {
 		public void onCompleted(SpeechError error) {
 			if (error == null) {
 				// showTip("播放完成");
-				startVoice(null, null, isInstalled());
+				if (!isOver)
+					startVoice(null, null, isLocated && isInstalled());
 			} else if (error != null) {
 				showTip(error.getPlainDescription(true));
 			}
