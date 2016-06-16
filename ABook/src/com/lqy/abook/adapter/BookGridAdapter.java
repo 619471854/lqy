@@ -268,7 +268,15 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
 					break;
-				case 7:// 删除
+				case 7:
+					intent = new Intent(activity, BrowserActivity.class);
+					intent.putExtra("title", e.getName());
+					intent.putExtra("url", "http://www.sodu.cc/result.html?searchstr=" + e.getName());
+					intent.putExtra("class", activity.getClass().getName());
+					activity.startActivity(intent);
+					activity.animationRightToLeft();
+					break;
+				case 8:// 删除
 					delete(e);
 					break;
 

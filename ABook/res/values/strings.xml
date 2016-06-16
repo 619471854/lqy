@@ -21,6 +21,7 @@
         <item>查看目录</item>
         <item>查看原网页</item>
         <item>百度搜索此小说</item>
+        <item>搜读搜索此小说</item>
         <item>删除</item>
     </string-array>
     <string-array name="update_menu">
