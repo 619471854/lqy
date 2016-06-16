@@ -35,29 +35,80 @@
         android:background="@drawable/read_menu_bg"
         android:orientation="vertical" >
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/my_center_del"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="删除所有数据" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_site"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="设置搜索界面可以搜索的网站" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/read_menu_bg"
+        android:orientation="vertical" >
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_height"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:paddingBottom="7dp"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp" >
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:text="启动时检查更新"
-                android:textColor="#ff7e6b5a"
-                android:textSize="16sp" />
+            android:paddingRight="10dp"
+            android:paddingTop="7dp" >
 
             <com.lqy.abook.widget.MySwitch
                 android:id="@+id/my_center_check_update"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:id="@+id/my_center_check_update_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/my_center_check_update"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="启动时检查更新"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/my_center_check_update_title"
+                android:layout_marginTop="0dp"
+                android:layout_toLeftOf="@id/my_center_check_update"
+                android:text="如果打开，启动应用时将自动检查更新，图片类型的除外"
+                android:textColor="@color/read_status"
+                android:textSize="12sp" />
+        </RelativeLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/my_center_exit"
+        style="@style/btn_txt_big"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_red_selector"
+        android:text="退出"
+        android:textColor="@color/white" />
 
 </LinearLayout>

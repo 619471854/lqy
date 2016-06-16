@@ -78,7 +78,7 @@
         style="@style/btn_txt_big"
         android:layout_height="@dimen/toolbar_height"
         android:layout_marginTop="2dp"
-        android:background="@drawable/btn_gray"
+        android:background="@drawable/btn_gray_selector"
         android:text="退出听书模式"
         android:textColor="#877667" />
 

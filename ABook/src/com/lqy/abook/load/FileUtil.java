@@ -21,7 +21,7 @@ import com.lqy.abook.tool.Util;
  */
 public class FileUtil {
 
-	private static final String APP_PATH = "/abook";// 路径
+	public static final String APP_PATH = "/abook";// 路径
 	private static final String ERROR_PATH = "/abook/error_log";// 日志
 	private static final String IMAGE_PATH = "/abook/image";// 图片路径
 	private static final String DB_PATH = "/abook/db";// 数据库

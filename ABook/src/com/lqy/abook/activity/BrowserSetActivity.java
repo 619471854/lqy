@@ -65,7 +65,7 @@ public class BrowserSetActivity extends MenuActivity {
 				public void onClick(DialogInterface dialog, int which) {
 
 					new HistoryDao().emptyHistory();
-					Util.dialog(_this, "历史纪录已清空");
+					Util.toast(_this, "历史纪录已清空");
 				}
 			});
 			break;
@@ -75,7 +75,7 @@ public class BrowserSetActivity extends MenuActivity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					clearWebViewCache();
-					Util.dialog(_this, "缓存已清空");
+					Util.toast(_this, "缓存已清空");
 				}
 			});
 			break;

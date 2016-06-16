@@ -48,7 +48,7 @@
             android:id="@+id/pop_cancel"
             style="@style/btn_txt_big"
             android:layout_marginTop="5dp"
-            android:background="@drawable/btn_gray"
+            android:background="@drawable/btn_gray_selector"
             android:text="退出听书模式" />
     </LinearLayout>
 

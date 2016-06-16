@@ -109,6 +109,9 @@ public class SearchActivity extends MenuActivity {
 			data.add(data.size() - 1, key);
 		hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
 		view_et.setAdapter(hintAdapter);
+		
+		//关闭键盘
+		Util.hideKeyboard(_this, view_et);
 	}
 
 	private int what = 1;
