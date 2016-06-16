@@ -31,14 +31,14 @@
             style="@style/toolbar_btn_img"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/btn_last_selector" />
+            android:src="@drawable/chapter_last_selector" />
 
         <ImageView
             android:id="@+id/read_menu_next"
             style="@style/toolbar_btn_img"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/btn_next_selector" />
+            android:src="@drawable/chapter_next_selector" />
 
         <ImageView
             android:id="@+id/read_menu_directory"

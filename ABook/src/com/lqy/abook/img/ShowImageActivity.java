@@ -49,7 +49,7 @@ public class ShowImageActivity extends MenuActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.image_show_more);
+		setContentView(R.layout.image_show);
 
 		init();
 
