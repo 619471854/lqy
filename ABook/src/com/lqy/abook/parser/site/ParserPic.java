@@ -20,7 +20,7 @@ public class ParserPic extends ParserOther {
 			String type = book.getExt() != null ? book.getExt().getEncodeType() : null;
 			String html = WebServer.getDataOnCookie(url, cookie, type);
 
-			MyLog.i("parserUrl ok  " + html.length());
+			MyLog.i(TAG, "parserUrl ok  " + html.length());
 			return parserImgs(url, html);
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -39,10 +39,10 @@ public class ParserPic extends ParserOther {
 				ImageTag node = (ImageTag) iterator.nextNode();
 				String imgUrl = node.getImageURL();
 				if (!Util.isEmpty(imgUrl) && imgUrl.equals(node.extractImageLocn()) && !imgUrl.equals(".gif")) {
-					urls.add(addDomain(url,baseUrl, imgUrl));
+					urls.add(addDomain(url, baseUrl, imgUrl));
 				}
 			}
-			MyLog.i("parserImgs  parserImgs ok  " + urls.size());
+			MyLog.i(TAG, "parserImgs ok  " + urls.size());
 			return urls;
 		} catch (Exception e) {
 			MyLog.e(e);

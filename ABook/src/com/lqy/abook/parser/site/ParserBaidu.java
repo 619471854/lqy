@@ -104,14 +104,14 @@ public class ParserBaidu extends ParserBase {
 			// book.setDirectoryUrl("http://m.baidu.com/tc?appui=alaxs&srct=zw&gid="
 			// + id + "&srd=1&src=" + src);
 			// if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-			// MyLog.i("ParserBaidu updateBookAndDict  此书没有更新");
+			// MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 			// return null;
 			// }
 			// List<ChapterEntity> chapters =
 			// parserBookDict(book.getDirectoryUrl());
 			// if (chapters == null || chapters.size() == 0) {
 			// book.setLoadStatus(LoadStatus.failed);
-			// MyLog.i("ParserBaidu updateBookAndDict getChapters failed");
+			// MyLog.i(TAG, "updateBookAndDict getChapters failed");
 			// return null;// 此书更新失败
 			// } else {
 			// return chapters;
@@ -127,7 +127,7 @@ public class ParserBaidu extends ParserBase {
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\" s-hover  xs-sum-short\" data-action=\"summary\"");
-			MyLog.i("ParserBaidu parserBookDetail getParserResult ok");
+			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toPlainTextString();
 				html = html.replaceAll("全部", CONSTANT.EMPTY);
@@ -253,7 +253,7 @@ public class ParserBaidu extends ParserBase {
 		// book.setWords(null);
 		book.setCompleted(matcher(html, config.completedReg).trim().equals("完结"));
 
-		MyLog.i("ParserBaidu search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}
@@ -294,7 +294,7 @@ public class ParserBaidu extends ParserBase {
 		// book.setWords(null);
 		book.setCompleted(matcher(html, config.completedReg).trim().equals("完结"));
 
-		MyLog.i("ParserBaidu search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		return book;
 	}
 

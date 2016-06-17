@@ -64,7 +64,7 @@ public abstract class ParserUtil {
 			return null;
 		if (childUrl.startsWith("http"))
 			return childUrl;
-		if (childUrl.startsWith("/")) {
+		if (childUrl.startsWith("/") && !Util.isEmpty(domain)) {
 			if (!Util.isEmpty(domain)) {
 				childUrl = domain + childUrl;
 			} else {
@@ -74,7 +74,9 @@ public abstract class ParserUtil {
 					childUrl = currentUrl + childUrl;
 			}
 		} else {
-			if (currentUrl.endsWith("/"))
+			if (currentUrl.endsWith(".html")) {
+				childUrl = currentUrl.substring(0, currentUrl.lastIndexOf("/") + 1) + childUrl;
+			} else if (currentUrl.endsWith("/"))
 				childUrl = currentUrl + childUrl;
 			else
 				childUrl = currentUrl + "/" + childUrl;
@@ -111,6 +113,8 @@ public abstract class ParserUtil {
 	}
 
 	public static String matcher(String html, String reg) {
+		if (reg == null)
+			return CONSTANT.EMPTY;
 		try {
 			Pattern p = Pattern.compile(reg);
 			Matcher m = p.matcher(html);
@@ -128,7 +132,7 @@ public abstract class ParserUtil {
 	protected NodeFilter createEqualFilter(final String reg) {
 		return new NodeFilter() {
 			public boolean accept(Node node) {
-				return node.getText().equals(reg);
+				return reg.equals(node.getText());
 			}
 		};
 	}
@@ -142,6 +146,8 @@ public abstract class ParserUtil {
 	}
 
 	protected static String matcher(String html, String reg, int count) {
+		if (reg == null)
+			return CONSTANT.EMPTY;
 		try {
 			Pattern p = Pattern.compile(reg);
 			Matcher m = p.matcher(html);
@@ -155,6 +161,8 @@ public abstract class ParserUtil {
 	}
 
 	protected static Matcher getMatcher(String html, String reg) {
+		if (reg == null)
+			return null;
 		try {
 			Pattern p = Pattern.compile(reg);
 			Matcher m = p.matcher(html);
@@ -168,6 +176,8 @@ public abstract class ParserUtil {
 	}
 
 	protected static int getMatcherCount(String html, String reg) {
+		if (reg == null)
+			return 0;
 		int count = 0;
 		try {
 			Pattern p = Pattern.compile(reg);

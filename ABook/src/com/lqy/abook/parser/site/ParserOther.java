@@ -48,7 +48,7 @@ public class ParserOther extends ParserBase {
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("ParserOther updateBookAndDict getChapters failed");
+				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				if (!Util.isEmpty(book.getFirstUrl())) {
@@ -111,7 +111,7 @@ public class ParserOther extends ParserBase {
 			if (Util.isEmpty(html))
 				html = WebServer.getDataOnCookie(url, ext.getCookie(), ext.getEncodeType());
 			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(LinkTag.class));
-			MyLog.i("ParserOther ParserBrowser parserOther ok " + ext.getEncodeType());
+			MyLog.i(TAG, "ParserBrowser parserBookDict ok " + ext.getEncodeType());
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			ChapterEntity e;
 			// 获取域名
@@ -159,7 +159,7 @@ public class ParserOther extends ParserBase {
 		try {
 			String html = WebServer.getDataOnCookie(url, ext.getCookie(), ext.getEncodeType());
 			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(BodyTag.class));
-			MyLog.i("ParserOther asynGetChapterDetail getParserResult ok");
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				// Node node = iterator.nextNode();
 				html = iterator.nextNode().toPlainTextString();

@@ -50,7 +50,7 @@ public class ParserQidian extends ParserBase {
 			}
 			return true;
 		} catch (Exception e) {
-			MyLog.i("ParserQidian parserSearch Search error " + e.toString());
+			MyLog.i(TAG, "parserSearch Search error " + e.toString());
 			return false;
 		}
 	}
@@ -72,7 +72,7 @@ public class ParserQidian extends ParserBase {
 				}
 			}
 		} catch (Exception e) {
-			MyLog.i("ParserQidian parserSearchSite error " + e.toString());
+			MyLog.i(TAG, "parserSearchSite error " + e.toString());
 		}
 		return null;
 	}
@@ -96,7 +96,7 @@ public class ParserQidian extends ParserBase {
 			else
 				book.setMatchWords(searchKey[0].length() + searchKey[1].length());
 
-			MyLog.i("ParserQidian search a book " + book.getName() + "  " + book.getAuthor());
+			MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 
 		} else if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return null;// 继续找第二本
@@ -136,7 +136,7 @@ public class ParserQidian extends ParserBase {
 				html1 = html.substring(j, k);
 				newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
 			}
-			MyLog.i("ParserQidian updateBook newChapter=" + newChapter);
+			MyLog.i(TAG, "updateBook newChapter=" + newChapter);
 			if (newChapter.equals(book.getNewChapter())) {
 				return false;// 此书没有更新
 			}
@@ -161,13 +161,13 @@ public class ParserQidian extends ParserBase {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i("ParserQidian updateBookAndDict  此书没有更新");
+				MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 				return null;
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("ParserQidian updateBookAndDict getChapters failed");
+				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				return chapters;
@@ -189,7 +189,7 @@ public class ParserQidian extends ParserBase {
 				}
 			};
 			SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), filter, encodeType);
-			MyLog.i("ParserQidian parserBookDetail getParserResult ok");
+			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();
 				if (node instanceof Span) {
@@ -215,7 +215,7 @@ public class ParserQidian extends ParserBase {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("li style='width:33%;' itemprop='chapter'"), encodeType);
-			MyLog.i("ParserQidian parserBookDict getParserResult ok");
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
 			while (iterator.hasMoreNodes()) {
 				Node node = iterator.nextNode();
@@ -241,13 +241,13 @@ public class ParserQidian extends ParserBase {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div class=\"bookreadercontent\""), encodeType);
-			MyLog.i("ParserQidian asynGetChapterDetail getParserResult ok");
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				Matcher m = getMatcher(html, "<script\\ssrc='([^']+)'\\s*charset='([^']+)'");
 				if (m == null)
 					return null;
-				MyLog.i("ParserQidian asynGetChapterDetail " + m.group(1));
+				MyLog.i(TAG, "asynGetChapterDetail " + m.group(1));
 
 				String text = WebServer.hcGetData(m.group(1), m.group(2));
 				m = getMatcher(text, "^document.write\\('([\\s\\S]+)'\\);$");

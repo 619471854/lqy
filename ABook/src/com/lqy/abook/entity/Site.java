@@ -1,25 +1,18 @@
 package com.lqy.abook.entity;
 
 import com.lqy.abook.parser.ParserBase;
-import com.lqy.abook.parser.site.Parser00ks;
-import com.lqy.abook.parser.site.Parser16K;
-import com.lqy.abook.parser.site.Parser17K;
-import com.lqy.abook.parser.site.ParserBaidu;
-import com.lqy.abook.parser.site.ParserOther;
-import com.lqy.abook.parser.site.ParserPic;
-import com.lqy.abook.parser.site.ParserQidian;
-import com.lqy.abook.parser.site.ParserSM;
-import com.lqy.abook.parser.site.ParserShuyue;
+import com.lqy.abook.parser.site.*;
 import com.lqy.abook.tool.CONSTANT;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic,_00kw;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB;
 
 	public static Site getDefault() {
 		return Other;
 	}
 
-	public static Site[] searchSite = new Site[] { Site.SM, Site.Shuyue,Site._00kw, Site._17K, Site._16K, Site.Qidian };
+	public static Site[] searchSite = new Site[] { Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site._17K, Site._16K, Site.Qidian };
+//	public static Site[] searchSite = new Site[] { Site.DSB };
 
 	/**
 	 * 是否支持更新
@@ -60,6 +53,8 @@ public enum Site {
 			return new ParserShuyue();
 		case _00kw:
 			return new Parser00ks();
+		case DSB:
+			return new ParserDSB();
 		case Pic:
 			return new ParserPic();
 		default:
@@ -82,7 +77,9 @@ public enum Site {
 		case Shuyue:
 			return "书阅屋";
 		case _00kw:
-			return "零点看书屋";
+			return "零点看书";
+		case DSB:
+			return "大书包";
 		case Pic:
 			return CONSTANT.EMPTY;
 		default:

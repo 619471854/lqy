@@ -75,13 +75,13 @@ public class Parser16K extends ParserBase {
 		if (html == null)
 			return false;
 		try {
-			MyLog.i("Parser16K Search  parseHtmlByWebView ok");
+			MyLog.i(TAG, "Search  parseHtmlByWebView ok");
 			int index = html.indexOf("===");
 			String resultUrl = html.substring(0, index);// 搜索结果的url地址
 			html = html.substring(index + 3);
 			if (resultUrl.equals(config.searchUrl)) {// search html
 				SimpleNodeIterator iterator = getParserResult(html, config.searchFilter);
-				MyLog.i("Parser16K Search ok,parsering");
+				MyLog.i(TAG, "Search ok,parsering");
 				int count = 0;
 				while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
 					html = iterator.nextNode().toHtml();
@@ -91,7 +91,7 @@ public class Parser16K extends ParserBase {
 				}
 			} else {// 如果只有1本，取出的是目录界面
 				SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-				MyLog.i("Parser16K Search ok is directory");
+				MyLog.i(TAG, "Search ok is directory");
 				if (iterator.hasMoreNodes()) {
 					html = iterator.nextNode().toHtml();
 					BookEntity book = processSearchDirectNode(html, resultUrl);
@@ -109,7 +109,7 @@ public class Parser16K extends ParserBase {
 	public boolean updateBook(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"hotTag\"");
-			MyLog.i("Parser16K updateBook getParserResult ok");
+			MyLog.i(TAG, "updateBook getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
@@ -131,7 +131,7 @@ public class Parser16K extends ParserBase {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"wrap\"");
-			MyLog.i("Parser16K updateBookAndDict getParserResult ok");
+			MyLog.i(TAG, "updateBookAndDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				iterator = getParserResult(html, "div class=\"hotTag\"");
@@ -139,20 +139,20 @@ public class Parser16K extends ParserBase {
 					String detail = iterator.nextNode().toHtml();
 					String newChapter = matcher(detail, config.newChapterReg2).trim().replaceAll("\\s", " ");
 					if (newChapter.equals(book.getNewChapter())) {
-						MyLog.i("Parser16K updateBookAndDict  此书没有更新");
+						MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 						return null;// 此书没有更新
 					}
 					book.setLoadStatus(LoadStatus.hasnew);
 					book.setNewChapter(newChapter);
 				} else {
-					MyLog.i("Parser16K updateBookAndDict getNewChapter failed");
+					MyLog.i(TAG, "updateBookAndDict getNewChapter failed");
 					book.setLoadStatus(LoadStatus.failed);
 					return null;// 此书更新失败
 				}
 				List<ChapterEntity> chapters = parserBookDict(html);
 				if (chapters == null || chapters.size() == 0) {
 					book.setLoadStatus(LoadStatus.failed);
-					MyLog.i("Parser16K updateBookAndDict getChapters failed");
+					MyLog.i(TAG, "updateBookAndDict getChapters failed");
 					return null;// 此书更新失败
 				} else {
 					return chapters;
@@ -172,7 +172,7 @@ public class Parser16K extends ParserBase {
 				return true;// 从目录界面过来
 			// 从搜索列表过来，更新封面和tip
 			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\"one\"");
-			MyLog.i("Parser16K parserBookDetail getParserResult ok");
+			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				detail.setCover(matcher(html, config.coverReg));
@@ -189,7 +189,7 @@ public class Parser16K extends ParserBase {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = getParserResult(url, "dd");
-			MyLog.i("Parser16K parserBookDict getParserResult ok");
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity e;
 			String urlRoot = url.endsWith("/") ? url : url + '/';
 			while (iterator.hasMoreNodes()) {
@@ -212,7 +212,7 @@ public class Parser16K extends ParserBase {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div id=\"htmlContent\""), encodeType);
-			MyLog.i("Parser16K asynGetChapterDetail getParserResult ok");
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				html = html.replaceAll(Config.lineWrapReg, "\n");
@@ -273,7 +273,7 @@ public class Parser16K extends ParserBase {
 		book.setUpdateTime(matcher(html, config.updateTimeReg).trim());
 		book.setWords(Util.toInt(matcher(html, config.wordsReg)) * 1000);
 
-		MyLog.i("Parser16K search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}
@@ -297,7 +297,7 @@ public class Parser16K extends ParserBase {
 		// book.setType(null);
 		// book.setUpdateTime(null);
 
-		MyLog.i("Parser16K search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		return book;
 	}
 
@@ -312,7 +312,7 @@ public class Parser16K extends ParserBase {
 		BookEntity book = null;
 		try {
 			SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-			MyLog.i("Parser16K Search ok is directory");
+			MyLog.i(TAG, "Search ok is directory");
 			if (iterator.hasMoreNodes()) {
 				String detailHtml = iterator.nextNode().toHtml();
 				book = processSearchDirectNode(detailHtml, url);

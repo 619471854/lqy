@@ -11,6 +11,7 @@ public abstract class ParserBase extends ParserUtil {
 	protected static final int searchMaxSizeSite = 5;// 每个网站最多显示5本书
 	protected static final int MaxMatch = Integer.MAX_VALUE;// 最大的匹配值
 	protected Site site;
+	protected String TAG = getClass().getSimpleName();
 
 	// 搜索小说
 	public abstract boolean parserSearch(List<BookEntity> books, String key);

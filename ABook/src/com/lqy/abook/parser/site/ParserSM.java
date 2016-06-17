@@ -36,7 +36,7 @@ public class ParserSM extends ParserBase2 {
 	public boolean updateBook(BookEntity book) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(book.getDetailUrl(), "div id=\"content\"");
-			MyLog.i("ParserSM updateBook getParserResult ok");
+			MyLog.i(TAG, "updateBook getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
@@ -60,13 +60,13 @@ public class ParserSM extends ParserBase2 {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i("ParserSM updateBookAndDict  此书没有更新");
+				MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 				return null;
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("ParserSM updateBookAndDict getChapters failed");
+				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				return chapters;
@@ -82,7 +82,7 @@ public class ParserSM extends ParserBase2 {
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div id=\"content\"");
-			MyLog.i("ParserSM parserBookDetail getParserResult ok");
+			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY)
@@ -104,7 +104,7 @@ public class ParserSM extends ParserBase2 {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = getParserResult(url, "li");
-			MyLog.i("ParserSM parserBookDict getParserResult ok");
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
 			String urlRoot = "http://www.shenmaxiaoshuo.com";
 			while (iterator.hasMoreNodes()) {
@@ -134,7 +134,7 @@ public class ParserSM extends ParserBase2 {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(url, "div id=\"htmlContent\" class=\"contentbox\"");
-			MyLog.i("ParserSM asynGetChapterDetail getParserResult ok");
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				html = matcher(html, "<div\\s*class=\"ad250left\">(((?!</div>)[\\s\\S])+)</div>(((?!更多手打全文字章节请到)[\\s\\S])+)更多手打全文字章节请到", 3);
@@ -182,7 +182,7 @@ public class ParserSM extends ParserBase2 {
 		book.setNewChapter(matcher(html, config.newChapterReg).trim().replaceAll("\\s", " "));
 		book.setUpdateTime(matcher(html, config.updateTimeReg));
 
-		MyLog.i("ParserSM search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}

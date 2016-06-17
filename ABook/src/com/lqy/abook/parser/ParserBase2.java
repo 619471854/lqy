@@ -18,7 +18,7 @@ public abstract class ParserBase2 extends ParserBase {
 		Config config = getConfig();
 		try {
 			SimpleNodeIterator iterator = getParserResult(config.searchUrl + key, config.searchFilter);
-			MyLog.i("Search ok,parsering");
+			MyLog.i(TAG, "Search ok,parsering");
 			int count = 0;
 			String[] keys = key.split(" ");
 			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
@@ -43,7 +43,7 @@ public abstract class ParserBase2 extends ParserBase {
 		try {
 			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + " " + author, config.searchFilter);
 
-			MyLog.i("SearchSite ok,parsering");
+			MyLog.i(TAG, "SearchSite ok,parsering");
 			while (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				// 完全匹配到了1个就可以了
@@ -73,7 +73,7 @@ public abstract class ParserBase2 extends ParserBase {
 		String authorHtml = matcher(html, config.authorReg);
 		book.setAuthor(authorHtml.replaceAll(config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 
-		MyLog.i(" processSearchSiteNode a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "processSearchSiteNode a book " + book.getName() + "  " + book.getAuthor());
 
 		// 如果有作者，那么必须完全匹配
 		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {

@@ -3,6 +3,9 @@ package com.lqy.abook.parser.site;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
+import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
@@ -33,22 +36,23 @@ public class Parser17K extends ParserBase2 {
 	@Override
 	public boolean updateBook(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(book.getDetailUrl(), "div class=\"bookBox_r\"");
-			MyLog.i("Parser17K updateBook getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
-				if (newChapter.equals(book.getNewChapter())) {
-					return false;// 此书没有更新
-				}
-				book.setLoadStatus(LoadStatus.hasnew);
-				book.setNewChapter(newChapter);
-				book.setWords(Util.toInt(matcher(html, config.wordsReg2)));
-				// book.setUpdateTime(matcher(html, ));
-
-				book.setCompleted(matcher(html, config.completedReg).length() > 0);
-				return true;
+			String html = toHtml(parseNodeByUrl(book.getDetailUrl(), createEqualFilter("dl class=\"NewsChapter\""), encodeType));
+			MyLog.i(TAG, "updateBook getParserResult ok");
+			if (Util.isEmpty(html))
+				return false;
+			String newChapter = null;
+			SimpleNodeIterator iterator = parseHtml(html, createStartFilter("a href="));
+			while (iterator.hasMoreNodes()) {
+				LinkTag chapterNode = (LinkTag) iterator.nextNode();
+				newChapter = chapterNode.getLinkText().trim();
 			}
+			if (book.getNewChapter().equals(newChapter)) {
+				return false;// 此书没有更新
+			}
+			book.setLoadStatus(LoadStatus.hasnew);
+			book.setNewChapter(newChapter);
+			book.setWords(Util.toInt(matcher(html, config.wordsReg2)));
+
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
@@ -59,13 +63,13 @@ public class Parser17K extends ParserBase2 {
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
 			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i("Parser17K updateBookAndDict  此书没有更新");
+				MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 				return null;
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
 				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i("Parser17K updateBookAndDict getChapters failed");
+				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
 				return chapters;
@@ -79,28 +83,56 @@ public class Parser17K extends ParserBase2 {
 
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
+		return parserBookDetail(detail, null);
+	}
+
+	public boolean parserBookDetail(BookEntity detail, String allHtml) {
 		try {
 			if (Util.isEmpty(detail.getName())) {
-				SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), createStartFilter("div itemscope"), encodeType);
-				MyLog.i("Parser17K parserBookDetail getParserResult ok");
-				if (iterator.hasMoreNodes()) {
-					String html = iterator.nextNode().toHtml();
-					detail.setName(matcher(html, "<font\\s*itemprop=\"name\">(.+)</font>"));
-					detail.setAuthor(matcher(html, "<span\\s*itemprop=\"author\"[^<]+<span>[^<]+<a[^<]+<font itemprop=\"name\">(.+)</font></a>"));
-					detail.setCover(matcher(html, "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\""));
+				NodeFilter filter = createEqualFilter("div class=\"bLeft\"");
+				Node node = Util.isEmpty(allHtml) ? parseNodeByUrl(detail.getDetailUrl(), filter, encodeType) : parseNodeByHtml(allHtml, filter);
+				MyLog.i(TAG, "parserBookDetail getParserResult ok");
+				if (node != null)
+					node = node.getFirstChild();
+				while (node != null) {
+					String txt = node.getText();
+					if ("div class=\"BookInfo\"".equals(txt)) {
+						String html = node.toHtml();
+						detail.setName(matcher(html, "<img\\s*class=\"book\"\\s*src=\"[^\"]+\"\\s*alt=\"([^\"]+)\"/>"));
+						detail.setCover(matcher(html, "<img\\s*class=\"book\"\\s*src=\"([^\"]+)\""));
 
-					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
-					detail.setCompleted(matcher(html, config.completedReg).length() > 0);
-					detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
-					detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
-					detail.setUpdateTime(matcher(html, config.updateTimeReg2));
+						String tip = matcher(html, "<div\\s*class=\"cont\"\\s*style=\"display: block;\">\\s*<a[^>]+>(((?!</a>).)+)</a>");
+						detail.setTip(tip.replaceAll(Config.lineWrapReg, "\n"));
+						detail.setWords(Util.toInt(matcher(html, "<em\\s*class=\"red\">(\\d+)</em>")));
+
+						node = node.getNextSibling();
+					} else if ("dl class=\"NewsChapter\"".equals(txt)) {
+						String html = node.toHtml();
+						SimpleNodeIterator iterator = parseHtml(html, createStartFilter("a href="));
+						while (iterator.hasMoreNodes()) {
+							LinkTag chapterNode = (LinkTag) iterator.nextNode();
+							detail.setNewChapter(chapterNode.getLinkText().trim());
+						}
+						node = node.getParent().getNextSibling();
+					} else if ("div class=\"bRight\"".equals(txt)) {
+						node = node.getFirstChild();
+					} else if ("div class=\"AuthorInfo\"".equals(txt)) {
+						node = node.getFirstChild();
+					} else if ("div class=\"author\"".equals(txt)) {
+						detail.setAuthor(matcher(node.toHtml(), "<a\\s*class=\"name[^>]+>([^<]+)</a>").trim());
+						return true;
+					} else {
+						node = node.getNextSibling();
+					}
 				}
 			} else {
-				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"bookBox_r\"");
-				MyLog.i("Parser17K parserBookDetail getParserResult ok");
+				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"cont\" style=\"display: block;\"");
+				MyLog.i(TAG, "parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
-					String html = iterator.nextNode().toHtml();
-					detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+					String tip = iterator.nextNode().getChildren().elementAt(1).toHtml();
+					tip = matcher(tip, config.tipsDetailReg);
+					tip = tip.replaceAll(Config.lineWrapReg, "\n");
+					detail.setTip(tip);
 				}
 			}
 			return true;
@@ -109,29 +141,43 @@ public class Parser17K extends ParserBase2 {
 		}
 	}
 
-	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
+		return parserBookDict(url, null);
+	}
+
+	public List<ChapterEntity> parserBookDict(String url, String allHtml) {
+		if (Util.isEmpty(url))
+			return null;
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = getParserResult(url, "li");
-			MyLog.i("Parser17K parserBookDict getParserResult ok");
-			ChapterEntity e;
-			String urlRoot = "http://www.17k.com";
-			while (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				e = new ChapterEntity();
-				// e.setId(matcher(html, "id=\"tips_(\\d+)\"").replaceAll("\\s",
-				// CONSTANT.EMPTY));
-				e.setName(matcher(html, "tn=\"([^\"]+)\""));
-				boolean isVip = html.indexOf("<span class=\"red\">VIP</span>") != -1;
-				if (isVip) {
-					e.setLoadStatus(LoadStatus.vip);
-				} else {
-					e.setUrl(urlRoot + matcher(html, "href=\"([^\"]+)\""));
+			SimpleNodeIterator iterator = null;
+			NodeFilter filter = new NodeFilter() {
+				public boolean accept(Node node) {
+					return node instanceof LinkTag && "dd".equals(node.getParent().getText());
 				}
-				e.setId(chapters.size());
-				if (!Util.isEmpty(e.getName()))
-					chapters.add(e);
+			};
+			if (Util.isEmpty(allHtml))
+				iterator = parseUrl(url, filter, encodeType);
+			else
+				iterator = parseHtml(allHtml, filter);
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
+			ChapterEntity e;
+			while (iterator.hasMoreNodes()) {
+				Node node = iterator.nextNode();
+				if (node instanceof LinkTag) {
+					LinkTag tag = (LinkTag) node;
+					e = new ChapterEntity();
+					e.setName(tag.toPlainTextString().trim());
+					e.setId(chapters.size());
+					boolean isVip = tag.toHtml().indexOf("alt=\"vip\"") != -1;
+					if (isVip) {
+						e.setLoadStatus(LoadStatus.vip);
+					} else {
+						e.setUrl(tag.getLink());
+					}
+					if (!Util.isEmpty(e.getName()))
+						chapters.add(e);
+				}
 			}
 			return chapters;
 		} catch (Exception e) {
@@ -144,7 +190,7 @@ public class Parser17K extends ParserBase2 {
 	public String getChapterDetail(String url) {
 		try {
 			SimpleNodeIterator iterator = getParserResult(url, "div id=\"chapterContentWapper\"");
-			MyLog.i("Parser17K asynGetChapterDetail getParserResult ok");
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				html = matcher(html, "<div id=\"chapterContentWapper\">\\s*(((?!本书首发来自)[\\s\\S])+)");
@@ -192,7 +238,7 @@ public class Parser17K extends ParserBase2 {
 		book.setUpdateTime(matcher(html, config.updateTimeReg).trim());
 		book.setWords(Util.toInt(matcher(html, config.wordsReg)));
 
-		MyLog.i("Parser17K search a book " + book.getName() + "  " + book.getAuthor());
+		MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
 		books.add(book);
 		return true;
 	}
@@ -203,9 +249,19 @@ public class Parser17K extends ParserBase2 {
 	public BookAndChapters parserBrowser(String url, String html) {
 		// http://www.17k.com/list/40082.html
 		// http://h5.17k.com/list/391013.html
+		// http://h5.17k.com/book/391013.html
+		// http://www.17k.com/book/1398783.html
 		String id = matcher(url, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");
 		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.17k\\.com/book/(\\d+)\\.html$");
+		}
+		if (Util.isEmpty(id)) {
 			id = matcher(url, "^http://h5\\.17k\\.com/list/(\\d+)\\.html$");
+			html = null;
+		}
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://h5\\.17k\\.com/book/(\\d+)\\.html$");
+			html = null;
 		}
 		if (Util.isEmpty(id))
 			return null;
@@ -214,14 +270,9 @@ public class Parser17K extends ParserBase2 {
 		BookEntity book = new BookEntity();
 		book.setDetailUrl(detailUrl);
 		book.setDirectoryUrl(directUrl);
-		if (parserBookDetail(book)) {
+		if (parserBookDetail(book, detailUrl.equals(url) ? html : null)) {
 			book.setSite(site);
-			List<ChapterEntity> chaters = null;
-			if (url.equals(directUrl)) {
-				chaters = parserBookDict(html);
-			} else {
-				chaters = parserBookDict(directUrl);
-			}
+			List<ChapterEntity> chaters = parserBookDict(directUrl, directUrl.equals(url) ? html : null);
 			return new BookAndChapters(book, chaters);
 		}
 		return null;

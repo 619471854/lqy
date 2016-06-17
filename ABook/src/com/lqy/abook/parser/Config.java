@@ -44,13 +44,10 @@ public class Config {
 			_17K.typeReg = "<span>类别：<a[^>]+>(\\S+)</a></span>[\\s\\S]+字数";
 			_17K.wordsReg = "字数：\\s*<code>(\\d+)</code>";
 			_17K.tipsReg = "<li><strong>简介：</strong>\\s*<p>\\s*<a[^>]+>([\\s\\S]+)</a>\\s*</p>\\s*</li>[\\s\\S]+最近更新";
-			_17K.tipsDetailReg = "<font\\s*itemprop=\"description\">(((?!</font>).)+)</font>";
+			_17K.tipsDetailReg = "<a[^>]+>(((?!</a>).)+)</a>";
 			_17K.newChapterReg = "最近更新：</font>\\s*<a[^>]+>([^<]+)</a>";
 			_17K.updateTimeReg = "<cite>([\\d-\\s:]+)</cite>";
 			_17K.completedReg = "<font\\s*itemprop=\"updataStatus\">(此书已完成)</font>";
-			_17K.newChapterReg2 = "<font\\s*itemprop=\"headline\">([^<]+)</font>";
-			_17K.wordsReg2 = "<em\\s*itemprop=\"wordCount\">(\\d+)</em>";
-			_17K.updateTimeReg2 = "<span\\s*class=\"time\">更新：(\\d\\d\\d\\d-\\d\\d-\\d\\d)更新</span>";
 		}
 		return _17K;
 	}
@@ -182,6 +179,7 @@ public class Config {
 		}
 		return shuyue;
 	}
+
 	private static Config _00ks;
 
 	public static Config get00ksConfig() {
@@ -206,6 +204,30 @@ public class Config {
 		return _00ks;
 	}
 
+	private static Config dsb;
+
+	public static Config getdDsbConfig() {
+		if (dsb == null) {
+			dsb = new Config();
+			dsb.searchUrl = "http://so.dashubao.co/cse/search?click=1&entry=1&s=17492266668774909517&nsid=&q=";
+			dsb.searchFilter = "div class=\"result-item result-game-item\"";
+			dsb.detailUrlReg = null;
+			dsb.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";//列表和详情界面都用的这个
+			dsb.directoryUrlReg = null;
+			dsb.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
+			dsb.keyReg = null;// 搜索到的关键词
+			dsb.authorReg = "作者：</span>\\s*<span>\\s*(((?!</span>)[\\s\\S])+)</span>";
+			dsb.typeReg = "类型：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">([^<]+)</span>";
+			dsb.wordsReg2 = "<span>字数：(\\d+)</span>";
+			dsb.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
+			dsb.tipsDetailReg = "<div\\s*class=\"txtbox\">(((?!</div>)[\\s\\S])+)</div>";
+			dsb.newChapterReg = null;
+			dsb.newChapterReg2 = "<div\\s*class=\"lastzj\">[^<]+<a\\s*[^>]+>([^<]+)</a>";
+			dsb.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
+			dsb.completedReg = null;
+		}
+		return dsb;
+	}
 
 	private static Config _520;
 
