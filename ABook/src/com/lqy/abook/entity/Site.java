@@ -11,7 +11,8 @@ public enum Site {
 		return Other;
 	}
 
-	public static Site[] searchSite = new Site[] { Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site._17K, Site._16K, Site.Qidian };
+	public static Site[] allSearchSite = new Site[] { Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site._17K, Site._16K, Site.Qidian };
+	public static Site[] searchSite =allSearchSite;
 //	public static Site[] searchSite = new Site[] { Site.DSB };
 
 	/**

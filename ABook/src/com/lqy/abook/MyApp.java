@@ -1,15 +1,21 @@
 package com.lqy.abook;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.os.Message;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.iflytek.cloud.SpeechUtility;
+import com.lqy.abook.entity.Site;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.CrashHandler;
@@ -36,6 +42,8 @@ public class MyApp extends Application {
 		globalConfig();
 		// 科大讯飞语音
 		SpeechUtility.createUtility(this, "appid=" + CONSTANT.speech_appid);
+		// 搜索的网站
+		getSearchSite();
 
 		super.onCreate();
 	}
@@ -51,6 +59,30 @@ public class MyApp extends Application {
 		} catch (Exception e) {
 			CONSTANT.versionName = CONSTANT.EMPTY;
 		}
+	}
+
+	private void getSearchSite() {
+		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
+		try {
+			String text = sp.getString("site", null);
+			Type type = new TypeToken<List<Site>>() {
+			}.getType();
+			List<Site> sites = new Gson().fromJson(text, type);
+			Site.searchSite = sites.toArray(new Site[sites.size()]);
+		} catch (Exception e) {
+			MyLog.i(e);
+		}
+		if (Site.searchSite == null)
+			Site.searchSite = Site.allSearchSite;
+	}
+
+	public void saveSearchSite(List<Site> sites) {
+		if (sites == null || sites.size() == 0)
+			return;
+		Site.searchSite = sites.toArray(new Site[sites.size()]);
+
+		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
+		sp.edit().putString("site", new Gson().toJson(sites)).commit();
 	}
 
 	@Override
