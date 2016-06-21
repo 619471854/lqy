@@ -1,6 +1,5 @@
 package com.lqy.abook.tool;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -18,6 +17,7 @@ import com.iflytek.cloud.SynthesizerListener;
 import com.lqy.abook.R;
 import com.lqy.abook.activity.ReadMenuActivity;
 import com.lqy.abook.load.FileUtil;
+import com.lqy.abook.widget.ArrayDialog;
 import com.lqy.abook.widget.MyAlertDialog;
 
 public class VoiceUtils {
@@ -52,20 +52,32 @@ public class VoiceUtils {
 	}
 
 	public void setVoicer() {
-		if (isInstalled()) {
+		if (isInstalled() && isLocated) {
 			SpeechUtility.getUtility().openEngineSettings(SpeechConstant.ENG_TTS);
 		} else {
-			new AlertDialog.Builder(activity).setTitle("在线合成发音人选项").setSingleChoiceItems(mCloudVoicersEntries, // 单选框有几项,各是什么名字
-					selectedNum, // 默认的选项
-					new DialogInterface.OnClickListener() { // 点击单选框后的处理
-						public void onClick(DialogInterface dialog, int which) { // 点击了哪一项
-							voicer = mCloudVoicersValue[which];
-							selectedNum = which;
-							// dialog.dismiss();
+			// new
+			// AlertDialog.Builder(activity).setTitle("在线合成发音人选项").setSingleChoiceItems(mCloudVoicersEntries,
+			// // 单选框有几项,各是什么名字
+			// selectedNum, // 默认的选项
+			// new DialogInterface.OnClickListener() { // 点击单选框后的处理
+			// public void onClick(DialogInterface dialog, int which) { //
+			// 点击了哪一项
+			// voicer = mCloudVoicersValue[which];
+			// selectedNum = which;
+			// // dialog.dismiss();
+			// sp.edit().putString("voicer", voicer).commit();
+			// }
+			// }).show();
+			new ArrayDialog(activity).setTitle("在线合成发音人选项").setItems(mCloudVoicersEntries, selectedNum, new DialogInterface.OnClickListener() {
 
-							sp.edit().putString("voicer", voicer).commit();
-						}
-					}).show();
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					voicer = mCloudVoicersValue[which];
+					selectedNum = which;
+					// dialog.dismiss();
+					sp.edit().putString("voicer", voicer).commit();
+				}
+			}).show();
 		}
 	}
 

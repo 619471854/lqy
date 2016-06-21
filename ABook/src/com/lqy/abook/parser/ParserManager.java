@@ -108,9 +108,8 @@ public class ParserManager {
 			public void run() {
 				BookAndChapters result = null;
 				if (allParsers) {
-					List<ParserBase> parsers = getParsers(null);
-					for (ParserBase parser : parsers) {
-						result = parser.parserBrowser(url2, html);
+					for (Site s : Site.allSearchSite) {
+						result = s.getParser().parserBrowser(url2, html);
 						if (result != null) {
 							break;
 						}
