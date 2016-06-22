@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import com.lqy.abook.MenuActivity;
@@ -29,6 +30,9 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
+		Drawable drawable = FileUtil.loadDrawable(FileUtil.getAppPath(), "logo.jpg");
+		if (drawable != null)
+			findViewById(R.id.loading_bg).setBackgroundDrawable(drawable);
 		getBooks();
 		// testGetData();
 	}

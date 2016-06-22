@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
@@ -88,7 +90,7 @@ public class ParserSM extends ParserBase2 {
 				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY)
 						.replace(Config.nbsp, " "));
 				detail.setCompleted(matcher(html, config.completedReg).length() > 0);
-				detail.setWords(Util.toInt(matcher(html, config.wordsReg)));
+				detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
 
 				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
 				detail.setUpdateTime(matcher(html, config.updateTimeReg2));
@@ -101,9 +103,13 @@ public class ParserSM extends ParserBase2 {
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
+		return parserBookDict(url, null);
+	}
+
+	private List<ChapterEntity> parserBookDict(String url, String allHtml) {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = getParserResult(url, "li");
+			SimpleNodeIterator iterator = parseIterator(url, allHtml, createEqualFilter("li"), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
 			String urlRoot = "http://www.shenmaxiaoshuo.com";
@@ -205,22 +211,72 @@ public class ParserSM extends ParserBase2 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		if (url.startsWith("http://m.sm.cn/nove")) {
-			// http://m.sm.cn/novel/reader.php?uc_param_str=dnntnwvepffrgibijbprsv&from=novel_wap#catal/修罗武神/善良的蜜蜂
-			if (url.startsWith("http://m.sm.cn/novel/reader.php")) {
-				Matcher m = getMatcher(url, "^http://m\\.sm\\.cn/novel/reader\\.php\\?[^/]+/([^/]+)/([^/]+)$");
-				if (m != null) {
-					return new BookAndChapters(m.group(1), m.group(2));
-				}
-			} else if (url.startsWith("http://m.sm.cn/novelw/menu.php")) {
-				// http://m.sm.cn/novelw/menu.php?uc_param_str=dnntnwvepffrgibijbprsv&from=novel_wap&title=修罗武神&author=善良的蜜蜂
-				String name = matcher(url, "&title=([^&]+)");
-				String author = matcher(url, "&author=([^&]+)");
-				if (!Util.isEmpty(name) && !Util.isEmpty(author)) {
-					return new BookAndChapters(name, author);
-				}
-			}
+		String id = matcher(url, "^http://www\\.shenmabook\\.com/xx-(\\d+)/$");
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.shenmabook\\.com/ml-(\\d+)/$");
+		}
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://m\\.shenmabook\\.com/xx-(\\d+)/$");
+			html = null;
+		}
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://m\\.shenmabook\\.com/ml-(\\d+)/$");
+			html = null;
+		}
+		if (Util.isEmpty(id))
+			return null;
+		String detailUrl = "http://www.shenmabook.com/xx-" + id + "/";
+		String directUrl = "http://www.shenmabook.com/ml-" + id + "/";
+		BookEntity book = new BookEntity();
+		book.setDetailUrl(detailUrl);
+		book.setDirectoryUrl(directUrl);
+		if (parserBookDetail(book, detailUrl.equals(url) ? html : null)) {
+			book.setSite(site);
+			List<ChapterEntity> chaters = parserBookDict(directUrl, directUrl.equals(url) ? html : null);
+			return new BookAndChapters(book, chaters);
 		}
 		return null;
+	}
+
+	private boolean parserBookDetail(BookEntity detail, String allHtml) {
+		try {
+			NodeFilter filter = createEqualFilter("div id=\"content\"");
+			Node node = parseNode(detail.getDetailUrl(), allHtml, filter, encodeType);
+			MyLog.i(TAG, "parserBookDetail getParserResult ok");
+			if (node != null) {
+				String html = node.toHtml();
+				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY)
+						.replace(Config.nbsp, " "));
+				detail.setCompleted(matcher(html, config.completedReg).length() > 0);
+				detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
+
+				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
+				detail.setUpdateTime(matcher(html, config.updateTimeReg2));
+			}
+			if (node != null)
+				node = node.getFirstChild();
+			while (node != null) {
+				String txt = node.getText();
+				if ("div class=\"wrapper_src\"".equals(txt)) {
+					String html = node.toPlainTextString().replaceAll("\\s", CONSTANT.EMPTY).replaceAll("&gt;", ">");
+					Matcher m = getMatcher(html, "[^>]+>([^>]+)>*([^>]+)>([^>]+)");
+					if (m != null) {
+						detail.setName(m.group(3));
+						detail.setAuthor(m.group(2));
+						detail.setType(m.group(1));
+					}
+					node = node.getNextSibling();
+				} else if ("div class=\"box mainintro\"".equals(txt)) {
+					String html = node.toHtml();
+					detail.setCover(matcher(html, config.coverReg));
+					break;
+				} else {
+					node = node.getNextSibling();
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

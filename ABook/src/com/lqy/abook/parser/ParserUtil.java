@@ -31,6 +31,38 @@ public abstract class ParserUtil {
 		return parser.parse(filter).elements();
 	}
 
+	protected static SimpleNodeIterator parseIterator(String url, String html, NodeFilter filter, String encodeType) throws Exception {
+		return Util.isEmpty(html) ? parseUrl(url, filter, encodeType) : parseHtml(html, filter);
+	}
+
+	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
+		try {
+			SimpleNodeIterator iterator = parseUrl(url, filter, encodeType);
+			if (iterator.hasMoreNodes()) {
+				return iterator.nextNode();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
+	}
+
+	protected static Node parseNodeByHtml(String html, NodeFilter filter) {
+		try {
+			SimpleNodeIterator iterator = parseHtml(html, filter);
+			if (iterator.hasMoreNodes()) {
+				return iterator.nextNode();
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
+	}
+
+	protected static Node parseNode(String url, String html, NodeFilter filter, String encodeType) {
+		return Util.isEmpty(html) ? parseNodeByUrl(url, filter, encodeType) : parseNodeByHtml(html, filter);
+	}
+
 	// 获取域名
 	protected static String getDomain(String url) {
 		String baseUrl = null;
@@ -82,30 +114,6 @@ public abstract class ParserUtil {
 				childUrl = currentUrl + "/" + childUrl;
 		}
 		return childUrl;
-	}
-
-	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(url, filter, encodeType);
-			if (iterator.hasMoreNodes()) {
-				return iterator.nextNode();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
-		}
-		return null;
-	}
-
-	protected static Node parseNodeByHtml(String html, NodeFilter filter) {
-		try {
-			SimpleNodeIterator iterator = parseHtml(html, filter);
-			if (iterator.hasMoreNodes()) {
-				return iterator.nextNode();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
-		}
-		return null;
 	}
 
 	public static String toHtml(Node node) {

@@ -10,10 +10,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MatcherTool;
+import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 /**
@@ -21,7 +25,7 @@ import com.lqy.abook.tool.Util;
  */
 public class FileUtil {
 
-	public static final String APP_PATH = "/abook";// 路径
+	private static final String APP_PATH = "/abook";// 路径
 	private static final String ERROR_PATH = "/abook/error_log";// 日志
 	private static final String IMAGE_PATH = "/abook/image";// 图片路径
 	private static final String DB_PATH = "/abook/db";// 数据库
@@ -46,6 +50,14 @@ public class FileUtil {
 
 	}
 
+	public static String getAppPath() {
+		File file = new File(getSdCardPath() + APP_PATH);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		return file.toString();
+	}
+
 	public static String getCachePath() {
 		File file = new File(getSdCardPath() + CACHE_PATH);
 		if (!file.exists()) {
@@ -53,6 +65,7 @@ public class FileUtil {
 		}
 		return file.toString();
 	}
+
 	public static String getErrorPath() {
 		File file = new File(getSdCardPath() + ERROR_PATH);
 		if (!file.exists()) {
@@ -255,9 +268,9 @@ public class FileUtil {
 
 			// 带后缀名的地址的图片可以使用缓存图片，
 			if (MatcherTool.hasExtendName(url) && file.exists() && file.length() != 0) {
-			//	MyLog.i("已下载:" + url);
+				// MyLog.i("已下载:" + url);
 			} else {
-			//	MyLog.i("开始下载:" + url);
+				// MyLog.i("开始下载:" + url);
 				FileOutputStream fos = null;
 				InputStream is = null;
 
@@ -279,9 +292,9 @@ public class FileUtil {
 
 					tempFile.renameTo(file);
 
-				//	MyLog.i("下载完成！:" + url);
+					// MyLog.i("下载完成！:" + url);
 				} catch (Exception e) {
-				//	MyLog.e(e.toString() + "下载时出现异常！:" + file.toString());
+					// MyLog.e(e.toString() + "下载时出现异常！:" + file.toString());
 					return null;
 
 				} finally {
@@ -330,4 +343,16 @@ public class FileUtil {
 		file.delete();
 	}
 
+	public static Drawable loadDrawable(String path, String name) {
+		try {
+			File f = new File(path, name);
+			if (f.exists() && f.isFile()) {
+				Drawable drawable = Drawable.createFromPath(f.toString());
+				if (drawable != null)
+					return drawable;
+			}
+		} catch (Exception e) {
+		}
+		return null;
+	}
 }

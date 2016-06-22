@@ -15,6 +15,7 @@ import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
+import com.lqy.abook.tool.WebServer;
 import com.lqy.abook.tool.WebViewParser;
 
 public class Parser16K extends ParserBase {
@@ -90,14 +91,9 @@ public class Parser16K extends ParserBase {
 						break;// 如果未匹配，后面的就不要了
 				}
 			} else {// 如果只有1本，取出的是目录界面
-				SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-				MyLog.i(TAG, "Search ok is directory");
-				if (iterator.hasMoreNodes()) {
-					html = iterator.nextNode().toHtml();
-					BookEntity book = processSearchDirectNode(html, resultUrl);
-					if (book != null)
-						books.add(book);
-				}
+				BookEntity book = processSearchDirectNode(html, resultUrl);
+				if (book != null)
+					books.add(book);
 			}
 			return true;
 		} catch (Exception e) {
@@ -184,11 +180,16 @@ public class Parser16K extends ParserBase {
 		}
 	}
 
-	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
+		return parserBookDict(url, null);
+	}
+
+	public List<ChapterEntity> parserBookDict(String url, String allHtml) {
+		if (Util.isEmpty(url))
+			return null;
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = getParserResult(url, "dd");
+			SimpleNodeIterator iterator = parseIterator(url, allHtml, createEqualFilter("dd"), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity e;
 			String urlRoot = url.endsWith("/") ? url : url + '/';
@@ -278,7 +279,10 @@ public class Parser16K extends ParserBase {
 		return true;
 	}
 
-	private BookEntity processSearchDirectNode(String html, String directoryUrl) throws Exception {
+	private BookEntity processSearchDirectNode(String html, String directoryUrl) {
+		html = toHtml(parseNode(directoryUrl, html, createEqualFilter("div class=\"one\""), encodeType));
+		if (Util.isEmpty(html))
+			return null;
 		// MyLog.i(html);
 		BookEntity book = new BookEntity();
 		book.setSite(site);
@@ -309,18 +313,9 @@ public class Parser16K extends ParserBase {
 		String id = matcher(url, "^http://www\\.16kxsw\\.com/16k/\\d+/(\\d+)/(index\\.html)?$");
 		if (Util.isEmpty(id))
 			return null;
-		BookEntity book = null;
-		try {
-			SimpleNodeIterator iterator = getParserResult(html, "div class=\"one\"");
-			MyLog.i(TAG, "Search ok is directory");
-			if (iterator.hasMoreNodes()) {
-				String detailHtml = iterator.nextNode().toHtml();
-				book = processSearchDirectNode(detailHtml, url);
-			}
-		} catch (Exception e) {
-		}
+		BookEntity book = processSearchDirectNode(html, url);
 		if (book != null) {
-			List<ChapterEntity> chaters = parserBookDict(html);
+			List<ChapterEntity> chaters = parserBookDict(url, html);
 			return new BookAndChapters(book, chaters);
 		}
 		return null;

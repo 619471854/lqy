@@ -48,7 +48,7 @@ public class MyCenterActivity extends MenuActivity {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 
-					FileUtil.delFile(new File(FileUtil.APP_PATH));
+					FileUtil.delFile(new File(FileUtil.getAppPath()));
 					DataCleanManager.cleanApplicationData(_this);
 
 					Util.toast(_this, "已经删除了所有的书籍和使用记录");

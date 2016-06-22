@@ -150,16 +150,13 @@ public class Parser17K extends ParserBase2 {
 			return null;
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = null;
 			NodeFilter filter = new NodeFilter() {
 				public boolean accept(Node node) {
 					return node instanceof LinkTag && "dd".equals(node.getParent().getText());
 				}
 			};
-			if (Util.isEmpty(allHtml))
-				iterator = parseUrl(url, filter, encodeType);
-			else
-				iterator = parseHtml(allHtml, filter);
+			SimpleNodeIterator iterator = parseIterator(url, allHtml,filter, encodeType);
+			
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity e;
 			while (iterator.hasMoreNodes()) {
@@ -247,10 +244,6 @@ public class Parser17K extends ParserBase2 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
-		// http://www.17k.com/list/40082.html
-		// http://h5.17k.com/list/391013.html
-		// http://h5.17k.com/book/391013.html
-		// http://www.17k.com/book/1398783.html
 		String id = matcher(url, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");
 		if (Util.isEmpty(id)) {
 			id = matcher(url, "^http://www\\.17k\\.com/book/(\\d+)\\.html$");

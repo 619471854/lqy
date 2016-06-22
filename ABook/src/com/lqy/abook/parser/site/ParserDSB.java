@@ -219,13 +219,8 @@ public class ParserDSB extends ParserBase3 {
 	}
 
 	public boolean parserBookDetail(BookEntity book, String html) {
-		Node node;
 		NodeFilter filter = createEqualFilter("section class=\"bookinfo\"");
-		if (Util.isEmpty(html)) {
-			node = parseNodeByUrl(book.getDetailUrl(), filter, "gbk");
-		} else {
-			node = parseNodeByHtml(html, filter);
-		}
+		Node node=parseNode(book.getDetailUrl(), html, filter, "gbk");
 		MyLog.i(TAG, "parserBookDetail  ok");
 		while (node != null) {
 			String txt = node.getText();
