@@ -148,7 +148,7 @@ public class ParserDSB extends ParserBase3 {
 					LinkTag tag = (LinkTag) node;
 					e = new ChapterEntity();
 					e.setName(tag.toPlainTextString().trim());
-					e.setUrl(tag.getLink());
+					e.setUrl(getChildUrl(url, tag.getLink()));
 					e.setId(chapters.size());
 					if (!Util.isEmpty(e.getName()))
 						chapters.add(e);
@@ -168,6 +168,7 @@ public class ParserDSB extends ParserBase3 {
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toPlainTextString();
+				html = html.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
 				html = html.replaceAll(Config.nbsp, "  ");
 				html = html.replaceAll("\r\n", "\n");
 				html = html.replaceAll("\n{2,}+", "\n");
@@ -220,7 +221,7 @@ public class ParserDSB extends ParserBase3 {
 
 	public boolean parserBookDetail(BookEntity book, String html) {
 		NodeFilter filter = createEqualFilter("section class=\"bookinfo\"");
-		Node node=parseNode(book.getDetailUrl(), html, filter, "gbk");
+		Node node = parseNode(book.getDetailUrl(), html, filter, "gbk");
 		MyLog.i(TAG, "parserBookDetail  ok");
 		while (node != null) {
 			String txt = node.getText();

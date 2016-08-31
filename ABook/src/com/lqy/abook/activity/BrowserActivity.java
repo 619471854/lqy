@@ -254,7 +254,7 @@ public class BrowserActivity extends MenuActivity {
 			// api 11-21
 			try {
 				if (!interceptAdvert && host != null && !url.contains(host)) {
-					MyLog.web("shouldInterceptRequest1 forbid " + url);
+					//MyLog.web("shouldInterceptRequest1 forbid " + url);
 					return new WebResourceResponse("image/png", "UTF-8", null);
 				}
 			} catch (Exception e) {
@@ -268,7 +268,7 @@ public class BrowserActivity extends MenuActivity {
 			try {
 				String url = request.getUrl().toString();
 				if (!interceptAdvert && host != null && !url.contains(host)) {
-					MyLog.web("shouldInterceptRequest2 forbid " + url);
+					//MyLog.web("shouldInterceptRequest2 forbid " + url);
 					return new WebResourceResponse("image/png", "UTF-8", null);
 				}
 			} catch (Exception e) {

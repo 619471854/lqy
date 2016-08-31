@@ -170,7 +170,7 @@ public class Parser17K extends ParserBase2 {
 					if (isVip) {
 						e.setLoadStatus(LoadStatus.vip);
 					} else {
-						e.setUrl(tag.getLink());
+						e.setUrl(getChildUrl(url, tag.getLink()));
 					}
 					if (!Util.isEmpty(e.getName()))
 						chapters.add(e);

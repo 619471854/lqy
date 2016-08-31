@@ -150,7 +150,7 @@ public class Config {
 			qidian.newChapterReg = "lastchaptername";
 			qidian.newChapterReg2 = "<strong\\s*itemprop='headline'>([^<]+)</strong>";
 			qidian.updateTimeReg = "lastchapterupdatetime";
-			qidian.updateTimeReg2 = "<span\\s*itemprop='dateModified'>\\s*(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})</span>";
+			qidian.updateTimeReg2 = "<span\\s*itemprop=\"dateModified\">\\s*(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})</span>";
 			qidian.completedReg = "action_status";
 		}
 		return qidian;

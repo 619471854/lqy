@@ -212,9 +212,13 @@ public class ParserQidian extends ParserBase {
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
+		return parserBookDict(url, null);
+	}
+
+	public List<ChapterEntity> parserBookDict(String url, String html) {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("li style='width:33%;' itemprop='chapter'"), encodeType);
+			SimpleNodeIterator iterator = parseIterator(url, html, createStartFilter("li style='width:33%;'"), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
 			while (iterator.hasMoreNodes()) {
@@ -223,7 +227,7 @@ public class ParserQidian extends ParserBase {
 					LinkTag a = (LinkTag) node.getFirstChild();
 					chapter = new ChapterEntity();
 					chapter.setName(a.toPlainTextString().trim().replaceAll("\\s", " "));
-					chapter.setUrl(a.getLink());
+					chapter.setUrl(getChildUrl(url, a.getLink()));
 					chapter.setId(chapters.size());
 					if (!Util.isEmpty(chapter.getName()))
 						chapters.add(chapter);
@@ -243,10 +247,18 @@ public class ParserQidian extends ParserBase {
 			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div class=\"bookreadercontent\""), encodeType);
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
+				Node n = iterator.nextNode();
+				String html = n.toHtml();
 				Matcher m = getMatcher(html, "<script\\ssrc='([^']+)'\\s*charset='([^']+)'");
-				if (m == null)
-					return null;
+				if (m == null) {
+					String t = n.toPlainTextString();
+					t = t.replaceAll("\\s", CONSTANT.EMPTY);
+					t = t.replaceAll(Config.blank + Config.blank, "\n        ");// 替换2全角空格为8个半角空格
+					if (t.startsWith("\n"))
+						t = t.substring(1);
+					t = t + "\n        （本章是VIP章节，不能阅读以下内容）";
+					return t;
+				}
 				MyLog.i(TAG, "asynGetChapterDetail " + m.group(1));
 
 				String text = WebServer.hcGetData(m.group(1), m.group(2));
@@ -276,6 +288,8 @@ public class ParserQidian extends ParserBase {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html) {
+		String detailUrl = null;
+		String directUrl = null;
 		String id = matcher(url, "http://m\\.qidian\\.com/book/bookchapterlist\\.aspx\\?bookid=(\\d+)");
 		if (Util.isEmpty(id))
 			id = matcher(url, "http://m\\.qidian\\.com/book/showbook\\.aspx\\?bookid=(\\d+)");
@@ -285,25 +299,64 @@ public class ParserQidian extends ParserBase {
 			id = matcher(url, "http://read\\.qidian\\.com/BookReader/([\\w-]+)\\.aspx");
 			if (Util.isEmpty(id))
 				return null;
-			id = null;
+			detailUrl = parserBookDetailUrl(url, html);
+			directUrl = url;
 		} else {
-			url = String.format(config.directoryUrlReg, id, 1);
+			detailUrl = "http://www.qidian.com/Book/" + id + ".aspx";
+			directUrl = String.format(config.directoryUrlReg, id, 1);
 		}
+
 		BookEntity book = new BookEntity();
-		book.setDirectoryUrl(url);
-		if (id != null) {
-			book.setDetailUrl("http://www.qidian.com/Book/" + id + ".aspx");
-			if (parserBookDetail(book)) {
-				book.setSite(site);
-				List<ChapterEntity> chaters = parserBookDict(url);
-				return new BookAndChapters(book, chaters);
-			}
-		} else {
+		book.setDetailUrl(detailUrl);
+		book.setDirectoryUrl(directUrl);
+
+		if (detailUrl == null || parserBookDetail(book, detailUrl.equals(url) ? html : null)) {
 			book.setSite(site);
-			List<ChapterEntity> chaters = parserBookDict(url);
-			return new BookAndChapters(book, chaters);
+			List<ChapterEntity> chapters = parserBookDict(directUrl, directUrl.equals(url) ? html : null);
+			if (chapters != null && chapters.size() > 0) {
+				book.setNewChapter(chapters.get(chapters.size() - 1).getName());
+			}
+			return new BookAndChapters(book, chapters);
+		}
+
+		return null;
+	}
+
+	public String parserBookDetailUrl(String directoryUrl, String allHtml) {
+		String html = toHtml(parseNode(directoryUrl, allHtml, createEqualFilter("div class=\"page_site\""), encodeType));
+		String id = matcher(html, "<a\\s*href=\"http://www\\.qidian\\.com/Book/(\\d+)\\.aspx\"\\s*target=\"_blank\">");
+		if (!Util.isEmpty(id)) {
+			return "http://www.qidian.com/Book/" + id + ".aspx";
 		}
 		return null;
 	}
 
+	public boolean parserBookDetail(BookEntity book, String allHtml) {
+
+		String html = toHtml(parseNode(book.getDetailUrl(), allHtml, createEqualFilter("div class=\"bookshow like_box\""), encodeType));
+		if (Util.isEmpty(html))
+			return false;
+		Matcher m = getMatcher(html, "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\"\\s*alt=\"《([^》]+)》作者：([^\"]+)\"\\s*onerror=");
+		if (m == null)
+			return false;
+		book.setCover(m.group(1));
+		book.setName(m.group(2));
+		book.setAuthor(m.group(3));
+
+		html = toHtml(parseNodeByHtml(html, createEqualFilter("div class=\"book_info\" id=\"divBookInfo\"")));
+		book.setUpdateTime(matcher(html, config.updateTimeReg2));
+		book.setType(matcher(html, "<span\\s*itemprop=\"genre\">([^<]+)</span>"));
+		book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
+		book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
+
+		Node tipNode = parseNodeByHtml(html, createEqualFilter("span itemprop=\"description\""));
+		if (tipNode != null) {
+			String tip = tipNode.toPlainTextString();
+			tip = tip.replaceAll(config.nbsp, CONSTANT.EMPTY);
+			tip = tip.replaceAll("\\s", CONSTANT.EMPTY);
+			tip = tip.replaceAll(Config.blank, CONSTANT.EMPTY);// 全角空格
+			book.setTip(tip);
+		}
+		return true;
+	}
 }

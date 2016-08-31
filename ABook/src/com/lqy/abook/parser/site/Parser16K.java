@@ -145,7 +145,7 @@ public class Parser16K extends ParserBase {
 					book.setLoadStatus(LoadStatus.failed);
 					return null;// 此书更新失败
 				}
-				List<ChapterEntity> chapters = parserBookDict(html);
+				List<ChapterEntity> chapters = parserBookDict(null,html);
 				if (chapters == null || chapters.size() == 0) {
 					book.setLoadStatus(LoadStatus.failed);
 					MyLog.i(TAG, "updateBookAndDict getChapters failed");

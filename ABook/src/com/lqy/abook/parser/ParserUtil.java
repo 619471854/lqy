@@ -88,6 +88,12 @@ public abstract class ParserUtil {
 		return baseUrl;
 	}
 
+	protected static String getChildUrl(String currentUrl, String childUrl) {
+		if (Util.isEmpty(currentUrl))
+			return childUrl;
+		return addDomain(currentUrl, null, childUrl);
+	}
+
 	/**
 	 * 获取子页面地址：如果地址以‘/’开头，则加上domain，否则加上当前页面地址
 	 */
