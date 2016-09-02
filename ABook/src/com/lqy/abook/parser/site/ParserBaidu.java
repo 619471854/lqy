@@ -1,7 +1,6 @@
 package com.lqy.abook.parser.site;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

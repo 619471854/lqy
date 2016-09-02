@@ -92,7 +92,18 @@ public class BookDao {
 	}
 
 	/**
-	 * 更新下载状态
+	 * 更新阅读位置
+	 */
+	public void updateReadLoation(final List<BookEntity> books) {
+		new Thread() {
+			public void run() {
+				DBManager.getInstance().updateReadLoation(books);
+			}
+		}.start();
+	}
+
+	/**
+	 * 更新阅读位置
 	 */
 	public void updateReadLoation(final long bookId, final int currentId, final int readBegin) {
 		new Thread() {

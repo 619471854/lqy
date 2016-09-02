@@ -219,7 +219,7 @@ public class DBManager {
 	}
 
 	/**
-	 * 更新当前章节
+	 * 更新阅读位置
 	 */
 	synchronized public void updateReadLoation(long bookId, int currentId, int readBegin) {
 		try {
@@ -228,6 +228,29 @@ public class DBManager {
 			values.put(BookDao.column_currentChapterId, currentId);
 			values.put(BookDao.column_readBegin, readBegin);
 			db.update(BookDao.table_name, values, BookDao.column_id + "=?", new String[] { bookId + CONSTANT.EMPTY });
+		} catch (Exception e) {
+		}
+	}
+
+	/**
+	 * 更新阅读位置
+	 */
+	synchronized public void updateReadLoation(List<BookEntity> books) {
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			db.beginTransaction(); // 手动设置开始事务
+			ContentValues values = new ContentValues();
+			try {
+				for (BookEntity e : books) {
+					values.put(BookDao.column_currentChapterId, e.getCurrentChapterId());
+					values.put(BookDao.column_readBegin, e.getReadBegin());
+					db.update(BookDao.table_name, values, BookDao.column_id + "=" + e.getId(), null);
+				}
+				db.setTransactionSuccessful(); // 设置事务处理成功，不设置会自动回滚不提交。
+				db.endTransaction(); // 处理完成
+			} catch (Exception e) {
+				db.endTransaction();// 处理完成
+			}
 		} catch (Exception e) {
 		}
 	}

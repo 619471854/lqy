@@ -218,7 +218,8 @@ public class ParserQidian extends ParserBase {
 	public List<ChapterEntity> parserBookDict(String url, String html) {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = parseIterator(url, html, createStartFilter("li style='width:33%;'"), encodeType);
+			//这里的html有问题
+			SimpleNodeIterator iterator = parseIterator(url, null, createStartFilter("li style='width:33%;'"), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
 			while (iterator.hasMoreNodes()) {

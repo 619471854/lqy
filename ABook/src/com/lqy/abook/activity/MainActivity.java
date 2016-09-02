@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,10 +33,13 @@ import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.DisplayUtil;
 import com.lqy.abook.tool.GlobalConfig;
+import com.lqy.abook.tool.MatcherTool;
+import com.lqy.abook.tool.MyClipboard;
 import com.lqy.abook.tool.NetworkUtils;
 import com.lqy.abook.tool.Util;
 import com.lqy.abook.widget.DrawerHScrollView;
 import com.lqy.abook.widget.DrawerHScrollView.IDrawerPresenter;
+import com.lqy.abook.widget.MyAlertDialog;
 
 public class MainActivity extends MenuActivity {
 	private DrawerHScrollView hscrollview;
@@ -276,8 +280,38 @@ public class MainActivity extends MenuActivity {
 		super.onDestroy();
 	}
 
+	private String lastClipboardText;
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		dao.updateReadLoation(books);
+		super.onSaveInstanceState(outState);
+	}
+
 	@Override
 	protected void onResume() {
+		// 获取剪贴板数据
+		final String clipboardText = MyClipboard.get(_this);
+		if (!Util.isEmpty(clipboardText) && !clipboardText.equals(lastClipboardText) && MatcherTool.matchWebSite(clipboardText)) {
+			lastClipboardText = clipboardText;
+			new MyAlertDialog(_this).setTitle("是否打开复制链接？").setMessage(clipboardText).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Intent intent = new Intent(_this, BrowserActivity.class);
+					intent.putExtra("url", clipboardText);
+					startActivity(intent);
+					animationRightToLeft();
+				}
+			}).setNegativeButton("取消", null).setNeutralButton("清空", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					MyClipboard.copy(_this, CONSTANT.EMPTY);
+				}
+			}).show();
+		}
+
 		if (Cache.getBook() != null && Cache.exitChapters())
 			Cache.getBook().setUnReadCount(Cache.getChapters().size() - Cache.getCurrentChapterIndex() - 1);
 		isBack = false;
