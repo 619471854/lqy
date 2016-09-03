@@ -59,7 +59,7 @@ public class MatcherTool {
 	 * 验证网址
 	 */
 	public static boolean matchWebSite(String url) {
-		String reg = "(http(s)?://)?(www.)?[\\w]+.\\w{2,4}(/)?";
+		String reg = "(http(s)?://)?(www\\.)?[\\w]+\\.\\w{2,4}(/)?";
 		Pattern p = Pattern.compile(reg);
 		Matcher m = p.matcher(url);
 		return m.find();
