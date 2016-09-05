@@ -283,9 +283,23 @@ public class MainActivity extends MenuActivity {
 	private String lastClipboardText;
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		dao.updateReadLoation(books);
-		super.onSaveInstanceState(outState);
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// 更新阅读记录
+		if (books != null && books.size() > 0) {
+			List<BookEntity> current = dao.getBookList();
+			if (current != null && current.size() > 0) {
+				for (BookEntity book : books) {
+					for (BookEntity e : current) {
+						if (book.getId() == e.getId()) {
+							book.setCurrentChapterId(e.getCurrentChapterId());
+							book.setReadBegin(e.getReadBegin());
+							break;
+						}
+					}
+				}
+			}
+		}
+		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	@Override

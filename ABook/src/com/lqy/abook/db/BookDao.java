@@ -90,7 +90,6 @@ public class BookDao {
 	public List<BookEntity> getBookList() {
 		return DBManager.getInstance().getBookList();
 	}
-
 	/**
 	 * 更新阅读位置
 	 */

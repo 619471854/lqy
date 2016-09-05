@@ -50,7 +50,7 @@ public class FavoriteDao {
 		new Thread() {
 			public void run() {
 				int re = DBManager.getInstance().deleteFavorite(id);
-				activity.sendMsgOnThread(what, re, null);
+				activity.sendMsgOnThread(what, id, null);
 			}
 		}.start();
 	}

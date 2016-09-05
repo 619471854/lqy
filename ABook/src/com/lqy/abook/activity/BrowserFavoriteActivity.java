@@ -65,9 +65,9 @@ public class BrowserFavoriteActivity extends MenuActivity {
 			render(recommendation);
 			break;
 		case 2:// 删除
-			for (int i = 0; i < favorite.size(); i++) {
-				if (favorite.get(i).getId() == arg1) {
-					favorite.remove(i);
+			for (int i = 0; i < data.size(); i++) {
+				if (data.get(i).getId() == arg1) {
+					data.remove(i);
 					break;
 				}
 			}
