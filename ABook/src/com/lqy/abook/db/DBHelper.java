@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DBNAME = "abook.db";
-	private static final int VERSION = 6;
+	private static final int VERSION = 7;
 
 	private static final String CREATE_TABLE_BOOK = "create table " + BookDao.table_name + " (" + BookDao.column_id + " integer primary key autoincrement,"
 			+ BookDao.column_name + " text not null," + BookDao.column_cover + " text," + BookDao.column_type + " text," + BookDao.column_author + " text,"
@@ -37,13 +37,16 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		if (oldVersion != newVersion) {
-			db.execSQL("drop table " + HistoryDao.table_name);
-			db.execSQL(CREATE_TABLE_HISTORY);
-		}
 		if (oldVersion < 6) {
+			if (oldVersion != newVersion) {
+				db.execSQL("drop table " + HistoryDao.table_name);
+				db.execSQL(CREATE_TABLE_HISTORY);
+			}
 			db.execSQL("drop table " + SearchDao.table_name);
 			db.execSQL(CREATE_TABLE_SEARCH);
+		}
+		if (oldVersion == 6 && newVersion == 7) {
+			db.execSQL("alter table " + BookDao.table_name + " change " + BookDao.column_directoryUrl + " text");
 		}
 	}
 

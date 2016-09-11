@@ -48,6 +48,13 @@
             style="@style/item_text"
             android:onClick="sendButtonClick"
             android:text="设置搜索界面可以搜索的网站" />
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_loading"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="设置启动界面图片" />
     </LinearLayout>
 
     <LinearLayout

@@ -226,7 +226,9 @@ public class ReadMenuActivity extends MenuActivity {
 		Intent intent;
 		switch (v.getId()) {
 		case R.id.read_menu_update:
-			if (!NetworkUtils.isNetConnectedRefreshWhereNot())
+			if (Cache.getBook().getSite().notDictUrl())
+				Util.toast(_this, "不支持更新");
+			else if (!NetworkUtils.isNetConnectedRefreshWhereNot())
 				Util.toast(_this, R.string.net_not_connected);
 			else
 				showMenuLay(menuLay_update);
@@ -346,6 +348,9 @@ public class ReadMenuActivity extends MenuActivity {
 			animationRightToLeft();
 			break;
 		case R.id.read_menu_html:
+			if (Cache.getBook().getSite().notDictUrl()) {
+				Util.toast(_this, "不支持此功能");
+			}
 			ChapterEntity e = Cache.getCurrentChapter();
 			if (e != null) {
 				intent = new Intent(_this, BrowserActivity.class);
@@ -358,6 +363,9 @@ public class ReadMenuActivity extends MenuActivity {
 			}
 			break;
 		case R.id.read_menu_baidu:
+			if (Cache.getBook().getSite().notDictUrl()) {
+				Util.toast(_this, "不支持此功能");
+			}
 			ChapterEntity e2 = Cache.getCurrentChapter();
 			if (e2 != null) {
 				intent = new Intent(_this, BrowserActivity.class);
@@ -520,7 +528,7 @@ public class ReadMenuActivity extends MenuActivity {
 					// 先获取缓存，再查找本地
 					chapters = Cache.getChapters();
 					if (chapters == null || chapters.size() == 0) {
-						chapters = LoadManager.getDirectory(book.getId());
+						chapters = LoadManager.getDirectory(book);
 					}
 					// 没有更新,且本地没有章节,则直接下载
 					if ((book.getLoadStatus() != LoadStatus.failed) && (chapters == null || chapters.size() == 0)) {

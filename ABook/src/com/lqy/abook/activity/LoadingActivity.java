@@ -30,7 +30,7 @@ public class LoadingActivity extends MenuActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.loading);
 
-		Drawable drawable = FileUtil.loadDrawable(FileUtil.getAppPath(), "logo.jpg");
+		Drawable drawable = FileUtil.loadDrawable(FileUtil.getAppPath(), FileUtil.LOADING_NAME);
 		if (drawable != null)
 			findViewById(R.id.loading_bg).setBackgroundDrawable(drawable);
 		getBooks();
@@ -87,7 +87,7 @@ public class LoadingActivity extends MenuActivity {
 	 * 整理章节状态
 	 */
 	private void check(BookEntity book) {
-		List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
+		List<ChapterEntity> chapters = LoadManager.getDirectory(book);
 		// if (chapters == null || chapters.size() == 0) {
 		// chapters = ParserManager.getDict(book);
 		// book.setLoadStatus(LoadStatus.hasnew);
@@ -101,7 +101,7 @@ public class LoadingActivity extends MenuActivity {
 				book.setCurrentChapterId(chapters.size() - 1);
 			book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
 
-			if (book.getSite() == Site.Pic)
+			if (!book.getSite().supportUpdated())
 				return;
 			// 更新章节状态
 			File file;

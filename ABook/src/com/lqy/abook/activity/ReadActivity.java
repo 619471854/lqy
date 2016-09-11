@@ -128,7 +128,7 @@ public class ReadActivity extends MenuActivity {
 		new Thread() {
 			public void run() {
 				if (chapter == null) {// 获取章节
-					List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
+					List<ChapterEntity> chapters = LoadManager.getDirectory(book);
 					if (chapters == null || chapters.size() == 0) {
 						chapters = ParserManager.getDict(book);
 					}

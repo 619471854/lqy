@@ -19,6 +19,7 @@ import com.lqy.abook.tool.Util;
 
 public class AsyncPicLoader {
 	public static boolean isRunning;
+	public static boolean isStop;
 
 	private Object _o = new Object();
 	private ThreadPoolExecutor executor;
@@ -35,12 +36,13 @@ public class AsyncPicLoader {
 		}
 		executor = new ThreadPoolExecutor(5, 50, 60, TimeUnit.SECONDS, new LinkedBlockingQueue());
 		isRunning = true;
+		isStop = false;
 		this.book = _book;
 		book.setLoadStatus(LoadStatus.loading);
 		// 等待下载并显示进度
 		new Thread() {
 			public void run() {
-				List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
+				List<ChapterEntity> chapters = LoadManager.getDirectory(book);
 				if (chapters == null || chapters.size() == 0) {
 					chapters = ParserManager.getDict(book);
 				}
@@ -55,13 +57,23 @@ public class AsyncPicLoader {
 					return;
 				}
 				for (int i = 0; i < chapters.size(); i++) {
-					if (isRunning) {
+					if (isStop) {
+						book.setLoadStatus(LoadStatus.completed);
+						activity.sendMsgOnThread(what);
+					} else if (isRunning) {
+						int progress = i * 98 / chapters.size() + 1;
+						activity.sendMsgOnThread(what, progress, null);
+
 						ChapterEntity chapter = chapters.get(i);
 						if (!load(chapter)) {
 							chapters.remove(chapter);
 							i--;
 						}
 						chapter.setLoadStatus(LoadStatus.completed);
+					} else {
+						book.setLoadStatus(LoadStatus.notLoaded);
+						activity.sendMsgOnThread(what);
+						return;
 					}
 				}
 
@@ -83,8 +95,12 @@ public class AsyncPicLoader {
 					new BookDao().updateBook(book);
 				}
 
-				activity.sendMsgOnThread(what);
-				isRunning = false;
+				if (!isRunning) {
+					activity.sendMsgOnThread(what);
+				} else {
+					activity.sendMsgOnThread(what, 100, null);
+					isRunning = false;
+				}
 			};
 		}.start();
 		return true;

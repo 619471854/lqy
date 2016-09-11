@@ -9,6 +9,7 @@ import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
+import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.tool.Util;
 
@@ -78,7 +79,9 @@ public class ParserManager {
 	 * 根据小说目录地址获取 目录
 	 */
 	public static List<ChapterEntity> getDict(BookEntity book) {
-		if (book.getSite() == Site.Other || book.getSite() == Site.Pic) {
+		if (book.getSite().notDictUrl()) {
+			return LoadManager.getDirectory(book);
+		} else if (book.getSite() == Site.Other || book.getSite() == Site.Pic) {
 			return new ParserOther().parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 		} else
 			return book.getSite().getParser().parserBookDict(book.getDirectoryUrl());
@@ -88,7 +91,9 @@ public class ParserManager {
 	 * 获取章节详情
 	 */
 	public static String getChapterDetail(BookEntity book, String url) {
-		if (book.getSite() == Site.Other) {
+		if (book.getSite().notDictUrl()) {
+			return LoadManager.getChapterContent(book.getId(), book.getName());
+		} else if (book.getSite() == Site.Other) {
 			return new ParserOther().getChapterDetail(url, book.getExt());
 		} else
 			return book.getSite().getParser().getChapterDetail(url);

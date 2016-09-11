@@ -130,7 +130,7 @@ public class ShowImageActivity extends MenuActivity {
 		new Thread() {
 			public void run() {
 				if (chapter == null) {// 获取章节
-					List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
+					List<ChapterEntity> chapters = LoadManager.getDirectory(book);
 					if (chapters == null || chapters.size() == 0) {
 						// 获取目录失败，请换源下载
 						if (NetworkUtils.isNetConnected(null))
@@ -307,7 +307,7 @@ public class ShowImageActivity extends MenuActivity {
 			view_next.setEnabled(Cache.hasNextChapter());
 			view_del.setVisibility(View.INVISIBLE);
 			break;
-		case R.id.toolbar_irectory:
+		case R.id.toolbar_directory:
 			Intent intent = new Intent(_this, DirectoryActivity.class);
 			intent.putExtra("class", _this.getClass().getName());
 			startActivity(intent);

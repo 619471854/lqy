@@ -10,14 +10,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MatcherTool;
-import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 /**
@@ -33,6 +30,7 @@ public class FileUtil {
 	private static final String CACHE_PATH = "/abook/cache";// books
 	private static final String BOOKNAME = "book_";// books
 	public static final String BOOK_INDEX_NAME = "000000";// books
+	public static final String LOADING_NAME = "loading.jpg";// books
 
 	private static String sdcard_path = null;// sd卡路径
 

@@ -32,8 +32,8 @@
     <string-array name="save_menu">
         <item>保存为文字小说</item>
         <item>保存为图片小说</item>
-        <item>保存为单章文字小说</item>
-        <item>保存为单章图片小说</item>
+        <item>保存本页的文本</item>
+        <item>保存本页的图片</item>
     </string-array>
     <string-array name="delete_chapter_menu">
         <item>删除本章之前的所有章节</item>

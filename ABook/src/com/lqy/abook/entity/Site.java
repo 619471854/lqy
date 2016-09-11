@@ -5,7 +5,7 @@ import com.lqy.abook.parser.site.*;
 import com.lqy.abook.tool.CONSTANT;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Located;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Located, Single;
 
 	public static Site getDefault() {
 		return Other;
@@ -17,10 +17,17 @@ public enum Site {
 	// public static Site[] searchSite = new Site[] { Site.DSB };
 
 	/**
+	 * 是否没有网址
+	 */
+	public boolean notDictUrl() {
+		return this == Site.Single || this == Site.Located;
+	}
+
+	/**
 	 * 是否支持更新
 	 */
 	public boolean supportUpdated() {
-		return this != Site.Pic && this != Site.Located;
+		return this != Site.Pic && !notDictUrl();
 	}
 
 	public static Site valueOf(int index) {

@@ -79,7 +79,7 @@ public class DirectoryActivity extends MenuActivity {
 			showProgressBar();
 			new Thread() {
 				public void run() {
-					List<ChapterEntity> chapters = LoadManager.getDirectory(book.getId());
+					List<ChapterEntity> chapters = LoadManager.getDirectory(book);
 					if (chapters == null || chapters.size() == 0) {
 						chapters = ParserManager.getDict(book);
 					}

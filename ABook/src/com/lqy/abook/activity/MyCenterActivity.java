@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.lqy.abook.MenuActivity;
 import com.lqy.abook.MyApp;
 import com.lqy.abook.R;
 import com.lqy.abook.entity.Site;
+import com.lqy.abook.img.SelectImageDialog;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.DataCleanManager;
@@ -22,6 +24,8 @@ import com.lqy.abook.widget.ArrayDialog;
 import com.lqy.abook.widget.MySwitch;
 
 public class MyCenterActivity extends MenuActivity {
+	private SelectImageDialog dialog;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,6 +96,18 @@ public class MyCenterActivity extends MenuActivity {
 				MainActivity.getInstance().finish();
 			finish();
 			break;
+		case R.id.my_center_loading:
+			if (dialog == null)
+				dialog = new SelectImageDialog(_this);
+			dialog.show();
+			break;
 		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (dialog != null && dialog.onActivityResult(requestCode, resultCode, data))
+			return;
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 }

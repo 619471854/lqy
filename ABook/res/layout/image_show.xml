@@ -49,7 +49,7 @@
             android:src="@drawable/chapter_next_selector" />
 
         <ImageView
-            android:id="@+id/toolbar_irectory"
+            android:id="@+id/toolbar_directory"
             style="@style/toolbar_btn_img"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"

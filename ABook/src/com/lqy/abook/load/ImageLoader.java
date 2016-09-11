@@ -1,5 +1,10 @@
 package com.lqy.abook.load;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -62,5 +67,49 @@ public class ImageLoader {
 
 		}
 
+	}
+	
+
+	/**
+	 * 保存图片
+	 */
+	public static String saveBitmap(InputStream is, String path, String name) {
+
+		FileOutputStream fos = null;
+		// 创建文件夹
+		File file = new File(path);
+		if (!file.exists())
+			file.mkdirs();
+		file = new File(path, name);
+		try {
+			fos = new FileOutputStream(file);
+			byte buffer[] = new byte[4 * 1024];
+			int numread = 0;
+			while ((numread = is.read(buffer)) != -1) {
+				fos.write(buffer, 0, numread);
+			}
+			fos.close();
+			is.close();
+			fos = null;
+			is = null;
+		} catch (Exception e) {
+			return null;
+		} finally {
+			if (fos != null) {
+				try {
+					fos.close();
+				} catch (IOException e) {
+				}
+				fos = null;
+			}
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+				}
+				is = null;
+			}
+		}
+		return file.toString();
 	}
 }

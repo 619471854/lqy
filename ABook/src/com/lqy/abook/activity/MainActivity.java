@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -403,6 +404,18 @@ public class MainActivity extends MenuActivity {
 			break;
 		case 4:
 			break;
+		case 5:
+			if (arg1 == 0 || arg1 == 100) {
+				updateBookCount--;
+				if (!isLoading()) {
+					btn_stop.setVisibility(View.GONE);
+					btn_update.setVisibility(View.VISIBLE);
+				}
+				refresh(false);
+			} else if (dialog != null && dialog.isShowing()) {
+				dialog.setProgress(arg1);
+			}
+			break;
 		}
 	}
 
@@ -439,12 +452,36 @@ public class MainActivity extends MenuActivity {
 			refresh(false);
 	}
 
+	private ProgressDialog dialog;
+
 	public boolean update(BookEntity book) {
 		if (book.getSite() == Site.Pic) {
-			if (new AsyncPicLoader().load(_this, book, 1)) {
+			final AsyncPicLoader loader = new AsyncPicLoader();
+			if (loader.load(_this, book, 5)) {
 				btn_update.setVisibility(View.GONE);
 				btn_stop.setVisibility(View.VISIBLE);
 				updateBookCount = 1;
+
+				dialog = new ProgressDialog(this);
+				dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				dialog.setCancelable(false);
+				dialog.setProgress(0);
+				dialog.setTitle("下载中...");
+				dialog.setButton(DialogInterface.BUTTON_POSITIVE, "完成", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						loader.isStop = true;
+					}
+				});
+				dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						loader.isRunning = false;
+					}
+				});
+				dialog.show();
 				return true;
 			} else {
 				return false;
@@ -487,7 +524,7 @@ public class MainActivity extends MenuActivity {
 						book.setLoadStatus(LoadStatus.notLoaded);
 					sendMsgOnThread(what, onlyCheckInt, null);
 				} else {// 没有更新，获取本地章节目录
-					chapters = LoadManager.getDirectory(book.getId());
+					chapters = LoadManager.getDirectory(book);
 					if (chapters == null || chapters.size() == 0) {
 						chapters = ParserManager.getDict(book);
 					}

@@ -16,7 +16,6 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
 import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.parser.ParserManager;
-import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -108,7 +107,6 @@ public class AsyncTxtLoader {
 		}
 		return false;
 	}
-
 
 	/**
 	 * 下载本书部分章节
@@ -269,22 +267,15 @@ public class AsyncTxtLoader {
 			String text = null;
 			if (!isReload)
 				text = LoadManager.getChapterContent(book.getId(), chapter.getName());
-			boolean success = false;
+
 			if (Util.isEmpty(text)) {
 				text = ParserManager.getChapterDetail(book, chapter.getUrl());
-				if (Util.isEmpty(text)) {
-					text = null;
-				} else {
-					if (text.startsWith(chapter.getName()) || text.startsWith(chapter.getName().replaceAll("\\s", CONSTANT.EMPTY)))
-						text = "        " + text;
-					else
-						text = chapter.getName() + "\n        " + text;
-					success = FileUtil.write(text, FileUtil.getBooksPath(book.getId()), FileUtil.getChapterName(chapter.getName()));
-				}
+				text = LoadManager.saveChapterContent(book.getId(), chapter.getName(), text);
+
+				chapter.setLoadStatus(text != null ? LoadStatus.completed : LoadStatus.failed);
 			} else {
-				success = true;
+				chapter.setLoadStatus(LoadStatus.completed);
 			}
-			chapter.setLoadStatus(success ? LoadStatus.completed : LoadStatus.failed);
 			return text;
 
 		} catch (Exception e) {

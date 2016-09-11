@@ -21,6 +21,8 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
+import com.lqy.abook.parser.site.ParserOther;
+import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 import com.lqy.abook.widget.MyAlertDialog;
@@ -32,6 +34,7 @@ public class SaveBook {
 	public static final int WHAT_SAVEBOOK3 = 1003;
 	public static final int WHAT_SAVEBOOK4 = 1004;
 	public static final int WHAT_SAVEBOOK5 = 1005;
+	public static final int WHAT_SAVEBOOK6 = 1006;
 
 	public SaveBook(BrowserActivity a) {
 		activity = a;
@@ -52,17 +55,17 @@ public class SaveBook {
 		});
 	}
 
-	public boolean dealMsg(int what, int arg1, Object o) {
+	public boolean dealMsg(int what, int arg1, Object o, String title) {
 		switch (what) {
 		case WHAT_SAVEBOOK1:// 添加到书架
 			MyLog.i("savebook1");
 			activity.showLoadingDialog("正在获取小说目录");
 			String[] params = (String[]) o;
-			ParserManager.parserBrowser(activity, activity.webView.getUrl(), params[1], params[0], WHAT_SAVEBOOK2,true);
+			ParserManager.parserBrowser(activity, activity.webView.getUrl(), params[1], params[0], WHAT_SAVEBOOK2, true);
 			break;
 		case WHAT_SAVEBOOK2:// 添加到书架
 			MyLog.i("savebook2 ", o);
-			saveBook((BookAndChapters) o);
+			saveBook((BookAndChapters) o, title);
 			break;
 		case WHAT_SAVEBOOK3:// 添加到书架成功，启动首页
 			MyLog.i("savebook3 ", o);
@@ -82,11 +85,23 @@ public class SaveBook {
 			MyLog.i("savebook4");
 			activity.showLoadingDialog("正在获取小说目录");
 			String[] params2 = (String[]) o;
-			ParserManager.parserBrowser(activity, activity.webView.getUrl(), params2[1], params2[0], WHAT_SAVEBOOK5,false);
+			ParserManager.parserBrowser(activity, activity.webView.getUrl(), params2[1], params2[0], WHAT_SAVEBOOK5, false);
 			break;
 		case WHAT_SAVEBOOK5:// 添加到书架
 			MyLog.i("savebook2 ", o);
-			saveImgs((BookAndChapters) o);
+			saveImgs((BookAndChapters) o, title);
+			break;
+		case WHAT_SAVEBOOK6:// 添加本页内容到书架
+			MyLog.i("savebook6");
+			String text = ParserOther.parseChapterDetail(((String[]) o)[1]);
+			if (Util.isEmpty(text)) {
+				Util.dialog(activity, "获取失败");
+				break;
+			}
+			BookEntity book = new BookEntity();
+			book.setSite(Site.Single);
+			book.setTip(text);
+			saveBook(new BookAndChapters(book, null), title);
 			break;
 		default:
 			return false;
@@ -97,12 +112,16 @@ public class SaveBook {
 	/**
 	 * 添加到书架
 	 */
-	private void saveImgs(final BookAndChapters result) {
+	private void saveImgs(final BookAndChapters result, final String title) {
 		if (result == null || result.getResult() != BookAndChapters.SearchResult.InputName) {
 			Util.dialog(activity, "获取目录失败");
 		} else {
 			final EditText et = new EditText(activity);
 			et.setBackgroundColor(Color.WHITE);
+			if (!Util.isEmpty(title)) {
+				et.setText(title);
+				et.setSelection(title.length());
+			}
 			new MyAlertDialog(activity).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -139,6 +158,13 @@ public class SaveBook {
 							+ ",document.cookie,document.getElementsByTagName('html')[0].innerHTML);");
 				}
 			});
+		} else if (which == 2) {
+			Util.dialog(activity, "确定要保存此网页)", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					activity.loadUrl("javascript:window.local_obj.saveBook(" + WHAT_SAVEBOOK6 + ",1,document.getElementsByTagName('body')[0].innerText);");
+				}
+			});
 		} else {
 			Util.notCompleted(activity);
 		}
@@ -147,7 +173,7 @@ public class SaveBook {
 	/**
 	 * 添加到书架
 	 */
-	private void saveBook(final BookAndChapters result) {
+	private void saveBook(final BookAndChapters result, final String title) {
 		if (result == null || result.getResult() == BookAndChapters.SearchResult.Failed) {
 			Util.dialog(activity, "获取目录失败");
 		} else if (result.getResult() == BookAndChapters.SearchResult.Search) {
@@ -163,6 +189,10 @@ public class SaveBook {
 		} else if (result.getResult() == BookAndChapters.SearchResult.InputName) {
 			final EditText et = new EditText(activity);
 			et.setBackgroundColor(Color.WHITE);
+			if (!Util.isEmpty(title)) {
+				et.setText(title);
+				et.setSelection(title.length());
+			}
 			new MyAlertDialog(activity).setTitle("请输入要添加的书籍名字").setView(et).setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -186,9 +216,23 @@ public class SaveBook {
 		activity.showLoadingDialog("正在保存小说");
 		new Thread() {
 			public void run() {
+				String text = book.getTip();
+				if (book.getSite() == Site.Single) {
+					if (text.length() > 100) {
+						book.setTip(text.substring(0, 100) + "...");
+					}
+					book.setDirectoryUrl(CONSTANT.EMPTY);// 不能为空
+				}
 				if (new BookDao().addBook(book)) {
-					LoadManager.saveDirectory(book.getId(), chapters);
-					book.setUnReadCount(chapters.size());
+					if (book.getSite() == Site.Single) {
+						List<ChapterEntity> cs = LoadManager.getDirectory(book);
+						LoadManager.saveDirectory(book.getId(), cs);
+						LoadManager.saveChapterContent(book.getId(), book.getName(), text);
+						book.setUnReadCount(cs.size());
+					} else {
+						LoadManager.saveDirectory(book.getId(), chapters);
+						book.setUnReadCount(chapters.size());
+					}
 					activity.sendMsgOnThread(WHAT_SAVEBOOK3, book);
 				} else {
 					activity.sendErrorOnThread("保存小说失败");

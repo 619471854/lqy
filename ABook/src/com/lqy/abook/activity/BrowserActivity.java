@@ -167,7 +167,7 @@ public class BrowserActivity extends MenuActivity {
 
 	@Override
 	protected void dealMsg(int what, int arg1, Object o) {
-		if (saveUtils.dealMsg(what, arg1, o))
+		if (saveUtils.dealMsg(what, arg1, o, webView == null ? null : webView.getTitle()))
 			return;
 		switch (what) {
 		case WHAT_INIT:
@@ -254,7 +254,7 @@ public class BrowserActivity extends MenuActivity {
 			// api 11-21
 			try {
 				if (!interceptAdvert && host != null && !url.contains(host)) {
-					//MyLog.web("shouldInterceptRequest1 forbid " + url);
+					// MyLog.web("shouldInterceptRequest1 forbid " + url);
 					return new WebResourceResponse("image/png", "UTF-8", null);
 				}
 			} catch (Exception e) {
@@ -268,7 +268,7 @@ public class BrowserActivity extends MenuActivity {
 			try {
 				String url = request.getUrl().toString();
 				if (!interceptAdvert && host != null && !url.contains(host)) {
-					//MyLog.web("shouldInterceptRequest2 forbid " + url);
+					// MyLog.web("shouldInterceptRequest2 forbid " + url);
 					return new WebResourceResponse("image/png", "UTF-8", null);
 				}
 			} catch (Exception e) {
@@ -295,7 +295,7 @@ public class BrowserActivity extends MenuActivity {
 		@JavascriptInterface
 		public void saveBook(int what, String cookie, String html) {
 			// MyLog.save(html);
-			sendMsgOnThread( what, new String[] { cookie, html });
+			sendMsgOnThread(what, new String[] { cookie, html });
 		}
 
 		@JavascriptInterface
