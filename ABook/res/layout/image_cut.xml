@@ -1,0 +1,36 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black" >
+
+    <com.lqy.abook.widget.CutView
+        android:id="@+id/image_cutview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/transparent" >
+
+        <ImageView
+            style="@style/toolbar_btn_img"
+            android:onClick="cancelButtonClick"
+            android:src="@drawable/back" />
+
+        <TextView
+            style="@style/toolbar_btn_txt"
+            android:layout_alignParentRight="true"
+            android:onClick="sendButtonClick"
+            android:text="确定" />
+
+        <TextView
+            style="@style/toolbar_btn_txt"
+            android:layout_centerInParent="true"
+            android:onClick="rotateButtonClick"
+            android:text="旋转90度" />
+    </RelativeLayout>
+
+</RelativeLayout>
