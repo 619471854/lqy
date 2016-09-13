@@ -213,9 +213,6 @@ public class SaveLocatedBook {
 				line = line.trim();
 				if (line.length() == 0)
 					continue;
-				if (firstChapter == null) {
-					firstChapter = line.substring(0, Math.min(100, line.length()));
-				}
 				m = p.matcher(line);
 				if (m.find()) {// 找到了“第二章 ＊＊＊ ”，创建新章节
 					if (c == null) {
@@ -225,6 +222,9 @@ public class SaveLocatedBook {
 						// 保存上一章
 						chapters.add(c);
 						LoadManager.saveChapterContent(book.getId(), c.getName(), text.toString());
+						if (firstChapter == null) {
+							firstChapter = text.substring(0, Math.min(100, text.length()));
+						}
 						text.delete(0, text.length());
 						// 开始下一章
 						c = new ChapterEntity();
@@ -259,6 +259,9 @@ public class SaveLocatedBook {
 					if (text.length() > length) {// 章节字数达标，此章结束
 						// 保存上一章
 						chapters.add(c);
+						if (firstChapter == null) {
+							firstChapter = text.substring(0, Math.min(100, text.length()));
+						}
 						LoadManager.saveChapterContent(book.getId(), c.getName(), text.toString());
 
 						c = null;
@@ -275,6 +278,7 @@ public class SaveLocatedBook {
 					book.setTip(firstChapter);
 					new BookDao().updateBook(book);
 				}
+				book.setUnReadCount(chapters.size());
 				activity.sendMsgOnThread(msg_ok, book);
 			}
 		} catch (Exception e) {
