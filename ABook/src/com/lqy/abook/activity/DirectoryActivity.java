@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -172,6 +172,19 @@ public class DirectoryActivity extends MenuActivity {
 							return true;
 						}
 					});
+				} else if (book.getSite() == Site.Located) {
+					listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+						@Override
+						public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2, long arg3) {
+							Util.dialog(_this, "删除后不能恢复，确定要删除本章吗？", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int w) {
+									deleteChapter(arg2, 2);
+								}
+							});
+							return true;
+						}
+					});
 				}
 				if (toLast) {
 					listView.setSelection(adapter.getCount() - 1);
@@ -213,7 +226,7 @@ public class DirectoryActivity extends MenuActivity {
 		List<ChapterEntity> chapters = Cache.getChapters();
 		switch (which) {
 		case 0:// 删除之前的
-			if(position==0)
+			if (position == 0)
 				return;
 			for (int i = 0; i < position; i++) {
 				chapters.remove(0);
@@ -221,19 +234,24 @@ public class DirectoryActivity extends MenuActivity {
 			book.setFirstUrl(chapters.get(0).getUrl());
 			break;
 		case 1:// 删除之后的
-			if(position== chapters.size() - 1)
+			if (position == chapters.size() - 1)
 				return;
 			for (int i = chapters.size() - 1; i > position; i--) {
 				chapters.remove(i);
 			}
 			book.setLastestUrl(chapters.get(chapters.size() - 1).getUrl());
 			break;
+		case 2:// 删除当前章
+			chapters.remove(position);
+			break;
 		}
 		for (int i = 0; i < chapters.size(); i++) {
 			chapters.get(i).setId(i);
 		}
 		adapter.notifyDataSetChanged();
-		new BookDao().updateBook(book);
+		if (which != 2) {
+			new BookDao().updateBook(book);
+		}
 		LoadManager.asynSaveDirectory(book.getId(), chapters);
 	}
 

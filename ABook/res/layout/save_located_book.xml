@@ -1,0 +1,105 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="1、以"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/save_located_book_start1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_bg"
+            android:gravity="center"
+            android:maxLength="5"
+            android:minWidth="50dp"
+            android:padding="5dp"
+            android:text="第"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="一"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/save_located_book_start2"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/search_bg"
+            android:gravity="center"
+            android:maxLength="5"
+            android:minWidth="50dp"
+            android:padding="5dp"
+            android:text="章"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="作为章节开始"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="2、每章字数不少于"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/save_located_book_length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_bg"
+            android:gravity="center"
+            android:hint="1000-9999"
+            android:inputType="number"
+            android:maxLength="4"
+            android:minWidth="50dp"
+            android:padding="5dp"
+            android:text="5000"
+            android:textColor="#848484"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -67,7 +67,10 @@ public class CoverActivity extends MenuActivity {
 		}
 
 		view_bookname.setText(book.getName());
-		view_author.setText(book.getAuthor());
+		if (Util.isEmpty(book.getAuthor()))
+			view_author.setVisibility(View.INVISIBLE);
+		else
+			view_author.setText(book.getAuthor());
 		view_site.setText("下载点：" + book.getSite().getName());
 		showDetailInfo();
 		if (onlyRead) {

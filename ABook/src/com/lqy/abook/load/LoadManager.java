@@ -11,6 +11,7 @@ import com.lqy.abook.MenuActivity;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.Site;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.Util;
 
@@ -79,7 +80,7 @@ public class LoadManager {
 	}
 
 	public static List<ChapterEntity> getDirectory(BookEntity book) {
-		if (book.getSite().notDictUrl()) {
+		if (book.getSite() == Site.Single) {
 			List<ChapterEntity> data = new ArrayList<ChapterEntity>();
 			ChapterEntity e = new ChapterEntity();
 			e.setName(book.getName());

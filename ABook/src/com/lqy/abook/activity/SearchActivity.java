@@ -19,6 +19,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
+import com.lqy.abook.adapter.SaveLocatedBook;
 import com.lqy.abook.adapter.SearchAdapter;
 import com.lqy.abook.db.SearchDao;
 import com.lqy.abook.entity.BookEntity;
@@ -82,8 +83,19 @@ public class SearchActivity extends MenuActivity {
 		});
 	}
 
+	private SaveLocatedBook located;
+
 	public void addClick(View v) {
-		Util.notCompleted(_this);
+		if (located == null)
+			located = new SaveLocatedBook(_this);
+		located.show();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (located != null && located.onActivityResult(requestCode, resultCode, data))
+			return;
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private int parseNum;
@@ -109,8 +121,8 @@ public class SearchActivity extends MenuActivity {
 			data.add(data.size() - 1, key);
 		hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
 		view_et.setAdapter(hintAdapter);
-		
-		//关闭键盘
+
+		// 关闭键盘
 		Util.hideKeyboard(_this, view_et);
 	}
 
@@ -118,6 +130,9 @@ public class SearchActivity extends MenuActivity {
 
 	@Override
 	protected void dealMsg(int what, int arg1, Object o) {
+		if (located != null && located.dealMsg(what, arg1, o))
+			return;
+		
 		if (what == 0) {
 			List<String> d = (List<String>) o;
 			if (d != null && d.size() > 0) {

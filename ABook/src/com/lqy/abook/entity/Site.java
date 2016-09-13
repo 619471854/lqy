@@ -91,6 +91,8 @@ public enum Site {
 			return "大书包";
 		case Pic:
 			return CONSTANT.EMPTY;
+		case Located:
+			return "本地导入";
 		default:
 			return CONSTANT.EMPTY;
 		}

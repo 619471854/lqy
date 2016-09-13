@@ -100,14 +100,14 @@ public class LoadingActivity extends MenuActivity {
 			if (book.getCurrentChapterId() >= chapters.size())
 				book.setCurrentChapterId(chapters.size() - 1);
 			book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
-
-			if (!book.getSite().supportUpdated())
-				return;
 			// 更新章节状态
 			File file;
 			String path = FileUtil.getBooksPath(book.getId());
+			boolean notSupportUpdated = !book.getSite().supportUpdated();
 			for (ChapterEntity chapter : chapters) {
-				if (!chapter.isVip()) {
+				if (notSupportUpdated) {
+					chapter.setLoadStatus(LoadStatus.completed);
+				} else if (!chapter.isVip()) {
 					file = new File(path, FileUtil.getChapterName(chapter.getName()));
 					if (file.exists() && file.length() > 0) {
 						chapter.setLoadStatus(LoadStatus.completed);
@@ -116,8 +116,9 @@ public class LoadingActivity extends MenuActivity {
 					}
 				}
 			}
-			LoadManager.saveDirectory(book.getId(), chapters);
-
+			if (!notSupportUpdated) {
+				LoadManager.saveDirectory(book.getId(), chapters);
+			}
 		}
 	}
 }
