@@ -100,37 +100,17 @@ public class SelectImageDialog {
 	}
 
 	/**
-	 * 跳转到剪切界面
+	 * 保存图片
 	 */
-	private void cutImage(final String path) {
-		try {
-			new MyAlertDialog(activity).setTitle("系统提示").setMessage("是否裁切图片？").setPositiveButton("是", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// 剪切图片
-					Intent intent = new Intent(activity, CutImageActivity.class);
-					intent.putExtra("class", activity.getClass().getName());
-					intent.putExtra("path", path);
-					activity.startActivity(intent);
-				}
-			}).setNegativeButton("否", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// 重命名以前的图片
-					File file = new File(FileUtil.getAppPath(), FileUtil.LOADING_NAME);
-					if (file.exists())
-						file.renameTo(new File(FileUtil.getAppPath(), System.currentTimeMillis() + "_" + FileUtil.LOADING_NAME));
-					file = new File(path);
-					if (file.exists())
-						file.renameTo(new File(FileUtil.getAppPath(), FileUtil.LOADING_NAME));
-					Util.toast(activity, "设置成功");
-				}
-			}).show();
-		} catch (Exception e) {
-			MyLog.e(e);
-		}
+	private void saveImage(final String path) {
+		// 重命名以前的图片
+		File file = new File(FileUtil.getAppPath(), FileUtil.LOADING_NAME);
+		if (file.exists())
+			file.renameTo(new File(FileUtil.getAppPath(), System.currentTimeMillis() + "_" + FileUtil.LOADING_NAME));
+		file = new File(path);
+		if (file.exists())
+			file.renameTo(new File(FileUtil.getAppPath(), FileUtil.LOADING_NAME));
+		Util.toast(activity, "设置成功");
 	}
 
 	private void dealImageResult(Intent data) {
@@ -181,7 +161,7 @@ public class SelectImageDialog {
 				Util.toast(activity, "未找到图片路径");
 				return;
 			}
-			cutImage(path);
+			saveImage(path);
 		} catch (Exception e) {
 			Util.toast(activity, "获取图片失败");
 		} catch (OutOfMemoryError e) {
@@ -213,7 +193,7 @@ public class SelectImageDialog {
 			Util.toast(activity, "未找到照片");
 			return;
 		}
-		cutImage(cameraPath);
+		saveImage(cameraPath);
 	}
 
 }

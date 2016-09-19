@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.ImageView;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
@@ -15,7 +16,6 @@ import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserBaidu;
@@ -31,8 +31,10 @@ public class LoadingActivity extends MenuActivity {
 		setContentView(R.layout.loading);
 
 		Drawable drawable = FileUtil.loadDrawable(FileUtil.getAppPath(), FileUtil.LOADING_NAME);
-		if (drawable != null)
-			findViewById(R.id.loading_bg).setBackgroundDrawable(drawable);
+		if (drawable != null) {
+			ImageView view = (ImageView) findViewById(R.id.loading_bg);
+			view.setImageDrawable(drawable);
+		}
 		getBooks();
 		// testGetData();
 	}
