@@ -157,6 +157,7 @@ public class AsyncTxtLoader {
 		MyLog.i("totalChapterCount=" + count);
 		if (count == 0) {// 没有需要下载的
 			isRunning = false;
+			activity.sendMsgOnThread(what, 100, null);
 			return false;
 		}
 		book.setLoadStatus(LoadStatus.loading);

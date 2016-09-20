@@ -560,6 +560,7 @@ public class ReadMenuActivity extends MenuActivity {
 		case 2:
 			menu_update.setVisibility(View.VISIBLE);
 			menu_stop.setVisibility(View.GONE);
+			LoadManager.asynSaveDirectory(Cache.getBook().getId(), Cache.getChapters());
 			break;
 		case 3:
 			BookEntity book = Cache.getBook();

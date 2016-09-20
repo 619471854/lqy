@@ -532,8 +532,31 @@ public class MainActivity extends MenuActivity {
 						if (NetworkUtils.isNetConnected(null))
 							book.setLoadStatus(LoadStatus.failed);
 						sendMsgOnThread(what, onlyCheckInt, null);// 更新失败
-					} else
+					} else {
+						// 获取剩余未读章节数
+						if (book.getCurrentChapterId() < 0)
+							book.setCurrentChapterId(0);
+						if (book.getCurrentChapterId() >= chapters.size())
+							book.setCurrentChapterId(chapters.size() - 1);
+						book.setUnReadCount(chapters.size() - book.getCurrentChapterId() - 1);
+						// 更新章节状态
+						File file;
+						String path = FileUtil.getBooksPath(book.getId());
+						boolean notSupportUpdated = !book.getSite().supportUpdated();
+						for (ChapterEntity chapter : chapters) {
+							if (notSupportUpdated) {
+								chapter.setLoadStatus(LoadStatus.completed);
+							} else if (!chapter.isVip()) {
+								file = new File(path, FileUtil.getChapterName(chapter.getName()));
+								if (file.exists() && file.length() > 0) {
+									chapter.setLoadStatus(LoadStatus.completed);
+								} else {
+									chapter.setLoadStatus(LoadStatus.notLoaded);
+								}
+							}
+						}
 						sendMsgOnThread(what, onlyCheckInt, new BookAndChapters(book, chapters));
+					}
 				}
 			};
 		}.start();
