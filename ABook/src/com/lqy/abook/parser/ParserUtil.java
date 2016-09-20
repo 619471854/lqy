@@ -35,7 +35,7 @@ public abstract class ParserUtil {
 		return Util.isEmpty(html) ? parseUrl(url, filter, encodeType) : parseHtml(html, filter);
 	}
 
-	protected static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
+	public static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
 		try {
 			SimpleNodeIterator iterator = parseUrl(url, filter, encodeType);
 			if (iterator.hasMoreNodes()) {
@@ -143,7 +143,7 @@ public abstract class ParserUtil {
 		return CONSTANT.EMPTY;
 	}
 
-	protected NodeFilter createEqualFilter(final String reg) {
+	public static NodeFilter createEqualFilter(final String reg) {
 		return new NodeFilter() {
 			public boolean accept(Node node) {
 				return reg.equals(node.getText());
@@ -151,7 +151,7 @@ public abstract class ParserUtil {
 		};
 	}
 
-	protected NodeFilter createStartFilter(final String reg) {
+	protected static NodeFilter createStartFilter(final String reg) {
 		return new NodeFilter() {
 			public boolean accept(Node node) {
 				return node.getText().startsWith(reg);
@@ -174,7 +174,7 @@ public abstract class ParserUtil {
 		return CONSTANT.EMPTY;
 	}
 
-	protected static Matcher getMatcher(String html, String reg) {
+	public static Matcher getMatcher(String html, String reg) {
 		if (reg == null)
 			return null;
 		try {

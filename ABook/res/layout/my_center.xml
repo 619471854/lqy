@@ -48,6 +48,7 @@
             style="@style/item_text"
             android:onClick="sendButtonClick"
             android:text="设置搜索界面可以搜索的网站" />
+
         <View style="@style/item_line" />
 
         <TextView
@@ -55,6 +56,14 @@
             style="@style/item_text"
             android:onClick="sendButtonClick"
             android:text="设置启动界面图片" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_version"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="检测版本更新" />
     </LinearLayout>
 
     <LinearLayout

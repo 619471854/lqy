@@ -3,10 +3,16 @@ package com.lqy.abook.activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.htmlparser.Node;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -17,6 +23,7 @@ import com.lqy.abook.R;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.img.SelectImageDialog;
 import com.lqy.abook.load.FileUtil;
+import com.lqy.abook.parser.ParserUtil;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.DataCleanManager;
 import com.lqy.abook.tool.Util;
@@ -101,7 +108,59 @@ public class MyCenterActivity extends MenuActivity {
 				dialog = new SelectImageDialog(_this);
 			dialog.show();
 			break;
+		case R.id.my_center_version:
+			getVersion();
+			break;
 		}
+	}
+
+	private void getVersion() {
+		new Thread() {
+			public void run() {
+				Node node = ParserUtil.parseNodeByUrl(CONSTANT.VERSION_URL, ParserUtil.createEqualFilter("div class=\"summary noImg\""), "utf-8");
+				final String text = node == null ? null : node.toPlainTextString();
+
+				if (!isFinishing()) {
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							checkVersion(text);
+						}
+					});
+				}
+			}
+		}.start();
+	}
+
+	private void checkVersion(String value) {
+		try {
+			Pattern p = Pattern.compile("\\s*version:(\\d+)\\s+url:(\\S+)\\s*");
+			Matcher m = p.matcher(value);
+			if (m.find()) {
+				int version = Integer.parseInt(m.group(1));
+				final String url = m.group(2);
+
+				PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+				if (version > info.versionCode) {
+					Util.dialog(_this, "发现新的版本，是否更新", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Uri uri = Uri.parse(url);
+							// 创建Intent意图
+							Intent intent = new Intent(Intent.ACTION_VIEW);
+							// 设置Uri和类型
+							intent.setDataAndType(uri, "application/vnd.android.package-archive");
+							// 执行意图进行安装
+							startActivity(intent);
+						}
+					});
+					return;
+				}
+			}
+		} catch (Exception e) {
+		}
+		Util.toast(_this, "已是最新版本");
 	}
 
 	@Override

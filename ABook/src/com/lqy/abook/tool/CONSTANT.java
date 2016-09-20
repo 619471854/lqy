@@ -29,4 +29,6 @@ public class CONSTANT {
 	public static final int screen_light_max = 255;// 屏幕亮度
 	public static final int voice_speed = 50;//默认的语音速度
 
+	public static final String VERSION_URL = "http://appfront.handday.cn/ShareWork/Article?id=0CH8BAZgZ2";
+
 }
