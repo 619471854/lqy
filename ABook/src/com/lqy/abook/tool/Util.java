@@ -2,12 +2,11 @@ package com.lqy.abook.tool;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.util.Base64;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -176,12 +175,18 @@ public class Util {
 	}
 
 	/**
-	 * 验证网址
+	 * 获取手机型号
 	 */
-	public static boolean matchWebSite(String url) {
-		String reg = "(http(s)?://)?(www\\.)?[\\w]+\\.\\w{2,4}(/)?";
-		Pattern p = Pattern.compile(reg);
-		Matcher m = p.matcher(url);
-		return m.find();
+	public static String getMobileBrand() {
+		try {
+			if (!Util.isEmpty(Build.MODEL) && !"unknown".equalsIgnoreCase(Build.MODEL))
+				return Build.MODEL;
+			if (!Util.isEmpty(Build.BRAND) && !"unknown".equalsIgnoreCase(Build.BRAND))
+				return Build.BRAND;
+			if (!Util.isEmpty(Build.MANUFACTURER) && !"unknown".equalsIgnoreCase(Build.MANUFACTURER))
+				return Build.MANUFACTURER;
+		} catch (Exception e) {
+		}
+		return null;
 	}
 }

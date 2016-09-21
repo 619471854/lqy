@@ -57,13 +57,6 @@
             android:onClick="sendButtonClick"
             android:text="设置启动界面图片" />
 
-        <View style="@style/item_line" />
-
-        <TextView
-            android:id="@+id/my_center_version"
-            style="@style/item_text"
-            android:onClick="sendButtonClick"
-            android:text="检测版本更新" />
     </LinearLayout>
 
     <LinearLayout
@@ -116,6 +109,39 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/read_menu_bg"
+        android:orientation="vertical" >
+
+
+        <TextView
+            android:id="@+id/my_center_version"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="检测版本更新" />
+
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_feedback"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="意见或建议" />
+
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_helper"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="帮助和说明" />
+    </LinearLayout>
     <TextView
         android:id="@+id/my_center_exit"
         style="@style/btn_txt_big"

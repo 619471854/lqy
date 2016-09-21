@@ -12,7 +12,9 @@
     <string name="cancel">返回</string>
     <string name="abolish">取消</string>
     <string name="ok">确定</string>
-
+    <string name="app_about">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;自从“读书巴士”不能搜索站外小说后，市场上就找不到可以搜索免费小说的阅读器了。所以我决定自己做一个阅读器，自己和朋友们用起来还不错，所以就分享给大家。\n&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;阅读器现在只能搜索有限几个网站，如果大家觉得哪个免费网站的小说更新快，可以在“意见与建议里”给我发邮件，我有时间的话就加上。谢谢大家支持！</string>
+    <string name="app_about_add">1．点击首页的按钮“＋”，进入找书界面直接搜索。\n2．点击首页的按钮“＋”，进入找书界面再点击按钮“本地”，选择手机上的一个“.txt”文件，就可以导入本地小说。\n3．点击首页底部的标签“浏览器”，可以像普通浏览器一样查看网页，进入一个小说目录页如“http://m.shuyuewu.com/info-33236/”，点击底部按钮“加入书架”。\n4．在“浏览器”进入一个小说内容页如“https://www.douban.com/note/148195310/”，<b>长按</b>底部按钮“加入书架”。</string>
+    
     <string-array name="book_menu">
         <item>置顶</item>
         <item>更新本书</item>
@@ -46,7 +48,6 @@
         <item>删除本章的所有图片</item>
         <item>删除地址不包含字符串的所有图片</item>
     </string-array>
-
     <string-array name="voicer_cloud_entries">
         <item>小燕—女青、中英、普通话</item>
         <item>小宇—男青、中英、普通话</item>
@@ -87,4 +88,5 @@
         <item>nannan</item>
         <item>vils</item>
     </string-array>
+
 </resources>

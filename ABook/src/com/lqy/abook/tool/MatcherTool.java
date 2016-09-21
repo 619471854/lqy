@@ -58,11 +58,13 @@ public class MatcherTool {
 	/**
 	 * 验证网址
 	 */
+	public static final String SiteReg="(http|ftp|https)://[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
 	public static boolean matchWebSite(String url) {
-		String reg = "(http|ftp|https)://[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&amp;:/~\\+#]*[\\w\\-\\@?^=%&amp;/~\\+#])?";
 		//String reg = "(http(s)?://)?(www\\.)?[\\w]+\\.\\w{2,4}(/)?";
-		Pattern p = Pattern.compile(reg);
+		Pattern p = Pattern.compile(SiteReg);
 		Matcher m = p.matcher(url);
 		return m.find();
 	}
+
+	
 }

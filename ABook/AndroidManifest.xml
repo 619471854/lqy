@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lqy.abook"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0.0" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -136,6 +136,11 @@
         <!-- 个人中心-->
         <activity
             android:name="com.lqy.abook.activity.MyCenterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme" />
+        <!-- 帮助-->
+        <activity
+            android:name="com.lqy.abook.activity.MyHelpActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme" />
 

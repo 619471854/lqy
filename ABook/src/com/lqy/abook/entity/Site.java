@@ -88,7 +88,7 @@ public enum Site {
 		case _00kw:
 			return "零点看书";
 		case DSB:
-			return "大书包";
+			return "大书包小说网";
 		case Pic:
 			return CONSTANT.EMPTY;
 		case Located:

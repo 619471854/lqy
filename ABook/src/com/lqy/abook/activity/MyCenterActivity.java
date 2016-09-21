@@ -109,12 +109,21 @@ public class MyCenterActivity extends MenuActivity {
 			dialog.show();
 			break;
 		case R.id.my_center_version:
-			getVersion();
+			v.setEnabled(false);
+			checkVersion(v);
 			break;
+		case R.id.my_center_feedback:
+			feedback();
+		case R.id.my_center_helper:
+			startActivity(new Intent(_this, MyHelpActivity.class));
+			animationRightToLeft();
 		}
 	}
 
-	private void getVersion() {
+	/**
+	 * 版本检测
+	 */
+	private void checkVersion(final View v) {
 		new Thread() {
 			public void run() {
 				Node node = ParserUtil.parseNodeByUrl(CONSTANT.VERSION_URL, ParserUtil.createEqualFilter("div class=\"summary noImg\""), "utf-8");
@@ -124,7 +133,38 @@ public class MyCenterActivity extends MenuActivity {
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							checkVersion(text);
+							try {
+								Pattern p = Pattern.compile("\\s*version:(\\d+)\\s+url:(\\S+)\\s*");
+								Matcher m = p.matcher(text);
+								if (m.find()) {
+									int version = Integer.parseInt(m.group(1));
+									final String url = m.group(2);
+
+									PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+									if (version > info.versionCode) {
+										Util.dialog(_this, "发现新的版本，是否更新", new DialogInterface.OnClickListener() {
+
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												Uri uri = Uri.parse(url);
+												Intent intent = new Intent(Intent.ACTION_VIEW);
+												intent.setData(uri);
+												try {
+													intent.setClassName("com.android.browser", "com.android.browser.BrowserActivity");
+													startActivity(intent);
+												} catch (Exception e) {
+													startActivity(intent);
+												}
+											}
+										});
+										v.setEnabled(true);
+										return;
+									}
+								}
+							} catch (Exception e) {
+							}
+							Util.toast(_this, "已是最新版本");
+							v.setEnabled(true);
 						}
 					});
 				}
@@ -132,35 +172,31 @@ public class MyCenterActivity extends MenuActivity {
 		}.start();
 	}
 
-	private void checkVersion(String value) {
+	/**
+	 * 意见和建议
+	 */
+	private void feedback() {
 		try {
-			Pattern p = Pattern.compile("\\s*version:(\\d+)\\s+url:(\\S+)\\s*");
-			Matcher m = p.matcher(value);
-			if (m.find()) {
-				int version = Integer.parseInt(m.group(1));
-				final String url = m.group(2);
-
-				PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-				if (version > info.versionCode) {
-					Util.dialog(_this, "发现新的版本，是否更新", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Uri uri = Uri.parse(url);
-							// 创建Intent意图
-							Intent intent = new Intent(Intent.ACTION_VIEW);
-							// 设置Uri和类型
-							intent.setDataAndType(uri, "application/vnd.android.package-archive");
-							// 执行意图进行安装
-							startActivity(intent);
-						}
-					});
-					return;
-				}
+			String[] reciver = new String[] { "921419024@qq.com" };
+			String[] myCc = new String[] {};
+			StringBuilder sb = new StringBuilder();// 内容
+			try {
+				sb.append("Android Version：" + android.os.Build.VERSION.RELEASE + "\n  ");
+				sb.append("Platform：" + Util.getMobileBrand() + "\n  ");
+				sb.append("App Version：" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName + "\n  ");
+			} catch (Exception e) {
 			}
+
+			Intent myIntent = new Intent(android.content.Intent.ACTION_SEND);
+			myIntent.setType("plain/text");
+			myIntent.putExtra(android.content.Intent.EXTRA_EMAIL, reciver); // 接收人
+			myIntent.putExtra(android.content.Intent.EXTRA_CC, myCc); // 抄送
+			myIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "意见和建议"); // 标题
+			myIntent.putExtra(android.content.Intent.EXTRA_TEXT, sb.toString());
+			startActivity(Intent.createChooser(myIntent, ""));
 		} catch (Exception e) {
+			Util.dialog(_this, "未找到邮件客户端或者邮件客户端未设置账户");
 		}
-		Util.toast(_this, "已是最新版本");
 	}
 
 	@Override

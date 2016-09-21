@@ -8,7 +8,6 @@ import java.util.Map;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.os.Message;
 
@@ -38,27 +37,12 @@ public class MyApp extends Application {
 		// 崩溃处理
 		CrashHandler crashHandler = CrashHandler.getInstance();
 		crashHandler.init(getApplicationContext());
-		// 全局设置
-		globalConfig();
 		// 科大讯飞语音
 		SpeechUtility.createUtility(this, "appid=" + CONSTANT.speech_appid);
 		// 搜索的网站
 		getSearchSite();
 
 		super.onCreate();
-	}
-
-	/**
-	 * 全局设置
-	 */
-	private void globalConfig() {
-		// 版本号
-		try {
-			PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-			CONSTANT.versionName = info.versionName;
-		} catch (Exception e) {
-			CONSTANT.versionName = CONSTANT.EMPTY;
-		}
 	}
 
 	private void getSearchSite() {

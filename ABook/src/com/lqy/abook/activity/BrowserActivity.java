@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
@@ -32,6 +33,7 @@ import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.FavoriteEntity;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.tool.CONSTANT;
+import com.lqy.abook.tool.MatcherTool;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.MyWebChromeClient;
 import com.lqy.abook.tool.Util;
@@ -356,13 +358,13 @@ public class BrowserActivity extends MenuActivity {
 			lay_top.setVisibility(View.GONE);
 			lay_bottom.setVisibility(View.GONE);
 			hideMoreLay();
-			Util.toast(_this, "按“Home”除外的任何实体按键可以显示菜单项");
+			Toast.makeText(_this, "按“Home”除外的任何实体按键可以显示菜单项", Toast.LENGTH_LONG).show();
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			break;
 		case R.id.browser_refresh:// 刷新
 			if (view_url.isFocused()) {
 				String value = view_url.getText().toString();
-				if (Util.matchWebSite(value)) {
+				if (MatcherTool.matchWebSite(value)) {
 					if (!value.startsWith("http://") && !value.startsWith("https://"))
 						value = "http://" + value;
 					loadUrl(value);

@@ -4,7 +4,6 @@ public class CONSTANT {
 
 	public static boolean isDebug = false;
 	public static final String EMPTY = "";
-	public static String versionName;
 	public static final String TEMP = ".temp";
 
 	public static final int coverWidth = 100;// 书封面的长宽

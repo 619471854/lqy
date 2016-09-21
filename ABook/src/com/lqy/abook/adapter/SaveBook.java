@@ -43,13 +43,15 @@ public class SaveBook {
 
 			@Override
 			public boolean onLongClick(final View v) {
-				new MyAlertDialog(activity).setItems(R.array.save_menu, new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						saveBookClick(which);
-					}
-				}).show();
+				// new MyAlertDialog(activity).setItems(R.array.save_menu, new
+				// DialogInterface.OnClickListener() {
+				//
+				// @Override
+				// public void onClick(DialogInterface dialog, int which) {
+				// saveBookClick(which);
+				// }
+				// }).show();
+				saveBookClick(2);
 				return true;
 			}
 		});
@@ -159,7 +161,7 @@ public class SaveBook {
 				}
 			});
 		} else if (which == 2) {
-			Util.dialog(activity, "确定要保存此网页)", new DialogInterface.OnClickListener() {
+			Util.dialog(activity, "确定要保存此网页吗？", new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					activity.loadUrl("javascript:window.local_obj.saveBook(" + WHAT_SAVEBOOK6 + ",1,document.getElementsByTagName('body')[0].innerText);");
