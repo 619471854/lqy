@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
 import com.lqy.abook.db.BookDao;
+import com.lqy.abook.db.DBManager;
 import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;

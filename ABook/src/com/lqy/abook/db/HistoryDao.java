@@ -27,7 +27,7 @@ public class HistoryDao {
 				public void run() {
 					int time = (int) (System.currentTimeMillis() / 1000);
 					long id = DBManager.getInstance().saveHistory(title, url, time);
-					MyLog.i("saveHistory ok id= " + id);
+					MyLog.i("saveHistory ok time= " + time);
 				}
 			}.start();
 		}

@@ -42,7 +42,7 @@ public class ParserShuyue extends ParserBase3 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		String id = matcher(url, "http://m\\.shuyuewu\\.com/wapbook-(\\d+)_?\\d*/?");
 		if (Util.isEmpty(id))
 			id = matcher(url, "http://m\\.shuyuewu\\.com/info-(\\d+)/?");

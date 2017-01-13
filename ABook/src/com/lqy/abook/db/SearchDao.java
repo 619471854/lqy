@@ -1,6 +1,5 @@
 package com.lqy.abook.db;
 
-import java.util.Calendar;
 import java.util.List;
 
 import com.lqy.abook.MenuActivity;
@@ -17,9 +16,7 @@ public class SearchDao {
 	public void getList(final MenuActivity a, final int what) {
 		new Thread() {
 			public void run() {
-				Calendar cal = Calendar.getInstance();
-				cal.add(Calendar.DAY_OF_MONTH, -30);
-				List<String> data = DBManager.getInstance().getSearchList(cal.getTimeInMillis());
+				List<String> data = DBManager.getInstance().getSearchList();
 				a.sendMsgOnThread(what, data);
 			}
 		}.start();
@@ -33,6 +30,17 @@ public class SearchDao {
 			public void run() {
 				long id = DBManager.getInstance().addSearchHistory(name, System.currentTimeMillis());
 				MyLog.i("SearchDao add " + id);
+			}
+		}.start();
+	}
+
+	/**
+	 * 删除查询搜索记录
+	 */
+	public void delete(final String name) {
+		new Thread() {
+			public void run() {
+				DBManager.getInstance().deleteSearchHistory(name);
 			}
 		}.start();
 	}

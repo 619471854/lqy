@@ -135,23 +135,23 @@ public class Config {
 	public static Config getQidianConfig() {
 		if (qidian == null) {
 			qidian = new Config();
-			qidian.searchUrl = "http://sosu.qidian.com/ajax/search.ashx?method=Search&n=5&rpid=10&keyword=";
-			qidian.searchFilter = null;
-			qidian.detailUrlReg = "bookurl";
-			qidian.coverReg = "coverurl";
-			qidian.directoryUrlReg = "http://sosu.qidian.com/goto.aspx?bookid=%s&chapterid=0&readtype=0&sitetype=%s";
-			qidian.nameReg = "bookname";
+			qidian.searchUrl = "http://se.qidian.com/?kw=";
+			qidian.searchFilter = "li data-rid=";
+			qidian.detailUrlReg = null;
+			qidian.coverReg = "<img\\s*src=\"([^\"]+)\"";
+			qidian.directoryUrlReg = null;
+			qidian.nameReg = "<h4>\\s*<a[^>]+>(((?!</a>)[\\s\\S])+)</a>\\s*</h4>";
 			qidian.keyReg = null;// 搜索到的关键词
-			qidian.authorReg = "authorname";
-			qidian.typeReg = "raw_categoryname";
-			qidian.wordsReg = "wordscount";
-			qidian.tipsReg = "description";
+			qidian.authorReg = "<a\\s*class=\"name\"[^>]+>([^<]+)</a>";
+			qidian.typeReg = null;
+			qidian.wordsReg = "<span>\\s*([\\.\\d]+)万</span>\\s*总字数\\s*</p>";
+			qidian.tipsReg = ">([^<]+)</a>\\s*<em>\\s*\\|\\s*</em>\\s*<span>([^<]+)</span>\\s*</p>\\s*<p\\s*class=\"intro\">([^<]+)</p>";
 			qidian.tipsDetailReg = null;
-			qidian.newChapterReg = "lastchaptername";
-			qidian.newChapterReg2 = "<strong\\s*itemprop='headline'>([^<]+)</strong>";
-			qidian.updateTimeReg = "lastchapterupdatetime";
-			qidian.updateTimeReg2 = "<span\\s*itemprop=\"dateModified\">\\s*(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2})</span>";
-			qidian.completedReg = "action_status";
+			qidian.newChapterReg ="最新更新([^<]+)</a>\\s*<em>[^<]+</em>\\s*<span>([^<]+)(更新)?</span>" ;
+			qidian.newChapterReg2 = "<b>最近更新：</b>\\s*<a.*?>(.+?)</a>";
+			qidian.updateTimeReg = null;
+			qidian.updateTimeReg2 = "<em\\s*class=\"time\">([^<]+)(更新)?</em>";
+			qidian.completedReg = "";
 		}
 		return qidian;
 	}

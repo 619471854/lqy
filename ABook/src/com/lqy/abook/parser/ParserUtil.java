@@ -205,4 +205,14 @@ public abstract class ParserUtil {
 		return count;
 	}
 
+	// 获取cookie
+	protected static String getCookieByName(String cookie, String name) {
+		if (!Util.isJsEmpty(cookie)) {
+			String value = matcher(cookie, "(^| )" + name + "=([^;]*)(;|$)");
+			if (!Util.isJsEmpty(value)) {
+				return value;
+			}
+		}
+		return null;
+	}
 }

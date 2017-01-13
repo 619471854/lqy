@@ -45,9 +45,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("drop table " + SearchDao.table_name);
 			db.execSQL(CREATE_TABLE_SEARCH);
 		}
-		if (oldVersion == 6 && newVersion == 7) {
-			db.execSQL("alter table " + BookDao.table_name + " change " + BookDao.column_directoryUrl + " text");
-		}
 	}
 
 	private static DBHelper instance;

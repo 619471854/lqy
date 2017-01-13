@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
-import org.htmlparser.tags.LinkTag;
-import org.htmlparser.tags.Span;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.google.gson.Gson;
@@ -37,20 +34,20 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		try {
-			String msg = WebServer.getDataByUrlConnection(config.searchUrl + key, encodeType);
-			Type type = new TypeToken<Map<String, Object>>() {
-			}.getType();
-			Map<String, Object> data = new Gson().fromJson(msg, type);
-			data = (Map<String, Object>) data.get("Data");
-			data = (Map<String, Object>) data.get("search_response");
-			List<Map<String, String>> list = (List<Map<String, String>>) data.get("books");
-			String keys[] = key.split(" ");
-			for (Map<String, String> map : list) {
-				processSearchNode(books, map, keys, null, null);
+			String html = WebServer.hcGetData(config.searchUrl + key, encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
+			MyLog.i(TAG, "Search ok,parsering");
+			int count = 0;
+			String[] keys = key.split(" ");
+			while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
+				html = iterator.nextNode().toHtml();
+				boolean success = processSearchNode(books, html, keys);
+				if (!success)
+					break;// 如果未匹配，后面的就不要了
 			}
 			return true;
 		} catch (Exception e) {
-			MyLog.i(TAG, "parserSearch Search error " + e.toString());
+			MyLog.i(e.toString());
 			return false;
 		}
 	}
@@ -58,226 +55,222 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public BookEntity parserSearchSite(String name, String author) {
 		try {
-			String msg = WebServer.getDataByUrlConnection(config.searchUrl + name + "+" + author, encodeType);
-			Type type = new TypeToken<Map<String, Object>>() {
-			}.getType();
-			Map<String, Object> data = new Gson().fromJson(msg, type);
-			data = (Map<String, Object>) data.get("Data");
-			data = (Map<String, Object>) data.get("search_response");
-			List<Map<String, String>> list = (List<Map<String, String>>) data.get("books");
-			for (Map<String, String> map : list) {
-				BookEntity e = processSearchNode(null, map, null, name, author);
-				if (e != null) {
+			String html = WebServer.hcGetData(config.searchUrl + name, encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, createStartFilter(config.searchFilter));
+
+			MyLog.i(TAG, "SearchSite ok,parsering");
+			while (iterator.hasMoreNodes()) {
+				html = iterator.nextNode().toHtml();
+				// 完全匹配到了1个就可以了
+				BookEntity e = processSearchSiteNode(html, name, author);
+				if (e != null)
 					return e;
-				}
 			}
 		} catch (Exception e) {
-			MyLog.i(TAG, "parserSearchSite error " + e.toString());
 		}
 		return null;
 	}
 
-	protected BookEntity processSearchNode(List<BookEntity> books, Map<String, String> item, String[] searchKey, String name, String author) throws Exception {
+	/**
+	 * 解析 搜索小说所在的所在的site
+	 */
+	protected BookEntity processSearchSiteNode(String html, String name, String author) throws Exception {
 		// MyLog.i(html);
 		BookEntity book = new BookEntity();
 		book.setSite(site);
-		book.setName(item.get(config.nameReg));
-		String directorUrl = String.format(config.directoryUrlReg, item.get("bookid"), item.get("internalsiteid"));
-		book.setDirectoryUrl(directorUrl);// siteId
+		String nameHtml = matcher(html, config.nameReg);
+		book.setName(nameHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+
+		String id = matcher(html, "data-bid=\"(\\d+)\"");
+		book.setDirectoryUrl("http://book.qidian.com/ajax/book/category?bookId=" + id);
+		book.setDetailUrl("http://book.qidian.com/info/" + id);
 		if (Util.isEmpty(book.getName()) || Util.isEmpty(book.getDirectoryUrl()))
 			return null;// 不完善的数据
-		book.setAuthor(item.get(config.authorReg));
+		book.setAuthor(matcher(html, config.authorReg).replaceAll("\\s", CONSTANT.EMPTY));
 
-		if (searchKey != null) {
-			if (searchKey[0].equals(book.getName()))
-				book.setMatchWords(MaxMatch);
-			else if (searchKey.length == 1)
-				book.setMatchWords(searchKey[0].length());
-			else
-				book.setMatchWords(searchKey[0].length() + searchKey[1].length());
+		MyLog.i(TAG, "processSearchSiteNode a book " + book.getName() + "  " + book.getAuthor());
 
-			MyLog.i(TAG, "search a book " + book.getName() + "  " + book.getAuthor());
-
-		} else if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
+		// 如果有作者，那么必须完全匹配
+		if (!name.equals(book.getName()) || !author.equals(book.getAuthor())) {
 			return null;// 继续找第二本
 		}
 
-		book.setCover(item.get(config.coverReg));
-		book.setDetailUrl(item.get(config.detailUrlReg));
-		book.setType(item.get(config.typeReg));
-		book.setTip(Util.toString(item.get(config.tipsReg)).replaceAll(Config.blank, " ").trim());
-		book.setWords(Util.toInt(item.get(config.wordsReg)));
-		book.setNewChapter(item.get(config.newChapterReg));
-		long time = Util.toLongOr_1(item.get(config.updateTimeReg));
-		if (time != CONSTANT._1)
-			time *= 1000;
-		book.setUpdateTime(Util.formatDate(time, 10));
-		// "1": "出版中","2": "封 笔","3": "已完成","4": "已经完本", "5": "情节展开","6":
-		// "接近尾声", "7": "新书上传","8": "暂 停", "9": "精彩纷呈", "10": "连载中"
-		String status = item.get(config.completedReg);
-		book.setCompleted("3".equals(status) || "4".equals(status));
+		book.setCover(getQidianChildUrl(matcher(html, config.coverReg)));
 
-		if (books != null)
-			books.add(book);
-		return book;
+		Matcher m = getMatcher(html, config.tipsReg);
+		if (m != null) {
+			book.setType(m.group(1).trim());
+			book.setCompleted(m.group(2).trim().equals("完本"));
+			book.setTip(m.group(3).replaceAll("\\s", CONSTANT.EMPTY));
+		}
+		m = getMatcher(html, config.newChapterReg);
+		if (m != null) {
+			book.setNewChapter(m.group(1).replaceAll("\\s", " "));
+			book.setUpdateTime(m.group(2));
+		}
+		book.setWords((int) (Util.toFloat(matcher(html, config.wordsReg)) * 10000));
+
+		return book;// 已找到
+	}
+
+
+	protected boolean processSearchNode(List<BookEntity> books, String html, String[] searchKey) throws Exception {
+		// MyLog.i(html);
+		BookEntity book = new BookEntity();
+		book.setSite(site);
+		String nameHtml = matcher(html, config.nameReg);
+		book.setName(nameHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+
+		String id = matcher(html, "data-bid=\"(\\d+)\"");
+		book.setDirectoryUrl("http://book.qidian.com/ajax/book/category?bookId=" + id);
+		book.setDetailUrl("http://book.qidian.com/info/" + id);
+		if (Util.isEmpty(book.getName()) || Util.isEmpty(book.getDirectoryUrl()))
+			return false;// 不完善的数据
+		book.setAuthor(matcher(html, config.authorReg).replaceAll("\\s", CONSTANT.EMPTY));
+
+		if (searchKey.length == 1) {
+			if (searchKey[0].equals(book.getName()) || searchKey[0].equals(book.getAuthor()))
+				book.setMatchWords(MaxMatch);
+			else
+				book.setMatchWords(book.getName().contains(searchKey[0]) ? searchKey[0].length() : 0);
+		} else {
+			if (searchKey[0].equals(book.getName()) && searchKey[1].equals(book.getAuthor()))
+				book.setMatchWords(MaxMatch);
+			else
+				book.setMatchWords((book.getName().contains(searchKey[0]) ? searchKey[0].length() : 0)
+						+ (searchKey[1].equals(book.getAuthor()) ? searchKey[1].length() : 0));
+		}
+		book.setCover(getQidianChildUrl(matcher(html, config.coverReg)));
+
+		Matcher m = getMatcher(html, config.tipsReg);
+		if (m != null) {
+			book.setType(m.group(1).trim());
+			book.setCompleted(m.group(2).trim().equals("完本"));
+			book.setTip(m.group(3).replaceAll("\\s", CONSTANT.EMPTY));
+		}
+		m = getMatcher(html, config.newChapterReg);
+		if (m != null) {
+			book.setNewChapter(m.group(1).replaceAll("\\s", " "));
+			book.setUpdateTime(m.group(2));
+		}
+		book.setWords((int) (Util.toFloat(matcher(html, config.wordsReg)) * 10000));
+
+		MyLog.i(TAG, "ParserQidian search a book " + book.getName() + "  " + book.getAuthor());
+		books.add(book);
+		return true;
 	}
 
 	@Override
 	public boolean updateBook(BookEntity book) {
-		try {
-			String html = WebServer.hcGetData(book.getDetailUrl(), encodeType);
-			int i = html.indexOf("<div class=\"updata_cont");
-			int j = html.indexOf("<div class=\"updata_cont", i + 10);
-			int k = html.indexOf("<div class=\"updata_cont", j + 10);
-			int h = html.indexOf("<div class=\"author_tj", k);
-			String html1 = html.substring(k, h);
-			String newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
-			if (newChapter.length() == 0) {
-				html1 = html.substring(j, k);
-				newChapter = matcher(html1, config.newChapterReg2).trim().replaceAll("\\s", " ");
-			}
-			MyLog.i(TAG, "updateBook newChapter=" + newChapter);
-			if (newChapter.equals(book.getNewChapter())) {
-				return false;// 此书没有更新
-			}
-			book.setLoadStatus(LoadStatus.hasnew);
-			book.setNewChapter(newChapter);
-			book.setUpdateTime(matcher(html1, config.updateTimeReg2));
+		String html = toHtml(parseNode(book.getDetailUrl(), null, createStartFilter("div class=\"book-detail-wrap"), encodeType));
+		if (Util.isEmpty(html))
+			return false;
+		String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
+		if (newChapter.equals(book.getNewChapter())) {
+			return false;// 此书没有更新
+		}
+		book.setLoadStatus(LoadStatus.hasnew);
+		book.setNewChapter(newChapter);
+		book.setUpdateTime(matcher(html, config.updateTimeReg2).trim());
+		float words = Util.toFloat(matcher(html, "<em>([\\d\\.]+)</em><cite>万字</cite>"));
+		if (words > 0)
+			book.setWords(((int) words) * 10000);
 
-			SimpleNodeIterator iterator = parseHtml(html, createEqualFilter("div class=\"info_box\""));
-			if (iterator.hasMoreNodes()) {
-				html = iterator.nextNode().toHtml();
-				book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
-				book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
+		return true;
+	}
+
+	@Override
+	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
+		if (Util.isEmpty(book.getDetailUrl())) {
+			book.setLoadStatus(LoadStatus.failed);
+			return null;
+		}
+		if (!updateBook(book)) {
+			MyLog.i(TAG, "updateBookAndDict  此书没有更新");
+			return null;
+		}
+		List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
+		if (chapters == null || chapters.size() == 0) {
+			book.setLoadStatus(LoadStatus.failed);
+			MyLog.i(TAG, "updateBookAndDict getChapters failed");
+			return null;// 此书更新失败
+		} else {
+			return chapters;
+		}
+	}
+
+	@Override
+	public boolean parserBookDetail(BookEntity book) {
+		Node tipNode = parseNode(book.getDetailUrl(), null, createEqualFilter("div class=\"book-intro\""), encodeType);
+		if (tipNode != null) {
+			String tip = tipNode.toPlainTextString().trim();
+			tip = tip.replaceAll("\r\n", "\n");
+			tip = tip.replaceAll(Config.blank, CONSTANT.EMPTY);// 全角空格
+
+			int index = tip.indexOf("作者自定义标签:");
+			if (index != -1) {
+				book.setTip(tip.substring(0, index).trim());
+			} else {
+				book.setTip(tip);
 			}
 			return true;
-		} catch (Exception e) {
-			MyLog.e(e);
 		}
 		return false;
 	}
 
 	@Override
-	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
-		try {
-			if (!Util.isEmpty(book.getDetailUrl()) && !updateBook(book)) {
-				MyLog.i(TAG, "updateBookAndDict  此书没有更新");
-				return null;
-			}
-			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
-			if (chapters == null || chapters.size() == 0) {
-				book.setLoadStatus(LoadStatus.failed);
-				MyLog.i(TAG, "updateBookAndDict getChapters failed");
-				return null;// 此书更新失败
-			} else {
-				return chapters;
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
-		}
-		book.setLoadStatus(LoadStatus.failed);
-		return null;
-	}
-
-	@Override
-	public boolean parserBookDetail(BookEntity detail) {
-		try {
-			NodeFilter filter = new NodeFilter() {
-				public boolean accept(Node node) {
-					String text = node.getText();
-					return text.equals("span itemprop=\"description\"") || text.startsWith("a itemprop=\"url\" stat-type");
-				}
-			};
-			SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), filter, encodeType);
-			MyLog.i(TAG, "parserBookDetail getParserResult ok");
-			while (iterator.hasMoreNodes()) {
-				Node node = iterator.nextNode();
-				if (node instanceof Span) {
-					String tip = node.toPlainTextString();
-					tip = tip.replaceAll(config.nbsp, CONSTANT.EMPTY);
-					tip = tip.replaceAll("\\s", CONSTANT.EMPTY);
-					tip = tip.replaceAll(Config.blank, CONSTANT.EMPTY);// 全角空格
-					detail.setTip(tip);
-				} else if (node instanceof LinkTag) {
-					String directoryUrl = ((LinkTag) node).getLink();
-					if (!Util.isEmpty(directoryUrl))
-						detail.setDirectoryUrl(directoryUrl);
-				}
-			}
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
-		return parserBookDict(url, null);
-	}
-
-	public List<ChapterEntity> parserBookDict(String url, String html) {
 		try {
-			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			//这里的html有问题
-			SimpleNodeIterator iterator = parseIterator(url, null, createStartFilter("li style='width:33%;'"), encodeType);
-			MyLog.i(TAG, "parserBookDict getParserResult ok");
-			ChapterEntity chapter;
-			while (iterator.hasMoreNodes()) {
-				Node node = iterator.nextNode();
-				try {
-					LinkTag a = (LinkTag) node.getFirstChild();
-					chapter = new ChapterEntity();
-					chapter.setName(a.toPlainTextString().trim().replaceAll("\\s", " "));
-					chapter.setUrl(getChildUrl(url, a.getLink()));
-					chapter.setId(chapters.size());
-					if (!Util.isEmpty(chapter.getName()))
-						chapters.add(chapter);
-				} catch (Exception e) {
+			String msg = WebServer.hcGetData(url, encodeType);
+			Type type = new TypeToken<Map<String, Object>>() {
+			}.getType();
+			Map<String, Object> data = new Gson().fromJson(msg, type);
+			data = (Map<String, Object>) data.get("data");
+			List<Map<String, Object>> dirList = (List<Map<String, Object>>) data.get("vs");
+
+			List<ChapterEntity> re = new ArrayList<ChapterEntity>();
+			ChapterEntity e = null;
+			String cUrl = null;
+			String baseUrl = "http://read.qidian.com/chapter/";
+			for (Map<String, Object> dir : dirList) {
+				boolean isVip = Util.toFloat(dir.get("vS")) == 1;
+				List<Map<String, Object>> chapterList = (List<Map<String, Object>>) dir.get("cs");
+				for (Map<String, Object> chapter : chapterList) {
+					String name = Util.toString(chapter.get("cN"));
+					cUrl = null;
+					if (!isVip) {
+						if (chapter.get("cN") != null) {
+							cUrl = baseUrl + chapter.get("cU").toString();
+						}
+					}
+					if (!Util.isEmpty(name) && (isVip || !Util.isEmpty(cUrl))) {
+						e = new ChapterEntity();
+						e.setName(name);
+						if (isVip)
+							e.setLoadStatus(LoadStatus.vip);
+						e.setUrl(cUrl);
+						e.setId(re.size());
+						re.add(e);
+					}
 				}
 			}
-			return chapters;
+			return re;
 		} catch (Exception e) {
 			MyLog.e(e);
-			return null;
 		}
+
+		return null;
 	}
 
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div class=\"bookreadercontent\""), encodeType);
-			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				Node n = iterator.nextNode();
-				String html = n.toHtml();
-				Matcher m = getMatcher(html, "<script\\ssrc='([^']+)'\\s*charset='([^']+)'");
-				if (m == null) {
-					String t = n.toPlainTextString();
-					t = t.replaceAll("\\s", CONSTANT.EMPTY);
-					t = t.replaceAll(Config.blank + Config.blank, "\n        ");// 替换2全角空格为8个半角空格
-					if (t.startsWith("\n"))
-						t = t.substring(1);
-					t = t + "\n        （本章是VIP章节，不能阅读以下内容）";
-					return t;
-				}
-				MyLog.i(TAG, "asynGetChapterDetail " + m.group(1));
-
-				String text = WebServer.hcGetData(m.group(1), m.group(2));
-				m = getMatcher(text, "^document.write\\('([\\s\\S]+)'\\);$");
-				if (m != null)
-					text = m.group(1);
-
-				text = text.replaceAll("&amp;", CONSTANT.EMPTY);
-				text = text.replaceAll("&lt;", CONSTANT.EMPTY);
-				text = text.replaceAll("&gt;", CONSTANT.EMPTY);
-				int i = text.indexOf("<a href=http://www.qidian.com>");
-				if (i != -1)
-					text = text.substring(0, i);
-				text = text.replaceAll(Config.lineWrapReg2, "\n");
-				text = text.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
-				text = text.replaceAll(Config.nbsp, "  ");
-				text = text.replaceAll("\n{2,}+", "\n");
-				return text.trim();
+			Node node = parseNodeByUrl(url, createEqualFilter("div class=\"read-content j_readContent\""), encodeType);
+			if (node != null) {
+				String t = node.toPlainTextString();
+				t = t.replaceAll("\\s*", CONSTANT.EMPTY);
+				t = t.replaceAll(Config.blank + Config.blank, "\n        ");// 替换2全角空格为8个半角空格
+				return t.trim();
 			}
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -288,76 +281,86 @@ public class ParserQidian extends ParserBase {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	@Override
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		String detailUrl = null;
-		String directUrl = null;
-		String id = matcher(url, "http://m\\.qidian\\.com/book/bookchapterlist\\.aspx\\?bookid=(\\d+)");
+		String id = matcher(url, "http://m\\.qidian\\.com/book/(\\d+)");
 		if (Util.isEmpty(id))
-			id = matcher(url, "http://m\\.qidian\\.com/book/showbook\\.aspx\\?bookid=(\\d+)");
-		if (Util.isEmpty(id))
-			id = matcher(url, "http://www\\.qidian\\.com/Book/(\\d+)\\.aspx");
+			id = matcher(url, "^http://book\\.qidian\\.com/info/(\\d+)$");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://read\\.qidian\\.com/BookReader/([\\w-]+)\\.aspx");
+			id = matcher(url, "^http://read\\.qidian\\.com/chapter/([\\w-]+)/([\\w-]+)$");
 			if (Util.isEmpty(id))
 				return null;
 			detailUrl = parserBookDetailUrl(url, html);
-			directUrl = url;
 		} else {
-			detailUrl = "http://www.qidian.com/Book/" + id + ".aspx";
-			directUrl = String.format(config.directoryUrlReg, id, 1);
+			detailUrl = "http://book.qidian.com/info/" + id;
 		}
 
 		BookEntity book = new BookEntity();
+		book.setSite(site);
 		book.setDetailUrl(detailUrl);
-		book.setDirectoryUrl(directUrl);
+		id = matcher(detailUrl, "^http://book\\.qidian\\.com/info/(\\d+)$");
+		if (Util.isEmpty(id))
+			return null;
+		book.setDirectoryUrl("http://book.qidian.com/ajax/book/category?bookId=" + id);
 
-		if (detailUrl == null || parserBookDetail(book, detailUrl.equals(url) ? html : null)) {
-			book.setSite(site);
-			List<ChapterEntity> chapters = parserBookDict(directUrl, directUrl.equals(url) ? html : null);
-			if (chapters != null && chapters.size() > 0) {
-				book.setNewChapter(chapters.get(chapters.size() - 1).getName());
-			}
+		if (!parserBookDetail(book, url.equals(detailUrl) ? html : null)) {
+			return null;
+		}
+
+		List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
+		if (chapters != null && chapters.size() > 0) {
+			book.setNewChapter(chapters.get(chapters.size() - 1).getName());
 			return new BookAndChapters(book, chapters);
 		}
-
 		return null;
+
 	}
 
-	public String parserBookDetailUrl(String directoryUrl, String allHtml) {
-		String html = toHtml(parseNode(directoryUrl, allHtml, createEqualFilter("div class=\"page_site\""), encodeType));
-		String id = matcher(html, "<a\\s*href=\"http://www\\.qidian\\.com/Book/(\\d+)\\.aspx\"\\s*target=\"_blank\">");
-		if (!Util.isEmpty(id)) {
-			return "http://www.qidian.com/Book/" + id + ".aspx";
-		}
-		return null;
+	private String parserBookDetailUrl(String directoryUrl, String allHtml) {
+		String html = toHtml(parseNode(directoryUrl, allHtml, createEqualFilter("dd data-eid=\"qd_R85\""), encodeType));
+		String url = matcher(html, "<a\\s*href=\"([^\"]+)\"");
+
+		return getQidianChildUrl(url);
 	}
 
-	public boolean parserBookDetail(BookEntity book, String allHtml) {
-
-		String html = toHtml(parseNode(book.getDetailUrl(), allHtml, createEqualFilter("div class=\"bookshow like_box\""), encodeType));
+	private boolean parserBookDetail(BookEntity book, String allHtml) {
+		String html = toHtml(parseNode(book.getDetailUrl(), allHtml, createStartFilter("div class=\"book-detail-wrap"), encodeType));
 		if (Util.isEmpty(html))
 			return false;
-		Matcher m = getMatcher(html, "<img\\s*itemprop=\"image\"\\s*src=\"([^\"]+)\"\\s*alt=\"《([^》]+)》作者：([^\"]+)\"\\s*onerror=");
+		book.setCover(matcher(html, "<a\\s*class=\"J-getJumpUrl\"[^>]+>\\s*<img\\s*src=\"([^\"]+)\""));
+
+		Matcher m = getMatcher(html, "<h1>\\s*<em>([^<]+)</em>\\s*<span>\\s*<a\\s*class=\"writer\"[^>]+>([^<]+)</a>");
 		if (m == null)
 			return false;
-		book.setCover(m.group(1));
-		book.setName(m.group(2));
-		book.setAuthor(m.group(3));
+		book.setName(m.group(1));
+		book.setAuthor(m.group(2));
+		book.setWords((int) (Util.toFloat(matcher(html, "<em>([\\d\\.]+)</em><cite>万字</cite>")) * 10000));
+		book.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
+		book.setUpdateTime(matcher(html, config.updateTimeReg2).trim());
 
-		html = toHtml(parseNodeByHtml(html, createEqualFilter("div class=\"book_info\" id=\"divBookInfo\"")));
-		book.setUpdateTime(matcher(html, config.updateTimeReg2));
-		book.setType(matcher(html, "<span\\s*itemprop=\"genre\">([^<]+)</span>"));
-		book.setCompleted(matcher(html, "<span\\s*itemprop=\"updataStatus\">([^<]+)</span>").indexOf("完本") != -1);
-		book.setWords(Util.toInt(matcher(html, "<span\\s*itemprop=\"wordCount\">(\\d+)</span>")));
-
-		Node tipNode = parseNodeByHtml(html, createEqualFilter("span itemprop=\"description\""));
+		Node tipNode = parseNodeByHtml(html, createEqualFilter("div class=\"book-intro\""));
 		if (tipNode != null) {
-			String tip = tipNode.toPlainTextString();
-			tip = tip.replaceAll(config.nbsp, CONSTANT.EMPTY);
-			tip = tip.replaceAll("\\s", CONSTANT.EMPTY);
+			String tip = tipNode.toPlainTextString().trim();
+			tip = tip.replaceAll("\r\n", "\n");
 			tip = tip.replaceAll(Config.blank, CONSTANT.EMPTY);// 全角空格
-			book.setTip(tip);
+
+			int index = tip.indexOf("作者自定义标签:");
+			if (index != -1) {
+				book.setTip(tip.substring(0, index).trim());
+				book.setType(tip.substring(index + 8).replaceAll("\\s*", " ").trim());
+			} else {
+				book.setTip(tip);
+			}
 		}
+
 		return true;
 	}
+
+	private String getQidianChildUrl(String childUrl) {
+		if (Util.isEmpty(childUrl))
+			return childUrl;
+		return "http:" + childUrl;
+	}
+
 }

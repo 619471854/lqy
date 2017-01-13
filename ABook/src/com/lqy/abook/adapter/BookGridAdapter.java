@@ -26,6 +26,7 @@ import com.lqy.abook.activity.CoverActivity;
 import com.lqy.abook.activity.DirectoryActivity;
 import com.lqy.abook.activity.MainActivity;
 import com.lqy.abook.activity.ReadActivity;
+import com.lqy.abook.activity.SearchActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.LoadStatus;
@@ -261,9 +262,8 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					}
 					break;
 				case 6:
-					intent = new Intent(activity, BrowserActivity.class);
-					intent.putExtra("title", e.getName());
-					intent.putExtra("url", "https://www.baidu.com/s?wd=" + e.getName());
+					intent = new Intent(activity, SearchActivity.class);
+					intent.putExtra("search", e.getName());
 					intent.putExtra("class", activity.getClass().getName());
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
@@ -271,12 +271,20 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 				case 7:
 					intent = new Intent(activity, BrowserActivity.class);
 					intent.putExtra("title", e.getName());
+					intent.putExtra("url", "https://www.baidu.com/s?wd=" + e.getName());
+					intent.putExtra("class", activity.getClass().getName());
+					activity.startActivity(intent);
+					activity.animationRightToLeft();
+					break;
+				case 8:
+					intent = new Intent(activity, BrowserActivity.class);
+					intent.putExtra("title", e.getName());
 					intent.putExtra("url", "http://www.sodu.cc/result.html?searchstr=" + e.getName());
 					intent.putExtra("class", activity.getClass().getName());
 					activity.startActivity(intent);
 					activity.animationRightToLeft();
 					break;
-				case 8:// 删除
+				case 9:// 删除
 					delete(e);
 					break;
 

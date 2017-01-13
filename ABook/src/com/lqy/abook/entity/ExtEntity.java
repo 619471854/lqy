@@ -8,7 +8,7 @@ public class ExtEntity extends SerializableEntity {
 	private String cookie;
 	private String encodeType;
 	private boolean isPicLoadOver;
-	private String firstUrl;//第一个章节的地址，用于删除之前的章节
+	private String firstUrl;// 第一个章节的地址，用于删除之前的章节
 	private String lastestUrl;
 
 	public String getFirstUrl() {
@@ -52,6 +52,7 @@ public class ExtEntity extends SerializableEntity {
 
 	public ExtEntity() {
 	}
+
 	public String getCookie() {
 		return cookie;
 	}

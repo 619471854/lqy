@@ -35,6 +35,6 @@ public abstract class ParserBase extends ParserUtil {
 	public abstract String getChapterDetail(String url);
 
 	// 通过url与html解析小说目录
-	public abstract BookAndChapters parserBrowser(String url, String html);
+	public abstract BookAndChapters parserBrowser(String url, String html,String cookie);
 
 }

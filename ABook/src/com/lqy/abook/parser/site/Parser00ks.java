@@ -44,7 +44,7 @@ public class Parser00ks extends ParserBase3 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		String id = matcher(url, "http://m\\.00ksw\\.com/html/(\\d+/\\d+)/?");
 		if (Util.isEmpty(id))
 			id = matcher(url, "http://m\\.00ksw\\.com/ml/(\\d+/\\d+)/?");

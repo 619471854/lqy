@@ -130,6 +130,13 @@
         android:visibility="gone" >
 
         <TextView
+            android:id="@+id/browser_outside"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="外部打开" />
+
+        <View style="@style/item_line" />
+        <TextView
             android:id="@+id/browser_full"
             style="@style/item_text"
             android:onClick="sendButtonClick"

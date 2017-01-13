@@ -11,6 +11,7 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserOther;
+import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.tool.Util;
 
 public class ParserManager {
@@ -114,7 +115,10 @@ public class ParserManager {
 				BookAndChapters result = null;
 				if (allParsers) {
 					for (Site s : Site.allSearchSite) {
-						result = s.getParser().parserBrowser(url2, html);
+						if (s == Site.Qidian)
+							result = s.getParser().parserBrowser(url2, html, cookie);
+						else
+							result = s.getParser().parserBrowser(url2, html, cookie);
 						if (result != null) {
 							break;
 						}

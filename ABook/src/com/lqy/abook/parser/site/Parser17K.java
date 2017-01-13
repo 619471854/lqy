@@ -29,7 +29,6 @@ public class Parser17K extends ParserBase2 {
 
 	@Override
 	protected Config getConfig() {
-		// TODO Auto-generated method stub
 		return config;
 	}
 
@@ -243,7 +242,7 @@ public class Parser17K extends ParserBase2 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		String id = matcher(url, "^http://www\\.17k\\.com/list/(\\d+)\\.html$");
 		if (Util.isEmpty(id)) {
 			id = matcher(url, "^http://www\\.17k\\.com/book/(\\d+)\\.html$");

@@ -69,6 +69,20 @@ public class Util {
 		return result;
 	}
 
+	public static float toFloat(Object o) {
+		float result = 0;
+		try {
+			if (o != null) {
+				String str = o.toString().trim();
+				if (str.length() != 0) {
+					result = Float.parseFloat(str);
+				}
+			}
+		} catch (Exception e) {
+		}
+		return result;
+	}
+
 	public static boolean isEmpty(String s) {
 		return s == null || s.length() == 0;
 	}

@@ -54,18 +54,7 @@ public class MyCenterActivity extends MenuActivity {
 	public void sendButtonClick(View v) {
 		switch (v.getId()) {
 		case R.id.my_center_del:
-			Util.dialog(_this, "确定要删除所有数据吗(建议版本升级后出现不能保存书籍等情况时使用)？", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-
-					FileUtil.delFile(new File(FileUtil.getAppPath()));
-					DataCleanManager.cleanApplicationData(_this);
-
-					Util.toast(_this, "已经删除了所有的书籍和使用记录");
-
-				}
-			});
+			delete();
 			break;
 		case R.id.my_center_site:
 			Site[] all = Site.allSearchSite;
@@ -120,6 +109,30 @@ public class MyCenterActivity extends MenuActivity {
 			animationRightToLeft();
 			break;
 		}
+	}
+
+	/***
+ * 
+ */
+	private void delete() {
+		Util.dialog(_this, "确定要删除所有数据吗(建议版本升级后出现不能保存书籍等情况时使用)？", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Util.dialog(_this, "再次确定要删除所有数据吗？", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+						FileUtil.delFile(new File(FileUtil.getAppPath()));
+						DataCleanManager.cleanApplicationData(_this);
+
+						Util.toast(_this, "已经删除了所有的书籍和使用记录");
+
+					}
+				});
+			}
+		});
 	}
 
 	/**

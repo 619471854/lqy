@@ -183,7 +183,7 @@ public class ParserDSB extends ParserBase3 {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		BookEntity book = null;
 		String id = matcher(url, "^http://www\\.dashubao\\.co/book/(\\d+/\\d+)/index\\.html$");
 		if (Util.isEmpty(id)) {

@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -354,6 +355,14 @@ public class BrowserActivity extends MenuActivity {
 	public void sendButtonClick(View v) {
 		Intent intent;
 		switch (v.getId()) {
+		case R.id.browser_outside:// 外部浏览器打开
+			intent = new Intent();
+			intent.setAction("android.intent.action.VIEW");
+			Uri content_url = Uri.parse(webView.getUrl());
+			intent.setData(content_url);
+			startActivity(intent);
+			animationRightToLeft();
+			break;
 		case R.id.browser_full:// 全屏
 			lay_top.setVisibility(View.GONE);
 			lay_bottom.setVisibility(View.GONE);

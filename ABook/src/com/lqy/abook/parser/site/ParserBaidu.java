@@ -300,7 +300,7 @@ public class ParserBaidu extends ParserBase {
 	/**
 	 * 通过url与html解析小说目录
 	 */
-	public BookAndChapters parserBrowser(String url, String html) {
+	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		if (url.startsWith("http://m.baidu.com/tc"))
 			return new BookAndChapters((BookEntity) null, null);
 		else

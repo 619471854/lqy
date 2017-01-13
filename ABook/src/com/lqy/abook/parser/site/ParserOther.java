@@ -187,10 +187,6 @@ public class ParserOther extends ParserBase {
 	 * 获取所有链接
 	 */
 	@Override
-	public BookAndChapters parserBrowser(String url, String html) {
-		return null;
-	}
-
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		String encodeType = matcher(html, "<meta[\\s\\S]*charset=[\"']?([^\"']+)[\"']?>");
 		if (Util.isEmpty(encodeType))

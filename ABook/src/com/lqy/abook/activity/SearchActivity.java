@@ -3,6 +3,7 @@ package com.lqy.abook.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -10,8 +11,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,14 +31,13 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class SearchActivity extends MenuActivity {
-	private AutoCompleteTextView view_et;
+	private EditText view_et;
 	private ListView listView;
+	protected View view_historyHint;
 
 	private List<BookEntity> books;
 	private SearchAdapter adapter;
 	private SearchDao dao;
-	private List<String> data;
-	private ArrayAdapter<String> hintAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +49,11 @@ public class SearchActivity extends MenuActivity {
 	}
 
 	private void init() {
-		view_et = (AutoCompleteTextView) findViewById(R.id.search_edittext);
+		view_et = (EditText) findViewById(R.id.search_edittext);
 
 		view_hint = (TextView) findViewById(R.id.listview_empty);
+		view_historyHint = findViewById(R.id.search_history);
 		listView = (ListView) findViewById(android.R.id.list);
-
-		String search = getIntent().getStringExtra("search");
-		if (!Util.isEmpty(search)) {
-			search = search.trim();
-			view_et.setText(search);
-			view_et.setSelection(search.length());
-		}
 
 		loadView = findViewById(R.id.loading_view);
 		loadView.setLayoutParams(new LinearLayout.LayoutParams(-1, DisplayUtil.dip2px(_this, 100)));
@@ -66,11 +61,6 @@ public class SearchActivity extends MenuActivity {
 		dao = new SearchDao();
 		dao.getList(_this, 0);
 
-		// 输入提示
-		data = new ArrayList<String>();
-		data.add("清空历史纪录");
-		hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
-		view_et.setAdapter(hintAdapter);
 		// 搜索按钮
 		view_et.setOnEditorActionListener(new OnEditorActionListener() {
 			public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
@@ -81,6 +71,16 @@ public class SearchActivity extends MenuActivity {
 				return false;
 			}
 		});
+
+		String search = getIntent().getStringExtra("search");
+		if (!Util.isEmpty(search)) {
+			search = search.trim();
+			view_et.setText(search);
+			view_et.setSelection(search.length());
+			searchButtonClick(view_et);
+		}
+
+		listView.addHeaderView(new View(this));// 显示分割线,这里不用在点击的时候arg2--
 	}
 
 	private SaveLocatedBook located;
@@ -105,6 +105,9 @@ public class SearchActivity extends MenuActivity {
 		String key = view_et.getText().toString().trim();
 		if (Util.isEmpty(key))
 			return;
+		if (adapter == null) {
+			view_historyHint.setVisibility(View.GONE);
+		}
 		showProgressBar();
 		view_hint.setVisibility(View.GONE);
 		listView.setVisibility(View.GONE);
@@ -117,10 +120,6 @@ public class SearchActivity extends MenuActivity {
 		parseNum = ParserManager.asynSearch(this, key, ++what);
 
 		dao.add(key);
-		if (!data.contains(key))
-			data.add(data.size() - 1, key);
-		hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
-		view_et.setAdapter(hintAdapter);
 
 		// 关闭键盘
 		Util.hideKeyboard(_this, view_et);
@@ -132,13 +131,62 @@ public class SearchActivity extends MenuActivity {
 	protected void dealMsg(int what, int arg1, Object o) {
 		if (located != null && located.dealMsg(what, arg1, o))
 			return;
-		
+
 		if (what == 0) {
-			List<String> d = (List<String>) o;
-			if (d != null && d.size() > 0) {
-				data.addAll(data.size() - 1, d);
-				hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
-				view_et.setAdapter(hintAdapter);
+			final List<String> data = (List<String>) o;
+			if (data != null && data.size() > 0 && adapter == null) {
+				// 输入提示
+				listView.setVisibility(View.VISIBLE);
+				view_historyHint.setVisibility(View.VISIBLE);
+				view_hint.setVisibility(View.GONE);
+				final ArrayAdapter hintAdapter = new ArrayAdapter<String>(this, R.layout.search_hint_item, data);
+				listView.setAdapter(hintAdapter);
+
+				listView.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+						arg2 = arg2 - 1;
+						if (arg2 >= 0 && arg2 < data.size() && adapter == null) {
+							view_et.setText(data.get(arg2));
+							view_et.setSelection(view_et.getText().toString().length());
+							searchButtonClick(view_et);
+						}
+					}
+				});
+				findViewById(R.id.search_empty).setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Util.dialog(_this, "确定要清空搜索记录吗？", new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dao.empty();
+								listView.setVisibility(View.GONE);
+								view_historyHint.setVisibility(View.GONE);
+							}
+						});
+					}
+				});
+				listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+					@Override
+					public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2, long arg3) {
+						final int pos = arg2 - 1;
+						if (pos >= 0 && pos < data.size() && hintAdapter != null) {
+							Util.dialog(_this, "确定要删除此记录吗？", new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dao.delete(data.get(pos));
+									data.remove(pos);
+									hintAdapter.notifyDataSetChanged();
+								}
+							});
+						}
+						return true;
+					}
+				});
 			}
 		} else {
 			if (this.what != what)
@@ -176,8 +224,8 @@ public class SearchActivity extends MenuActivity {
 		}
 		listView.setVisibility(View.VISIBLE);
 		if (adapter == null) {
+			listView.setOnItemLongClickListener(null);
 			adapter = new SearchAdapter(this, books);
-			listView.addHeaderView(new View(this));// 显示分割线,这里不用在点击的时候arg2--
 			listView.setAdapter(adapter);
 			listView.setOnItemClickListener(new OnItemClickListener() {
 				@Override

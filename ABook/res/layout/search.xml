@@ -9,7 +9,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:background="@color/bg" >
+        android:background="@color/bg"
+        android:focusable="true"
+        android:focusableInTouchMode="true" >
+
+        <requestFocus />
 
         <ImageView
             style="@style/toolbar_btn_img"
@@ -43,13 +47,12 @@
         android:orientation="horizontal"
         android:padding="5dp" >
 
-        <AutoCompleteTextView
+        <EditText
             android:id="@+id/search_edittext"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/transparent"
-            android:completionThreshold="1"
             android:drawablePadding="0dp"
             android:gravity="center_vertical"
             android:hint="请输入书名或者作者或者书名 作者"
@@ -84,6 +87,30 @@
     <include layout="@layout/load_progress" />
 
     <include layout="@layout/listview_empty" />
+
+    <RelativeLayout
+        android:id="@+id/search_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:text="最近搜索："
+            android:textColor="@color/hint"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/search_empty"
+            style="@style/toolbar_btn_txt"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:text="清空搜索记录"
+            android:textSize="14sp" />
+    </RelativeLayout>
 
     <ListView
         android:id="@+id/android:list"

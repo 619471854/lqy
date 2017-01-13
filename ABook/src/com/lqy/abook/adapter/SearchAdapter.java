@@ -35,6 +35,7 @@ public class SearchAdapter extends ArrayAdapter<BookEntity> {
 			holder.title = (TextView) convertView.findViewById(R.id.search_item_title);
 			holder.type = (TextView) convertView.findViewById(R.id.search_item_type);
 			holder.author = (TextView) convertView.findViewById(R.id.search_item_author);
+			holder.chapter = (TextView) convertView.findViewById(R.id.search_item_chapter);
 			holder.tip = (TextView) convertView.findViewById(R.id.search_item_tips);
 			convertView.setTag(holder);
 		} else {
@@ -44,6 +45,12 @@ public class SearchAdapter extends ArrayAdapter<BookEntity> {
 		holder.title.setText(book.getName());
 		holder.author.setText(book.getSite().getName() + "  " + book.getAuthor());
 		holder.type.setText(Util.isEmpty(book.getType()) ? "暂未分类" : book.getType());
+		if (Util.isEmpty(book.getNewChapter())) {
+			holder.chapter.setVisibility(View.GONE);
+		} else {
+			holder.chapter.setVisibility(View.VISIBLE);
+			holder.chapter.setText(book.getNewChapter().trim());
+		}
 		holder.tip.setText(book.getTip());
 		// 延迟加载图片
 		asyncImageLoader.loadDrawable(holder.cover, book.getCover(), R.drawable.book_cover_default, false);
@@ -55,6 +62,7 @@ public class SearchAdapter extends ArrayAdapter<BookEntity> {
 		TextView title;
 		TextView type;
 		TextView author;
+		TextView chapter;
 		TextView tip;
 	}
 }

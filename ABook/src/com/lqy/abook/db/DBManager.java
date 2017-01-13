@@ -401,13 +401,15 @@ public class DBManager {
 	/**
 	 * 查询搜索记录
 	 */
-	synchronized public List<String> getSearchList(long time) {
+	synchronized public List<String> getSearchList() {
 		List<String> data = new ArrayList<String>();
 		try {
 			SQLiteDatabase db = dbHelper.getWritableDatabase();
-			Cursor c = db.query(SearchDao.table_name, null, SearchDao.column_time + " > " + time, null, null, null, null);
+			Cursor c = db.query(SearchDao.table_name, null, null, null, null, null, SearchDao.column_time + " desc", "10");
 			while (c.moveToNext()) {
-				data.add(c.getString(c.getColumnIndex(SearchDao.column_name)));
+				String name = c.getString(c.getColumnIndex(SearchDao.column_name));
+				if (!Util.isEmpty(name))
+					data.add(name);
 			}
 			c.close();
 		} catch (Exception e) {
@@ -430,6 +432,18 @@ public class DBManager {
 			MyLog.e(e);
 		}
 		return -1;
+	}
+
+	/**
+	 * 删除搜索记录
+	 */
+	synchronized public void deleteSearchHistory(String name) {
+		try {
+			SQLiteDatabase db = dbHelper.getWritableDatabase();
+			db.delete(SearchDao.table_name, SearchDao.column_name, new String[] { name });
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
 	}
 
 	/**
