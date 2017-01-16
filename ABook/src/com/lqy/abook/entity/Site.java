@@ -5,13 +5,13 @@ import com.lqy.abook.parser.site.*;
 import com.lqy.abook.tool.CONSTANT;
 
 public enum Site {
-	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Located, Single;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Biquge, Located, Single;
 
 	public static Site getDefault() {
 		return Other;
 	}
 
-	public static Site[] allSearchSite = new Site[] { Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site._17K, Site._16K, Site.Qidian };
+	public static Site[] allSearchSite = new Site[] { Site.Biquge, Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site._17K, Site._16K, Site.Qidian };
 	public static Site[] searchSite = allSearchSite;
 
 	// public static Site[] searchSite = new Site[] { Site.DSB };
@@ -64,6 +64,8 @@ public enum Site {
 			return new Parser00ks();
 		case DSB:
 			return new ParserDSB();
+		case Biquge:
+			return new ParserBiquge();
 		case Pic:
 			return new ParserPic();
 		default:
@@ -89,6 +91,8 @@ public enum Site {
 			return "零点看书";
 		case DSB:
 			return "大书包小说网";
+		case Biquge:
+			return "笔趣阁";
 		case Pic:
 			return CONSTANT.EMPTY;
 		case Located:
