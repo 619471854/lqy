@@ -68,13 +68,13 @@ public class Config {
 			SM.typeReg = "<span\\s*class=\"result-game-item-info-tag-title\">([^<]+)</span>";
 			SM.wordsReg = null;
 			SM.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
-			SM.tipsDetailReg = "<div\\s*class=\"introtxt\">\\s*<strong>[^<]+</strong>(((?!</div>)[\\s\\S])+)</div>";
+			SM.tipsDetailReg = "<p\\s*class=\"intro\">([\\s\\S]+?)</p>";
 			SM.newChapterReg = "<a\\s*cpos=\"newchapter\"[^>]+>([^<]+)</a>";
 			SM.updateTimeReg = "<span\\s*class=\"result-game-item-info-tag-title\">([\\d-]+)</span>";
-			SM.completedReg = "<span\\s*class=\"zt1\">已完成</span>";
-			SM.newChapterReg2 = "<span\\s*class=\"l02\"\\s*style=\"overflow:hidden;\"><a[^>]+>([^<]+)</a></span>";
-			SM.updateTimeReg2 = "<span\\s*class=\"l04\">([\\d-]+)</span>";
-			SM.wordsReg2 = "字数：\\s*<i>(\\d+)</i>";
+			SM.completedReg = "状态：(已完成)";
+			SM.newChapterReg2 = "<a\\s*href=\"/ml-\\d+-\\d+/\">([\\s\\S]+?)</a>";
+			SM.updateTimeReg2 = "最后更新：(\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*<div";
+			SM.wordsReg2 = "字数：\\s*(\\d+)";
 		}
 		return SM;
 	}
@@ -147,7 +147,7 @@ public class Config {
 			qidian.wordsReg = "<span>\\s*([\\.\\d]+)万</span>\\s*总字数\\s*</p>";
 			qidian.tipsReg = ">([^<]+)</a>\\s*<em>\\s*\\|\\s*</em>\\s*<span>([^<]+)</span>\\s*</p>\\s*<p\\s*class=\"intro\">([^<]+)</p>";
 			qidian.tipsDetailReg = null;
-			qidian.newChapterReg ="最新更新([^<]+)</a>\\s*<em>[^<]+</em>\\s*<span>([^<]+)(更新)?</span>" ;
+			qidian.newChapterReg = "最新更新([^<]+)</a>\\s*<em>[^<]+</em>\\s*<span>([^<]+)(更新)?</span>";
 			qidian.newChapterReg2 = "<b>最近更新：</b>\\s*<a.*?>(.+?)</a>";
 			qidian.updateTimeReg = null;
 			qidian.updateTimeReg2 = "<em\\s*class=\"time\">([^<]+)(更新)?</em>";
@@ -212,7 +212,7 @@ public class Config {
 			dsb.searchUrl = "http://so.dashubao.co/cse/search?click=1&entry=1&s=17492266668774909517&nsid=&q=";
 			dsb.searchFilter = "div class=\"result-item result-game-item\"";
 			dsb.detailUrlReg = null;
-			dsb.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";//列表和详情界面都用的这个
+			dsb.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";// 列表和详情界面都用的这个
 			dsb.directoryUrlReg = null;
 			dsb.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
 			dsb.keyReg = null;// 搜索到的关键词

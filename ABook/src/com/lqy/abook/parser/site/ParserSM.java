@@ -6,7 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.htmlparser.Node;
-import org.htmlparser.NodeFilter;
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
@@ -30,25 +31,23 @@ public class ParserSM extends ParserBase2 {
 
 	@Override
 	protected Config getConfig() {
-		// TODO Auto-generated method stub
 		return config;
 	}
 
 	@Override
 	public boolean updateBook(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(book.getDetailUrl(), "div id=\"content\"");
-			MyLog.i(TAG, "updateBook getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
+			String html = toHtml(parseNode(book.getDetailUrl(), null, createEqualFilter("div id=\"content\""), "gbk"));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "updateBook updateBook ok");
+				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s*", " ");
 				if (newChapter.equals(book.getNewChapter())) {
 					return false;// 此书没有更新
 				}
 				book.setLoadStatus(LoadStatus.hasnew);
 				book.setNewChapter(newChapter);
 				book.setCompleted(matcher(html, config.completedReg).length() > 0);
-				book.setWords(Util.toInt(matcher(html, config.wordsReg)));
+				book.setWords(Util.toInt(matcher(html, config.wordsReg2)));
 				book.setUpdateTime(matcher(html, config.updateTimeReg2));
 				return true;
 			}
@@ -83,16 +82,15 @@ public class ParserSM extends ParserBase2 {
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div id=\"content\"");
-			MyLog.i(TAG, "parserBookDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY)
-						.replace(Config.nbsp, " "));
+			String html = toHtml(parseNode(detail.getDetailUrl(), null, createEqualFilter("div id=\"content\""), "gbk"));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "parserBookDetail updateBook ok");
+				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.lineWrapReg, "\n").replaceAll("\\s+", CONSTANT.EMPTY)
+						.replace(Config.nbsp, " ").trim());
 				detail.setCompleted(matcher(html, config.completedReg).length() > 0);
 				detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
 
-				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
+				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s*", " "));
 				detail.setUpdateTime(matcher(html, config.updateTimeReg2));
 			}
 			return true;
@@ -108,26 +106,31 @@ public class ParserSM extends ParserBase2 {
 
 	private List<ChapterEntity> parserBookDict(String url, String allHtml) {
 		try {
+			String html = toHtml(parseNode(url, allHtml, createEqualFilter("div id=\"list\""), "gbk"));
+			if (Util.isEmpty(html))
+				return null;
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = parseIterator(url, allHtml, createEqualFilter("li"), encodeType);
+			SimpleNodeIterator iterator = parseHtml(html, new NodeClassFilter(LinkTag.class));
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity chapter;
-			String urlRoot = "http://www.shenmaxiaoshuo.com";
+			Node node = null;
+			LinkTag link = null;
+			String baseUrl = "http://www.shenmabook.com";
 			while (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				chapter = new ChapterEntity();
-				try {
-					Pattern p = Pattern.compile("<a\\s*href=\"([^\"]+)\">(((?!</a>)[\\s\\S])+)</a>");
-					Matcher m = p.matcher(html);
-					if (m.find()) {
-						chapter.setName(m.group(2).trim());
-						chapter.setUrl(urlRoot + m.group(1).trim());
+				node = iterator.nextNode();
+				if (node instanceof LinkTag) {
+					link = (LinkTag) node;
+					chapter = new ChapterEntity();
+					if (!Util.isEmpty(link.getLinkText())) {
+						chapter.setName(link.getLinkText().trim());
 					}
-				} catch (Exception e) {
+					if (!Util.isEmpty(link.getLink())) {
+						chapter.setUrl(baseUrl + link.getLink());
+					}
+					chapter.setId(chapters.size());
+					if (!Util.isEmpty(chapter.getName()))
+						chapters.add(chapter);
 				}
-				chapter.setId(chapters.size());
-				if (!Util.isEmpty(chapter.getName()))
-					chapters.add(chapter);
 			}
 			return chapters;
 		} catch (Exception e) {
@@ -139,16 +142,12 @@ public class ParserSM extends ParserBase2 {
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(url, "div id=\"htmlContent\" class=\"contentbox\"");
-			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				html = matcher(html, "<div\\s*class=\"ad250left\">(((?!</div>)[\\s\\S])+)</div>(((?!更多手打全文字章节请到)[\\s\\S])+)更多手打全文字章节请到", 3);
-				html = html.replaceAll(Config.lineWrapReg, "\n");
-				html = html.replaceAll("\r\n", "\n");
-				html = html.replaceAll("\n{2,}+", "\n");
-				html = html.replaceAll(Config.nbsp, "  ");
-				return html.trim();
+			Node node = parseNodeByUrl(url, createEqualFilter("div id=\"content\""), "gbk");
+			if (node != null) {
+				String t = node.toPlainTextString();
+				t = t.replaceAll("\\s*", CONSTANT.EMPTY);
+				t = t.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
+				return t.trim();
 			}
 		} catch (Exception e) {
 			MyLog.e(e);
@@ -238,41 +237,24 @@ public class ParserSM extends ParserBase2 {
 		return null;
 	}
 
-	private boolean parserBookDetail(BookEntity detail, String allHtml) {
+	public boolean parserBookDetail(BookEntity detail, String allHtml) {
 		try {
-			NodeFilter filter = createEqualFilter("div id=\"content\"");
-			Node node = parseNode(detail.getDetailUrl(), allHtml, filter, encodeType);
-			MyLog.i(TAG, "parserBookDetail getParserResult ok");
-			if (node != null) {
-				String html = node.toHtml();
-				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY)
-						.replace(Config.nbsp, " "));
+			String html = toHtml(parseNode(detail.getDetailUrl(), null, createEqualFilter("div id=\"content\""), "gbk"));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "parserBookDetail getParserResult ok");
+
+				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.lineWrapReg, "\n").replaceAll("\\s+", CONSTANT.EMPTY)
+						.replace(Config.nbsp, " ").trim());
 				detail.setCompleted(matcher(html, config.completedReg).length() > 0);
 				detail.setWords(Util.toInt(matcher(html, config.wordsReg2)));
 
-				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " "));
+				detail.setNewChapter(matcher(html, config.newChapterReg2).trim().replaceAll("\\s*", " "));
 				detail.setUpdateTime(matcher(html, config.updateTimeReg2));
-			}
-			if (node != null)
-				node = node.getFirstChild();
-			while (node != null) {
-				String txt = node.getText();
-				if ("div class=\"wrapper_src\"".equals(txt)) {
-					String html = node.toPlainTextString().replaceAll("\\s", CONSTANT.EMPTY).replaceAll("&gt;", ">");
-					Matcher m = getMatcher(html, "[^>]+>([^>]+)>*([^>]+)>([^>]+)");
-					if (m != null) {
-						detail.setName(m.group(3));
-						detail.setAuthor(m.group(2));
-						detail.setType(m.group(1));
-					}
-					node = node.getNextSibling();
-				} else if ("div class=\"box mainintro\"".equals(txt)) {
-					String html = node.toHtml();
-					detail.setCover(matcher(html, config.coverReg));
-					break;
-				} else {
-					node = node.getNextSibling();
-				}
+
+				detail.setName(matcher(html, "<img[\\s\\S]+?alt=\"(\\S+)\""));
+				detail.setAuthor(matcher(html, "<p\\s*class=\"author\">作者：(\\S+)\\s*</p>"));
+				detail.setType(matcher(html, "<p\\s*class=\"infosort\">分类：(\\S+)\\s*点击"));
+				detail.setCover(matcher(html, config.coverReg));
 			}
 			return true;
 		} catch (Exception e) {
