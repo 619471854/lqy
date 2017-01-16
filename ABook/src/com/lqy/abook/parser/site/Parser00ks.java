@@ -2,10 +2,6 @@ package com.lqy.abook.parser.site;
 
 import java.util.List;
 
-import org.htmlparser.Node;
-import org.htmlparser.util.NodeList;
-import org.htmlparser.util.SimpleNodeIterator;
-
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
@@ -45,12 +41,12 @@ public class Parser00ks extends ParserBase3 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String id = matcher(url, "http://m\\.00ksw\\.com/html/(\\d+/\\d+)/?");
+		String id = matcher(url, "http://m\\.00ksw\\.net/html/(\\d+/\\d+)");
 		if (Util.isEmpty(id))
-			id = matcher(url, "http://m\\.00ksw\\.com/ml/(\\d+/\\d+)/?");
+			id = matcher(url, "http://m\\.00ksw\\.net/ml/(\\d+/\\d+)/?");
 
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://www\\.00ksw\\.com/html/(\\d+/\\d+)/?");
+			id = matcher(url, "http://www\\.00ksw\\.net/html/(\\d+/\\d+)/?");
 			if (Util.isEmpty(id))
 				return null;
 			html = null;// 重新加载电脑版网页,直接用html有问题
@@ -62,20 +58,16 @@ public class Parser00ks extends ParserBase3 {
 			url += "/";
 
 		try {
-			SimpleNodeIterator iterator = parseIterator(url, html, createEqualFilter("div id=\"wrapper\""), "gbk");
-			
+			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), "gbk"));
+
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				NodeList children = iterator.nextNode().getChildren();
-				Node dict = children.elementAt(13);
-				Node detail = children.elementAt(9);
-				dict = dict.getChildren().elementAt(1);
-				children = null;
+			if (!Util.isEmpty(html)) {
 				// 获取内容
-				BookEntity book = parserBookDetail(url, detail.toHtml());
+				BookEntity book = parserBookDetail(url, html);
 				MyLog.i(TAG, "getBookAndDict book  " + book == null ? null : book.getName());
 				// 获取章节
-				List<ChapterEntity> chapters = parserBookDictByHtml(url, dict.toHtml());
+				html = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"list\"")));
+				List<ChapterEntity> chapters = parserBookDictByHtml(url, html);
 				if (chapters == null || chapters.size() == 0) {
 					MyLog.i(TAG, "getBookAndDict getChapters failed");
 					return null;
@@ -95,6 +87,6 @@ public class Parser00ks extends ParserBase3 {
 	}
 
 	public BookEntity parserBookDetail(String url, String html) {
-		return parserBookDetail(url, html, "http://www.00ksw.com");
+		return parserBookDetail(url, html, "http://www.00ksw.net");
 	}
 }

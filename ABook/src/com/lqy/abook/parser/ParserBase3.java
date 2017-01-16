@@ -100,6 +100,8 @@ public abstract class ParserBase3 extends ParserBase2 {
 	}
 
 	protected static List<ChapterEntity> parserBookDictByHtml(String urlRoot, String h) {
+		if (Util.isEmpty(h))
+			return null;
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = parseHtml(h, new NodeClassFilter(LinkTag.class));
