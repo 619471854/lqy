@@ -19,7 +19,7 @@ public class ParserShuyue extends ParserBase3 {
 	private static Config config = Config.getShuyueConfig();
 
 	public ParserShuyue() {
-		encodeType = "utf-8";
+		encodeType = "gbk";
 		site = Site.Shuyue;
 	}
 
@@ -59,7 +59,7 @@ public class ParserShuyue extends ParserBase3 {
 			url += "/";
 
 		try {
-			SimpleNodeIterator iterator = parseIterator(url, html, createEqualFilter("div id=\"wrapper\""), "gbk");
+			SimpleNodeIterator iterator = parseIterator(url, html, createEqualFilter("div id=\"wrapper\""), encodeType);
 
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {

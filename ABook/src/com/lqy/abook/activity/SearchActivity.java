@@ -59,7 +59,6 @@ public class SearchActivity extends MenuActivity {
 		loadView.setLayoutParams(new LinearLayout.LayoutParams(-1, DisplayUtil.dip2px(_this, 100)));
 
 		dao = new SearchDao();
-		dao.getList(_this, 0);
 
 		// 搜索按钮
 		view_et.setOnEditorActionListener(new OnEditorActionListener() {
@@ -78,6 +77,8 @@ public class SearchActivity extends MenuActivity {
 			view_et.setText(search);
 			view_et.setSelection(search.length());
 			searchButtonClick(view_et);
+		} else {
+			dao.getList(_this, 0);
 		}
 
 		listView.addHeaderView(new View(this));// 显示分割线,这里不用在点击的时候arg2--

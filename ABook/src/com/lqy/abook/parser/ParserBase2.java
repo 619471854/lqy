@@ -13,11 +13,14 @@ public abstract class ParserBase2 extends ParserBase {
 
 	protected abstract Config getConfig();
 
+	protected String getSearchEncodeType() {
+		return encodeType;
+	}
 	@Override
 	public boolean parserSearch(List<BookEntity> books, String key) {
 		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = getParserResult(config.searchUrl + key, config.searchFilter);
+			SimpleNodeIterator iterator = parseUrl(config.searchUrl + key, createEqualFilter(config.searchFilter), getSearchEncodeType());
 			MyLog.i(TAG, "Search ok,parsering");
 			int count = 0;
 			String[] keys = key.split(" ");
@@ -41,7 +44,7 @@ public abstract class ParserBase2 extends ParserBase {
 	public BookEntity parserSearchSite(String name, String author) {
 		Config config = getConfig();
 		try {
-			SimpleNodeIterator iterator = getParserResult(config.searchUrl + name + " " + author, config.searchFilter);
+			SimpleNodeIterator iterator = parseUrl(config.searchUrl + name + " " + author, createEqualFilter(config.searchFilter), getSearchEncodeType());
 
 			MyLog.i(TAG, "SearchSite ok,parsering");
 			while (iterator.hasMoreNodes()) {

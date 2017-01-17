@@ -81,7 +81,7 @@ public class Parser16K extends ParserBase {
 			String resultUrl = html.substring(0, index);// 搜索结果的url地址
 			html = html.substring(index + 3);
 			if (resultUrl.equals(config.searchUrl)) {// search html
-				SimpleNodeIterator iterator = getParserResult(html, config.searchFilter);
+				SimpleNodeIterator iterator = parseHtml(html, createEqualFilter(config.searchFilter));
 				MyLog.i(TAG, "Search ok,parsering");
 				int count = 0;
 				while (iterator.hasMoreNodes() && (count++ < searchMaxSizeSite || books.size() < searchMaxSizeSite)) {
@@ -104,7 +104,7 @@ public class Parser16K extends ParserBase {
 	@Override
 	public boolean updateBook(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"hotTag\"");
+			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div class=\"hotTag\""), encodeType);
 			MyLog.i(TAG, "updateBook getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
@@ -126,11 +126,11 @@ public class Parser16K extends ParserBase {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(book.getDirectoryUrl(), "div class=\"wrap\"");
+			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div class=\"wrap\""), encodeType);
 			MyLog.i(TAG, "updateBookAndDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
-				iterator = getParserResult(html, "div class=\"hotTag\"");
+				iterator = parseHtml(html, createEqualFilter("div class=\"hotTag\""));
 				if (iterator.hasMoreNodes()) {
 					String detail = iterator.nextNode().toHtml();
 					String newChapter = matcher(detail, config.newChapterReg2).trim().replaceAll("\\s", " ");
@@ -145,7 +145,7 @@ public class Parser16K extends ParserBase {
 					book.setLoadStatus(LoadStatus.failed);
 					return null;// 此书更新失败
 				}
-				List<ChapterEntity> chapters = parserBookDict(null,html);
+				List<ChapterEntity> chapters = parserBookDict(null, html);
 				if (chapters == null || chapters.size() == 0) {
 					book.setLoadStatus(LoadStatus.failed);
 					MyLog.i(TAG, "updateBookAndDict getChapters failed");
@@ -167,7 +167,7 @@ public class Parser16K extends ParserBase {
 			if (!Util.isEmpty(detail.getCover()) || !Util.isEmpty(detail.getTip()))
 				return true;// 从目录界面过来
 			// 从搜索列表过来，更新封面和tip
-			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\"one\"");
+			SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\"one\""), encodeType);
 			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();

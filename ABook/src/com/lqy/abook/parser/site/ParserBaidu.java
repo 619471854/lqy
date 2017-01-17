@@ -125,7 +125,8 @@ public class ParserBaidu extends ParserBase {
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(detail.getDirectoryUrl(), "div class=\" s-hover  xs-sum-short\" data-action=\"summary\"");
+			SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\" s-hover  xs-sum-short\" data-action=\"summary\""),
+					encodeType);
 			MyLog.i(TAG, "parserBookDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toPlainTextString();

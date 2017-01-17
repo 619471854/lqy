@@ -23,7 +23,7 @@ public class ParserDSB extends ParserBase3 {
 	private static Config config = Config.getdDsbConfig();
 
 	public ParserDSB() {
-		encodeType = "utf-8";
+		encodeType = "gbk";
 		site = Site.DSB;
 	}
 
@@ -47,7 +47,7 @@ public class ParserDSB extends ParserBase3 {
 
 	@Override
 	public boolean parserBookDetail(BookEntity book) {
-		Node node = parseNodeByUrl(book.getDetailUrl(), createEqualFilter("section class=\"bookinfo\""), "gbk");
+		Node node = parseNodeByUrl(book.getDetailUrl(), createEqualFilter("section class=\"bookinfo\""), encodeType);
 		while (node != null) {
 			if ("div class=\"info_m\"".equals(node.getText())) {
 				book.setWords(Util.toInt(matcher(node.toHtml(), config.wordsReg2)));
@@ -72,7 +72,7 @@ public class ParserDSB extends ParserBase3 {
 
 	@Override
 	public boolean updateBook(BookEntity book) {
-		Node node = parseNodeByUrl(book.getDetailUrl(), createEqualFilter("section class=\"bookinfo\""), "gbk");
+		Node node = parseNodeByUrl(book.getDetailUrl(), createEqualFilter("section class=\"bookinfo\""), encodeType);
 		while (node != null) {
 			String txt = node.getText();
 			MyLog.i("updateBook" + txt);
@@ -135,7 +135,7 @@ public class ParserDSB extends ParserBase3 {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = null;
 			if (Util.isEmpty(html))
-				iterator = parseUrl(url, createEqualFilter("dd"), "gbk");
+				iterator = parseUrl(url, createEqualFilter("dd"), encodeType);
 			else
 				iterator = parseHtml(html, createEqualFilter("dd"));
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
@@ -164,7 +164,7 @@ public class ParserDSB extends ParserBase3 {
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div class=\"yd_text2\""), "gbk");
+			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div class=\"yd_text2\""), encodeType);
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toPlainTextString();
@@ -185,25 +185,25 @@ public class ParserDSB extends ParserBase3 {
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
 		BookEntity book = null;
-		String id = matcher(url, "^http://www\\.dashubao\\.co/book/(\\d+/\\d+)/index\\.html$");
+		String id = matcher(url, "^http://www\\.dashubao\\.net/book/(\\d+/\\d+)/index\\.html$");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "^http://www\\.dashubao\\.co/jieshaoinfo/(\\d+/\\d+)\\.htm$");
+			id = matcher(url, "^http://www\\.dashubao\\.net/jieshaoinfo/(\\d+/\\d+)\\.htm$");
 		}
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "^http://m\\.dashubao\\.co/info-(\\d+)/$");
+			id = matcher(url, "^http://m\\.dashubao\\.net/info-(\\d+)/$");
 			if (Util.isEmpty(id)) {
-				id = matcher(url, "^http://m\\.dashubao\\.co/wapbook-(\\d+)/$");
+				id = matcher(url, "^http://m\\.dashubao\\.net/wapbook-(\\d+)_?\\d*/$");
 			}
 			if (Util.isEmpty(id))
 				return null;
 			html = null;
 			book = new BookEntity();
-			book.setDetailUrl("http://www.dashubao.co/jieshaoinfo/0/" + id + ".htm");
+			book.setDetailUrl("http://www.dashubao.net/jieshaoinfo/0/" + id + ".htm");
 			// 这里不设置 directoryUrl，获取详情时更新directoryUrl和detailUrl
 		} else {
 			book = new BookEntity();
-			book.setDetailUrl("http://www.dashubao.co/jieshaoinfo/" + id + ".htm");
-			book.setDirectoryUrl("http://www.dashubao.co/book/" + id + "/index.html");
+			book.setDetailUrl("http://www.dashubao.net/jieshaoinfo/" + id + ".htm");
+			book.setDirectoryUrl("http://www.dashubao.net/book/" + id + "/index.html");
 		}
 		MyLog.i(TAG, "parserBrowser ok");
 		book.setSite(site);
@@ -221,7 +221,7 @@ public class ParserDSB extends ParserBase3 {
 
 	public boolean parserBookDetail(BookEntity book, String html) {
 		NodeFilter filter = createEqualFilter("section class=\"bookinfo\"");
-		Node node = parseNode(book.getDetailUrl(), html, filter, "gbk");
+		Node node = parseNode(book.getDetailUrl(), html, filter, encodeType);
 		MyLog.i(TAG, "parserBookDetail  ok");
 		while (node != null) {
 			String txt = node.getText();

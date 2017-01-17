@@ -125,7 +125,7 @@ public class Parser17K extends ParserBase2 {
 					}
 				}
 			} else {
-				SimpleNodeIterator iterator = getParserResult(detail.getDetailUrl(), "div class=\"cont\" style=\"display: block;\"");
+				SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), createEqualFilter("div class=\"cont\" style=\"display: block;\""), encodeType);
 				MyLog.i(TAG, "parserBookDetail getParserResult ok");
 				if (iterator.hasMoreNodes()) {
 					String tip = iterator.nextNode().getChildren().elementAt(1).toHtml();
@@ -154,8 +154,8 @@ public class Parser17K extends ParserBase2 {
 					return node instanceof LinkTag && "dd".equals(node.getParent().getText());
 				}
 			};
-			SimpleNodeIterator iterator = parseIterator(url, allHtml,filter, encodeType);
-			
+			SimpleNodeIterator iterator = parseIterator(url, allHtml, filter, encodeType);
+
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity e;
 			while (iterator.hasMoreNodes()) {
@@ -185,7 +185,7 @@ public class Parser17K extends ParserBase2 {
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = getParserResult(url, "div id=\"chapterContentWapper\"");
+			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"chapterContentWapper\""), encodeType);
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();

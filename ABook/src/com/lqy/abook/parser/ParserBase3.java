@@ -23,9 +23,13 @@ public abstract class ParserBase3 extends ParserBase2 {
 		return false;
 	}
 
+	protected String getSearchEncodeType() {
+		return "utf-8";
+	}
+
 	@Override
 	public boolean parserBookDetail(BookEntity book) {
-		Node node = parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"intro\""), "gbk");
+		Node node = parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"intro\""), encodeType);
 		String html = toHtml(node);
 		if (html != null) {
 			book.setTip(html.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
@@ -38,7 +42,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 	public List<ChapterEntity> parserBookDict(String url) {
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"list\""), "gbk");
+			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"list\""), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
@@ -54,7 +58,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"list\""), "gbk");
+			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"list\""), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				Node dict = iterator.nextNode();
@@ -81,7 +85,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 
 	protected String getChapterDetail(String url, String filterReg) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"content\""), "gbk");
+			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"content\""), encodeType);
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();

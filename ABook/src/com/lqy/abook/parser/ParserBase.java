@@ -13,6 +13,8 @@ public abstract class ParserBase extends ParserUtil {
 	protected Site site;
 	protected String TAG = getClass().getSimpleName();
 
+	protected String encodeType;
+
 	// 搜索小说
 	public abstract boolean parserSearch(List<BookEntity> books, String key);
 
@@ -35,6 +37,6 @@ public abstract class ParserBase extends ParserUtil {
 	public abstract String getChapterDetail(String url);
 
 	// 通过url与html解析小说目录
-	public abstract BookAndChapters parserBrowser(String url, String html,String cookie);
+	public abstract BookAndChapters parserBrowser(String url, String html, String cookie);
 
 }

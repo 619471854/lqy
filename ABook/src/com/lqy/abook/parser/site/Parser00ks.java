@@ -15,7 +15,7 @@ public class Parser00ks extends ParserBase3 {
 	private static Config config = Config.get00ksConfig();
 
 	public Parser00ks() {
-		encodeType = "utf-8";
+		encodeType = "gbk";
 		site = Site._00kw;
 	}
 
@@ -58,7 +58,7 @@ public class Parser00ks extends ParserBase3 {
 			url += "/";
 
 		try {
-			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), "gbk"));
+			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), encodeType));
 
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (!Util.isEmpty(html)) {

@@ -13,12 +13,7 @@ import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
-public abstract class ParserUtil {
-	protected String encodeType;
-
-	protected SimpleNodeIterator getParserResult(String url, String reg) throws Exception {
-		return parseUrl(url, createEqualFilter(reg), encodeType);
-	}
+public class ParserUtil {
 
 	protected static SimpleNodeIterator parseHtml(String html, NodeFilter filter) throws Exception {
 		Parser parser = Parser.createParser(html, null);
