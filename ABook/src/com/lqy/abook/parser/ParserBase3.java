@@ -41,18 +41,16 @@ public abstract class ParserBase3 extends ParserBase2 {
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
 		try {
-			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
 			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"list\""), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (iterator.hasMoreNodes()) {
 				String html = iterator.nextNode().toHtml();
 				return parserBookDictByHtml(url, html);
 			}
-			return chapters;
 		} catch (Exception e) {
 			MyLog.e(e);
-			return null;
 		}
+		return null;
 	}
 
 	@Override

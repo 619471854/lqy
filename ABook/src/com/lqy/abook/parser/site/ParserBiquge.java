@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.htmlparser.Node;
 import org.htmlparser.tags.ImageTag;
+import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
@@ -27,6 +28,20 @@ public class ParserBiquge extends ParserBase3 {
 	protected Config getConfig() {
 		// TODO Auto-generated method stub
 		return config;
+	}
+
+	@Override
+	public List<ChapterEntity> parserBookDict(String url) {
+		try {
+			String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"list\""), encodeType));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "parserBookDict getParserResult ok");
+				return parserBookDictByHtml("http://www.biquge.com/", html);
+			}
+		} catch (Exception e) {
+			MyLog.e(e);
+		}
+		return null;
 	}
 
 	@Override
@@ -101,13 +116,14 @@ public class ParserBiquge extends ParserBase3 {
 			book.setAuthor(matcher(infoHtml, "<p>作&nbsp;&nbsp;&nbsp;&nbsp;者：([^<]*)</p>"));
 			book.setUpdateTime(matcher(infoHtml, "<p>最后更新：(\\d{4}/\\d{1,2}/\\d{1,2})[^<]*</p>"));
 			MyLog.i(book.getUpdateTime());
-			
+
 			String tipHtml = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"intro\"")));
-			book.setTip(tipHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s+", CONSTANT.EMPTY).replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        "));
+			book.setTip(tipHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s+", CONSTANT.EMPTY)
+					.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        "));
 
 			Node node = parseNodeByHtml(html, createEqualFilter("div id=\"fmimg\""));
 			ImageTag cover = (ImageTag) node.getChildren().elementAt(0);
-			book.setCover( "http://www.biquge.com" + cover.getImageURL());
+			book.setCover("http://www.biquge.com" + cover.getImageURL());
 
 			return book;
 
