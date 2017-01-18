@@ -121,6 +121,10 @@ public class ParserUtil {
 		return node == null ? null : node.toHtml();
 	}
 
+	public static String toText(Node node) {
+		return node == null ? null : node.toPlainTextString();
+	}
+
 	public static String matcher(String html, String reg) {
 		if (reg == null)
 			return CONSTANT.EMPTY;

@@ -2,12 +2,16 @@ package com.lqy.abook.parser.site;
 
 import java.util.List;
 
+import org.htmlparser.Node;
+import org.htmlparser.tags.ImageTag;
+
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.Site;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
+import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -16,7 +20,7 @@ public class ParserBiquge extends ParserBase3 {
 
 	public ParserBiquge() {
 		encodeType = "utf-8";
-		site = Site._00kw;
+		site = Site.Biquge;
 	}
 
 	@Override
@@ -27,14 +31,16 @@ public class ParserBiquge extends ParserBase3 {
 
 	@Override
 	public String getChapterDetail(String url) {
-		return getChapterDetail(url, "<div id=\"content\">\\s*(((?!</div>)[\\s\\S])+)\\s*</div>");
-	}
-
-	protected boolean setDetailUrl(BookEntity book) {
-		String url = book.getDirectoryUrl();
-		if (url != null && url.contains("m.00ksw.com"))
-			return true;
-		return super.setDetailUrl(book);
+		String text = toText(parseNode(url, null, createEqualFilter("div id=\"content\""), encodeType));
+		if (!Util.isEmpty(text)) {
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
+			String text2 = matcher(text, "创建于[\\s\\S]+?&nbsp;&nbsp;&nbsp;&nbsp;([\\s\\S]+)");
+			if (!Util.isEmpty(text2))
+				text = text2;
+			text = text.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
+			return text.trim();
+		}
+		return null;
 	}
 
 	/**
@@ -46,19 +52,19 @@ public class ParserBiquge extends ParserBase3 {
 			id = matcher(url, "http://m\\.00ksw\\.net/ml/(\\d+/\\d+)/?");
 
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://www\\.00ksw\\.net/html/(\\d+/\\d+)/?");
+			id = matcher(url, "http://www\\.biquge\\.com/(\\d+_\\d+)/?");
 			if (Util.isEmpty(id))
 				return null;
 			html = null;// 重新加载电脑版网页,直接用html有问题
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页
-			url = "http://www.00ksw.com/html/" + id + "/";
+			url = "http://www.biquge.com/" + id + "/";
 		}
 		if (!url.endsWith("/"))
 			url += "/";
 
 		try {
-			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), "gbk"));
+			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), encodeType));
 
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (!Util.isEmpty(html)) {
@@ -67,7 +73,7 @@ public class ParserBiquge extends ParserBase3 {
 				MyLog.i(TAG, "getBookAndDict book  " + book == null ? null : book.getName());
 				// 获取章节
 				html = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"list\"")));
-				List<ChapterEntity> chapters = parserBookDictByHtml(url, html);
+				List<ChapterEntity> chapters = parserBookDictByHtml("http://www.biquge.com/", html);
 				if (chapters == null || chapters.size() == 0) {
 					MyLog.i(TAG, "getBookAndDict getChapters failed");
 					return null;
@@ -86,7 +92,27 @@ public class ParserBiquge extends ParserBase3 {
 		return null;
 	}
 
-	public BookEntity parserBookDetail(String url, String html) {
-		return parserBookDetail(url, html, "http://www.00ksw.net");
+	protected BookEntity parserBookDetail(String url, String html) {
+		try {
+			String infoHtml = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"info\"")));
+			BookEntity book = new BookEntity();
+			book.setSite(site);
+			book.setName(matcher(infoHtml, "<h1>([^<]*)</h1>"));
+			book.setAuthor(matcher(infoHtml, "<p>作&nbsp;&nbsp;&nbsp;&nbsp;者：([^<]*)</p>"));
+			book.setUpdateTime(matcher(infoHtml, "<p>最后更新：(\\d{4}/\\d{1,2}/\\d{1,2})[^<]*</p>"));
+			MyLog.i(book.getUpdateTime());
+			
+			String tipHtml = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"intro\"")));
+			book.setTip(tipHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s+", CONSTANT.EMPTY).replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        "));
+
+			Node node = parseNodeByHtml(html, createEqualFilter("div id=\"fmimg\""));
+			ImageTag cover = (ImageTag) node.getChildren().elementAt(0);
+			book.setCover( "http://www.biquge.com" + cover.getImageURL());
+
+			return book;
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
