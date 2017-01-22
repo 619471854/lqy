@@ -166,15 +166,15 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 		holder.cover.setOnClickListener(new View.OnClickListener() {
 
 			@Override
-			public void onClick(View v) {	
+			public void onClick(View v) {
 				try {
 					MyLog.i("main books click " + v.getId());
 					BookEntity e = books.get(v.getId());
-					
-					if (e.getSite() == Site.Pic&&!e.isPicLoadOver()) {
+
+					if (e.getSite() == Site.Pic && !e.isPicLoadOver()) {
 						Util.dialog(activity, "请先更新本书(长按本书可更新)");
 						return;
-					} 
+					}
 					Cache.setBook(e);
 					if (e.getSite() == Site.Pic) {
 						Intent intent = new Intent(activity, ShowImageActivity.class);
@@ -241,7 +241,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					break;
 				case 4:// 查看目录
-					if (e.getSite() == Site.Pic&&!e.isPicLoadOver()) {
+					if (e.getSite() == Site.Pic && !e.isPicLoadOver()) {
 						Util.dialog(activity, "请先更新本书(长按本书可更新)");
 					} else {
 						intent = new Intent(activity, DirectoryActivity.class);
@@ -255,7 +255,11 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					} else {
 						intent = new Intent(activity, BrowserActivity.class);
 						intent.putExtra("title", e.getName());
-						intent.putExtra("url", e.getDirectoryUrl());
+						if (e.getSite() == Site.Qidian) {
+							intent.putExtra("url", e.getDetailUrl());
+						} else {
+							intent.putExtra("url", e.getDirectoryUrl());
+						}
 						intent.putExtra("class", activity.getClass().getName());
 						activity.startActivity(intent);
 						activity.animationRightToLeft();

@@ -61,9 +61,13 @@ public class ParserBiquge extends ParserBase3 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String id = matcher(url, "http://m\\.00ksw\\.net/html/(\\d+/\\d+)");
-		if (Util.isEmpty(id))
-			id = matcher(url, "http://m\\.00ksw\\.net/ml/(\\d+/\\d+)/?");
+		String id = matcher(url, "http://m\\.biquge\\.com/(\\d+_\\d+)/?");
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "http://m\\.biquge\\.com/booklist/(\\d+).html/?");
+			if (!Util.isEmpty(id)) {
+				id = "1_" + id;
+			}
+		}
 
 		if (Util.isEmpty(id)) {
 			id = matcher(url, "http://www\\.biquge\\.com/(\\d+_\\d+)/?");
