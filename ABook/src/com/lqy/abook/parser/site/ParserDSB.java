@@ -133,11 +133,7 @@ public class ParserDSB extends ParserBase3 {
 			return null;
 		try {
 			List<ChapterEntity> chapters = new ArrayList<ChapterEntity>();
-			SimpleNodeIterator iterator = null;
-			if (Util.isEmpty(html))
-				iterator = parseUrl(url, createEqualFilter("dd"), encodeType);
-			else
-				iterator = parseHtml(html, createEqualFilter("dd"));
+			SimpleNodeIterator iterator = parseIterator(url, html, createEqualFilter("dd"), encodeType);
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			ChapterEntity e;
 			Node node;
@@ -163,19 +159,14 @@ public class ParserDSB extends ParserBase3 {
 
 	@Override
 	public String getChapterDetail(String url) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div class=\"yd_text2\""), encodeType);
+		String text = toText(parseNodeByUrl(url, createEqualFilter("div class=\"yd_text2\""), encodeType));
+		if (!Util.isEmpty(text)) {
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toPlainTextString();
-				html = html.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
-				html = html.replaceAll(Config.nbsp, "  ");
-				html = html.replaceAll("\r\n", "\n");
-				html = html.replaceAll("\n{2,}+", "\n");
-				return html.trim();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+			text = text.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
+			text = text.replaceAll(Config.nbsp, "  ");
+			text = text.replaceAll("\r\n", "\n");
+			text = text.replaceAll("\n{2,}+", "\n");
+			return text.trim();
 		}
 		return null;
 	}

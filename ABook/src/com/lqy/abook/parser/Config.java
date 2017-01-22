@@ -229,6 +229,30 @@ public class Config {
 		return dsb;
 	}
 
+	private static Config biquge;
+
+	public static Config getBiqugeConfig() {
+		if (biquge == null) {
+			biquge = new Config();
+			biquge.searchUrl = "http://zhannei.baidu.com/cse/search?s=287293036948159515&q=";
+			biquge.searchFilter = "div class=\"result-item result-game-item\"";
+			biquge.detailUrlReg = null;
+			biquge.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";// 列表和详情界面都用的这个
+			biquge.directoryUrlReg = null;
+			biquge.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
+			biquge.keyReg = null;// 搜索到的关键词
+			biquge.authorReg = "作者：</span>\\s*<span>\\s*(((?!</span>)[\\s\\S])+)</span>";
+			biquge.typeReg = "类型：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">([^<]+)</span>";
+			biquge.wordsReg2 = "<span>字数：(\\d+)</span>";
+			biquge.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
+			biquge.tipsDetailReg = "<div\\s*class=\"txtbox\">(((?!</div>)[\\s\\S])+)</div>";
+			biquge.newChapterReg = null;
+			biquge.newChapterReg2 = "<div\\s*class=\"lastzj\">[^<]+<a\\s*[^>]+>([^<]+)</a>";
+			biquge.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
+			biquge.completedReg = null;
+		}
+		return biquge;
+	}
 	private static Config _520;
 
 	public static Config get18KConfig() {

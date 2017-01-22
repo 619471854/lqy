@@ -89,7 +89,7 @@ public class Parser17K extends ParserBase2 {
 		try {
 			if (Util.isEmpty(detail.getName())) {
 				NodeFilter filter = createEqualFilter("div class=\"bLeft\"");
-				Node node = Util.isEmpty(allHtml) ? parseNodeByUrl(detail.getDetailUrl(), filter, encodeType) : parseNodeByHtml(allHtml, filter);
+				Node node = parseNode(detail.getDetailUrl(), allHtml, filter, encodeType);
 				MyLog.i(TAG, "parserBookDetail getParserResult ok");
 				if (node != null)
 					node = node.getFirstChild();
@@ -125,10 +125,10 @@ public class Parser17K extends ParserBase2 {
 					}
 				}
 			} else {
-				SimpleNodeIterator iterator = parseUrl(detail.getDetailUrl(), createEqualFilter("div class=\"cont\" style=\"display: block;\""), encodeType);
-				MyLog.i(TAG, "parserBookDetail getParserResult ok");
-				if (iterator.hasMoreNodes()) {
-					String tip = iterator.nextNode().getChildren().elementAt(1).toHtml();
+				Node node = parseNodeByUrl(detail.getDetailUrl(), createEqualFilter("div class=\"cont\" style=\"display: block;\""), encodeType);
+				if (node != null) {
+					MyLog.i(TAG, "parserBookDetail getParserResult ok");
+					String tip = node.getChildren().elementAt(1).toHtml();
 					tip = matcher(tip, config.tipsDetailReg);
 					tip = tip.replaceAll(Config.lineWrapReg, "\n");
 					detail.setTip(tip);
@@ -184,20 +184,15 @@ public class Parser17K extends ParserBase2 {
 
 	@Override
 	public String getChapterDetail(String url) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"chapterContentWapper\""), encodeType);
+		String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"chapterContentWapper\""), encodeType));
+		if (!Util.isEmpty(html)) {
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				html = matcher(html, "<div id=\"chapterContentWapper\">\\s*(((?!本书首发来自)[\\s\\S])+)");
-				html = html.replaceAll(Config.lineWrapReg, "\n");
-				html = html.replaceAll("\r\n", "\n");
-				html = html.replaceAll("\n{2,}+", "\n");
-				html = html.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
-				return html.trim();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+			html = matcher(html, "<div id=\"chapterContentWapper\">\\s*(((?!本书首发来自)[\\s\\S])+)");
+			html = html.replaceAll(Config.lineWrapReg, "\n");
+			html = html.replaceAll("\r\n", "\n");
+			html = html.replaceAll("\n{2,}+", "\n");
+			html = html.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
+			return html.trim();
 		}
 		return null;
 	}

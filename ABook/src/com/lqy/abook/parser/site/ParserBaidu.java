@@ -125,16 +125,15 @@ public class ParserBaidu extends ParserBase {
 	@Override
 	public boolean parserBookDetail(BookEntity detail) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\" s-hover  xs-sum-short\" data-action=\"summary\""),
-					encodeType);
-			MyLog.i(TAG, "parserBookDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toPlainTextString();
-				html = html.replaceAll("全部", CONSTANT.EMPTY);
-				html = html.replaceAll("收起", CONSTANT.EMPTY);
-				html = html.replaceAll("\\s", CONSTANT.EMPTY);
+			String text = toText(parseNodeByUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\" s-hover  xs-sum-short\" data-action=\"summary\""),
+					encodeType));
+			if (!Util.isEmpty(text)) {
+				MyLog.i(TAG, "parserBookDetail getParserResult ok");
+				text = text.replaceAll("全部", CONSTANT.EMPTY);
+				text = text.replaceAll("收起", CONSTANT.EMPTY);
+				text = text.replaceAll("\\s", CONSTANT.EMPTY);
 				// MyLog.i(html);
-				detail.setTip(html);
+				detail.setTip(text);
 			}
 			return true;
 		} catch (Exception e) {

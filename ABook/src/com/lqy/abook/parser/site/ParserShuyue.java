@@ -59,11 +59,10 @@ public class ParserShuyue extends ParserBase3 {
 			url += "/";
 
 		try {
-			SimpleNodeIterator iterator = parseIterator(url, html, createEqualFilter("div id=\"wrapper\""), encodeType);
-
-			MyLog.i(TAG, "parserBookDict getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				NodeList children = iterator.nextNode().getChildren();
+			Node node = parseNode(url, html, createEqualFilter("div id=\"wrapper\""), encodeType);
+			if (node != null) {
+				MyLog.i(TAG, "parserBookDict getParserResult ok");
+				NodeList children = node.getChildren();
 				Node dict = children.elementAt(15);
 				Node detail = children.elementAt(9);
 				dict = dict.getChildren().elementAt(1);

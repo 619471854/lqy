@@ -103,22 +103,17 @@ public class Parser16K extends ParserBase {
 
 	@Override
 	public boolean updateBook(BookEntity book) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div class=\"hotTag\""), encodeType);
+		String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div class=\"hotTag\""), encodeType));
+		if (!Util.isEmpty(html)) {
 			MyLog.i(TAG, "updateBook getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
-				if (newChapter.equals(book.getNewChapter())) {
-					return false;// 此书没有更新
-				}
-				book.setLoadStatus(LoadStatus.hasnew);
-				book.setNewChapter(newChapter);
-				// book.setUpdateTime(matcher(html, ));
-				return true;
+			String newChapter = matcher(html, config.newChapterReg2).trim().replaceAll("\\s", " ");
+			if (newChapter.equals(book.getNewChapter())) {
+				return false;// 此书没有更新
 			}
-		} catch (Exception e) {
-			MyLog.e(e);
+			book.setLoadStatus(LoadStatus.hasnew);
+			book.setNewChapter(newChapter);
+			// book.setUpdateTime(matcher(html, ));
+			return true;
 		}
 		return false;
 	}
@@ -167,10 +162,9 @@ public class Parser16K extends ParserBase {
 			if (!Util.isEmpty(detail.getCover()) || !Util.isEmpty(detail.getTip()))
 				return true;// 从目录界面过来
 			// 从搜索列表过来，更新封面和tip
-			SimpleNodeIterator iterator = parseUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\"one\""), encodeType);
-			MyLog.i(TAG, "parserBookDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
+			String html = toHtml(parseNodeByUrl(detail.getDirectoryUrl(), createEqualFilter("div class=\"one\""), encodeType));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "parserBookDetail getParserResult ok");
 				detail.setCover(matcher(html, config.coverReg));
 				detail.setTip(matcher(html, config.tipsDetailReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 			}
@@ -212,10 +206,9 @@ public class Parser16K extends ParserBase {
 	@Override
 	public String getChapterDetail(String url) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(url, createStartFilter("div id=\"htmlContent\""), encodeType);
-			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
+			String html = toHtml(parseNodeByUrl(url, createStartFilter("div id=\"htmlContent\""), encodeType));
+			if (!Util.isEmpty(html)) {
+				MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
 				html = html.replaceAll(Config.lineWrapReg, "\n");
 				html = html.replaceAll("\r\n", "\n");
 				html = html.replaceAll("\n{2,}+", "\n");

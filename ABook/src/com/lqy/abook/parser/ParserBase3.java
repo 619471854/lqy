@@ -29,9 +29,8 @@ public abstract class ParserBase3 extends ParserBase2 {
 
 	@Override
 	public boolean parserBookDetail(BookEntity book) {
-		Node node = parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"intro\""), encodeType);
-		String html = toHtml(node);
-		if (html != null) {
+		String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"intro\""), encodeType));
+		if (!Util.isEmpty(html)) {
 			book.setTip(html.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 			return true;
 		}
@@ -40,15 +39,10 @@ public abstract class ParserBase3 extends ParserBase2 {
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"list\""), encodeType);
+		String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"list\""), encodeType));
+		if (!Util.isEmpty(html)) {
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				return parserBookDictByHtml(url, html);
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+			return parserBookDictByHtml(url, html);
 		}
 		return null;
 	}
@@ -56,11 +50,9 @@ public abstract class ParserBase3 extends ParserBase2 {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		try {
-			SimpleNodeIterator iterator = parseUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"list\""), encodeType);
-			MyLog.i(TAG, "parserBookDict getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				Node dict = iterator.nextNode();
-				List<ChapterEntity> chapters = parserBookDictByHtml(book.getDirectoryUrl(), dict.toHtml());
+			String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"list\""), encodeType));
+			if (!Util.isEmpty(html)) {
+				List<ChapterEntity> chapters = parserBookDictByHtml(book.getDirectoryUrl(), html);
 				if (chapters == null || chapters.size() == 0) {
 					book.setLoadStatus(LoadStatus.failed);
 					MyLog.i("ParserOther updateBookAndDict getChapters failed");
@@ -82,21 +74,16 @@ public abstract class ParserBase3 extends ParserBase2 {
 	}
 
 	protected String getChapterDetail(String url, String filterReg) {
-		try {
-			SimpleNodeIterator iterator = parseUrl(url, createEqualFilter("div id=\"content\""), encodeType);
+		String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"content\""), encodeType));
+		if (!Util.isEmpty(html)) {
 			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
-			if (iterator.hasMoreNodes()) {
-				String html = iterator.nextNode().toHtml();
-				html = matcher(html, filterReg);
-				html = html.replaceAll(Config.nbsp, "  ");
-				html = html.replaceAll(Config.lineWrapReg, "\n");
-				html = html.replaceAll("\r\n", "\n");
-				html = html.replaceAll("\n{2,}+", "\n");
-				html = html.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
-				return html.trim();
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+			html = matcher(html, filterReg);
+			html = html.replaceAll(Config.nbsp, "  ");
+			html = html.replaceAll(Config.lineWrapReg, "\n");
+			html = html.replaceAll("\r\n", "\n");
+			html = html.replaceAll("\n{2,}+", "\n");
+			html = html.replaceAll(Config.blank, "    ");// 替换全角空格为4个半角空格
+			return html.trim();
 		}
 		return null;
 	}

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.htmlparser.Node;
 import org.htmlparser.tags.ImageTag;
-import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
@@ -17,7 +16,7 @@ import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
 public class ParserBiquge extends ParserBase3 {
-	private static Config config = Config.get00ksConfig();
+	private static Config config = Config.getBiqugeConfig();
 
 	public ParserBiquge() {
 		encodeType = "utf-8";
@@ -36,7 +35,7 @@ public class ParserBiquge extends ParserBase3 {
 			String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"list\""), encodeType));
 			if (!Util.isEmpty(html)) {
 				MyLog.i(TAG, "parserBookDict getParserResult ok");
-				return parserBookDictByHtml("http://www.biquge.com/", html);
+				return parserBookDictByHtml("http://www.biquge.com", html);
 			}
 		} catch (Exception e) {
 			MyLog.e(e);

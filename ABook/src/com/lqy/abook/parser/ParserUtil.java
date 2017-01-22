@@ -31,10 +31,28 @@ public class ParserUtil {
 	}
 
 	public static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType) {
+		return parseNodeByUrl(url, filter, encodeType, false);
+	}
+
+	private static Node parseNodeByUrl(String url, NodeFilter filter, String encodeType, boolean isChanged) {
 		try {
 			SimpleNodeIterator iterator = parseUrl(url, filter, encodeType);
 			if (iterator.hasMoreNodes()) {
 				return iterator.nextNode();
+			}
+		} catch (org.htmlparser.util.ParserException e) {
+			// 编码错误
+			if (isChanged) {
+				MyLog.e(e);
+			} else {
+				MyLog.i("parseNodeByUrl pparse " + encodeType + " error,auto change type");
+				if (Util.isEmpty(encodeType)) {
+					return parseNodeByUrl(url, filter, "gbk", false);
+				} else if (encodeType.equalsIgnoreCase("utf-8")) {
+					return parseNodeByUrl(url, filter, "gbk", true);
+				} else {
+					return parseNodeByUrl(url, filter, "utf-8", true);
+				}
 			}
 		} catch (Exception e) {
 			MyLog.e(e);
