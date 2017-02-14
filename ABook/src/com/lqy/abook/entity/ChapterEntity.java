@@ -4,10 +4,10 @@ public class ChapterEntity extends SerializableEntity {
 	private int id;//章节列表的位置
 	private String name;
 	private String url;
-	private LoadStatus loadStatus = LoadStatus.notLoaded;
+	private LoadStatusEnum loadStatus = LoadStatusEnum.notLoaded;
 
 	public boolean isVip() {
-		return loadStatus == LoadStatus.vip;
+		return loadStatus == LoadStatusEnum.vip;
 	}
 
 	public int getId() {
@@ -34,11 +34,11 @@ public class ChapterEntity extends SerializableEntity {
 		this.url = url;
 	}
 
-	public LoadStatus getLoadStatus() {
+	public LoadStatusEnum getLoadStatus() {
 		return loadStatus;
 	}
 
-	public void setLoadStatus(LoadStatus loadStatus) {
+	public void setLoadStatus(LoadStatusEnum loadStatus) {
 		this.loadStatus = loadStatus;
 	}
 

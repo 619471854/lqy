@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.tool.Util;
 
 public class ParserResult {
@@ -31,7 +31,7 @@ public class ParserResult {
 			result = Result.InputName;
 			book = new BookEntity();
 			book.setDirectoryUrl(url);
-			book.setSite(Site.Other);
+			book.setSite(SiteEnum.Other);
 			this.chapters = chapters;
 		}
 	}

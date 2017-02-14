@@ -10,7 +10,7 @@ public class BookEntity extends SerializableEntity {
 	private String type;
 	private String author;
 	private int matchWords;
-	private Site site = Site.getDefault();
+	private SiteEnum site = SiteEnum.getDefault();
 	private String tip;
 	private String detailUrl;
 	private int words;
@@ -18,7 +18,7 @@ public class BookEntity extends SerializableEntity {
 	private String newChapter;
 	private String directoryUrl;// not null
 	private boolean isCompleted;
-	private LoadStatus loadStatus = LoadStatus.notLoaded;
+	private LoadStatusEnum loadStatus = LoadStatusEnum.notLoaded;
 	private int currentChapterId;
 	private int readBegin;
 	private int unReadCount;
@@ -114,11 +114,11 @@ public class BookEntity extends SerializableEntity {
 		this.matchWords = matchWords;
 	}
 
-	public Site getSite() {
+	public SiteEnum getSite() {
 		return site;
 	}
 
-	public void setSite(Site site) {
+	public void setSite(SiteEnum site) {
 		this.site = site;
 	}
 
@@ -178,11 +178,11 @@ public class BookEntity extends SerializableEntity {
 		this.isCompleted = isCompleted;
 	}
 
-	public LoadStatus getLoadStatus() {
+	public LoadStatusEnum getLoadStatus() {
 		return loadStatus;
 	}
 
-	public void setLoadStatus(LoadStatus loadStatus) {
+	public void setLoadStatus(LoadStatusEnum loadStatus) {
 		this.loadStatus = loadStatus;
 	}
 

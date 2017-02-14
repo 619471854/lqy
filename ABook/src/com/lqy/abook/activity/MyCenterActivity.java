@@ -20,7 +20,7 @@ import android.widget.CompoundButton;
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.MyApp;
 import com.lqy.abook.R;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.img.SelectImageDialog;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.parser.ParserUtil;
@@ -57,13 +57,13 @@ public class MyCenterActivity extends MenuActivity {
 			delete();
 			break;
 		case R.id.my_center_site:
-			Site[] all = Site.allSearchSite;
+			SiteEnum[] all = SiteEnum.allSearchSite;
 			String[] titles = new String[all.length];
 			boolean[] select = new boolean[all.length];
 			for (int i = 0; i < all.length; i++) {
-				Site s = all[i];
+				SiteEnum s = all[i];
 				titles[i] = s.getName();
-				for (Site s2 : Site.searchSite) {
+				for (SiteEnum s2 : SiteEnum.searchSite) {
 					if (s2 == s) {
 						select[i] = true;
 						break;
@@ -75,8 +75,8 @@ public class MyCenterActivity extends MenuActivity {
 				@Override
 				public void onClick(boolean[] o) {
 					try {
-						List<Site> searchSite = new ArrayList<Site>();
-						Site[] all = Site.allSearchSite;
+						List<SiteEnum> searchSite = new ArrayList<SiteEnum>();
+						SiteEnum[] all = SiteEnum.allSearchSite;
 						for (int i = 0; i < all.length; i++) {
 							if (o[i])
 								searchSite.add(all[i]);

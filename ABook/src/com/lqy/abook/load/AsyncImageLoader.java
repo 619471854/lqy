@@ -118,7 +118,7 @@ public class AsyncImageLoader {
 	}
 
 	public interface ImageCallback {
-		public void asynLoadSuccess();
+		void asynLoadSuccess();
 	}
 
 }

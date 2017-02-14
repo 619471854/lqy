@@ -12,7 +12,7 @@ import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -54,7 +54,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 			if (!Util.isEmpty(html)) {
 				List<ChapterEntity> chapters = parserBookDictByHtml(book.getDirectoryUrl(), html);
 				if (chapters == null || chapters.size() == 0) {
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					MyLog.i("ParserOther updateBookAndDict getChapters failed");
 					return null;// 此书更新失败
 				}
@@ -62,14 +62,14 @@ public abstract class ParserBase3 extends ParserBase2 {
 				if (newChapter.equals(book.getNewChapter())) {
 					return null;// 此书没有更新
 				}
-				book.setLoadStatus(LoadStatus.hasnew);
+				book.setLoadStatus(LoadStatusEnum.hasnew);
 				book.setNewChapter(newChapter);
 				return chapters;
 			}
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
-		book.setLoadStatus(LoadStatus.failed);
+		book.setLoadStatus(LoadStatusEnum.failed);
 		return null;
 	}
 

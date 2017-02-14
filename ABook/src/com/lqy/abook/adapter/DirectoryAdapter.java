@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.lqy.abook.R;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 
 public class DirectoryAdapter extends ArrayAdapter<ChapterEntity> {
 	private LayoutInflater layoutInflater;
@@ -39,14 +39,14 @@ public class DirectoryAdapter extends ArrayAdapter<ChapterEntity> {
 		holder.title.setText(chapter.getName());
 		holder.vip.setVisibility(chapter.isVip() ? View.VISIBLE : View.GONE);
 
-		LoadStatus status = chapter.getLoadStatus();
-		if (status == LoadStatus.failed) {
+		LoadStatusEnum status = chapter.getLoadStatus();
+		if (status == LoadStatusEnum.failed) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.status_disconnect);
-		} else if (status == LoadStatus.loading) {
+		} else if (status == LoadStatusEnum.loading) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.status_refresh);
-		} else if (status == LoadStatus.completed) {
+		} else if (status == LoadStatusEnum.completed) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.checked);
 		} else {

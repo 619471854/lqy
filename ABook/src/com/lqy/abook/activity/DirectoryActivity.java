@@ -20,8 +20,8 @@ import com.lqy.abook.adapter.DirectoryAdapter;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
@@ -84,7 +84,7 @@ public class DirectoryActivity extends MenuActivity {
 						chapters = ParserManager.getDict(book);
 					}
 					if (chapters == null || chapters.size() == 0) {
-						book.setLoadStatus(LoadStatus.failed);
+						book.setLoadStatus(LoadStatusEnum.failed);
 						sendErrorOnThread("获取目录失败");
 					} else {
 						sendMsgOnThread(0, chapters);
@@ -103,7 +103,7 @@ public class DirectoryActivity extends MenuActivity {
 							return;
 						}
 					}
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					sendErrorOnThread("获取目录失败");
 				}
 			}.start();
@@ -144,7 +144,7 @@ public class DirectoryActivity extends MenuActivity {
 							book.setReadBegin(0);
 							Cache.setCurrentChapter(adapter.getItem(arg2));
 							Intent intent;
-							if (book.getSite() == Site.Pic) {
+							if (book.getSite() == SiteEnum.Pic) {
 								intent = new Intent(_this, ShowImageActivity.class);
 							} else {
 								intent = new Intent(_this, ReadActivity.class);
@@ -164,7 +164,7 @@ public class DirectoryActivity extends MenuActivity {
 						}
 					}
 				});
-				if (book.getSite() == Site.Other || book.getSite() == Site.Pic) {
+				if (book.getSite() == SiteEnum.Other || book.getSite() == SiteEnum.Pic) {
 					listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 						@Override
 						public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -172,7 +172,7 @@ public class DirectoryActivity extends MenuActivity {
 							return true;
 						}
 					});
-				} else if (book.getSite() == Site.Located) {
+				} else if (book.getSite() == SiteEnum.Located) {
 					listView.setOnItemLongClickListener(new OnItemLongClickListener() {
 						@Override
 						public boolean onItemLongClick(AdapterView<?> arg0, View arg1, final int arg2, long arg3) {

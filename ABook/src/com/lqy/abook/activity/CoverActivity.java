@@ -14,7 +14,7 @@ import com.lqy.abook.R;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.ImageLoader;
@@ -158,11 +158,11 @@ public class CoverActivity extends MenuActivity {
 						LoadManager.saveDirectory(book.getId(), data);
 						sendMsgOnThread(2, data);
 					} else {
-						book.setLoadStatus(LoadStatus.failed);
+						book.setLoadStatus(LoadStatusEnum.failed);
 						sendErrorOnThread("加载失败");
 					}
 				} else {
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					sendErrorOnThread("保存失败");
 				}
 			}

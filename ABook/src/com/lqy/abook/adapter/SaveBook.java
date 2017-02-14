@@ -18,7 +18,7 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.parser.site.ParserOther;
@@ -101,7 +101,7 @@ public class SaveBook {
 				break;
 			}
 			BookEntity book = new BookEntity();
-			book.setSite(Site.Single);
+			book.setSite(SiteEnum.Single);
 			book.setTip(text);
 			saveBook(new BookAndChapters(book, null), title);
 			break;
@@ -131,7 +131,7 @@ public class SaveBook {
 					String name = et.getText().toString().trim();
 					if (!Util.isEmpty(name)) {
 						result.getBook().setName(name);
-						result.getBook().setSite(Site.Pic);
+						result.getBook().setSite(SiteEnum.Pic);
 						saveBook(result.getBook(), result.getChapters());
 					}
 				}
@@ -219,14 +219,14 @@ public class SaveBook {
 		new Thread() {
 			public void run() {
 				String text = book.getTip();
-				if (book.getSite() == Site.Single) {
+				if (book.getSite() == SiteEnum.Single) {
 					if (text.length() > 100) {
 						book.setTip(text.substring(0, 100) + "...");
 					}
 					book.setDirectoryUrl(CONSTANT.EMPTY);// 不能为空
 				}
 				if (new BookDao().addBook(book)) {
-					if (book.getSite() == Site.Single) {
+					if (book.getSite() == SiteEnum.Single) {
 						List<ChapterEntity> cs = LoadManager.getDirectory(book);
 						LoadManager.saveDirectory(book.getId(), cs);
 						LoadManager.saveChapterContent(book.getId(), book.getName(), text);

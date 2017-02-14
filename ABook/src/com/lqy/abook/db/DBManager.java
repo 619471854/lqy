@@ -11,7 +11,7 @@ import com.lqy.abook.MyApp;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ExtEntity;
 import com.lqy.abook.entity.FavoriteEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
@@ -83,7 +83,7 @@ public class DBManager {
 		e.setName(c.getString(c.getColumnIndex(BookDao.column_name)));
 		e.setType(c.getString(c.getColumnIndex(BookDao.column_type)));
 		e.setAuthor(c.getString(c.getColumnIndex(BookDao.column_author)));
-		e.setSite(Site.valueOf(c.getInt(c.getColumnIndex(BookDao.column_site))));
+		e.setSite(SiteEnum.valueOf(c.getInt(c.getColumnIndex(BookDao.column_site))));
 		e.setTip(c.getString(c.getColumnIndex(BookDao.column_tip)));
 		e.setDetailUrl(c.getString(c.getColumnIndex(BookDao.column_detailUrl)));
 		e.setWords(c.getInt(c.getColumnIndex(BookDao.column_words)));

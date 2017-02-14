@@ -11,15 +11,15 @@ import android.widget.TextView;
 
 import com.lqy.abook.R;
 import com.lqy.abook.entity.BookEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 
 public class SiteSwitchAdapter extends ArrayAdapter<BookEntity> {
 	private LayoutInflater layoutInflater;
 	private ViewHolder holder;
-	private Site currentSite;
+	private SiteEnum currentSite;
 
-	public SiteSwitchAdapter(Activity activity, List<BookEntity> books, Site currentSite) {
+	public SiteSwitchAdapter(Activity activity, List<BookEntity> books, SiteEnum currentSite) {
 		super(activity, 0, books);
 		this.layoutInflater = LayoutInflater.from(activity);
 		this.currentSite = currentSite;

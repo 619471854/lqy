@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
-	private static final String DBNAME = "abook.db";
+	public static final String DBNAME = "abook.db";
 	private static final int VERSION = 7;
 
 	private static final String CREATE_TABLE_BOOK = "create table " + BookDao.table_name + " (" + BookDao.column_id + " integer primary key autoincrement,"

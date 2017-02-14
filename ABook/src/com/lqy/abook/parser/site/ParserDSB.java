@@ -11,8 +11,8 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
 import com.lqy.abook.tool.CONSTANT;
@@ -24,7 +24,7 @@ public class ParserDSB extends ParserBase3 {
 
 	public ParserDSB() {
 		encodeType = "gbk";
-		site = Site.DSB;
+		site = SiteEnum.DSB;
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class ParserDSB extends ParserBase3 {
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
-				book.setLoadStatus(LoadStatus.failed);
+				book.setLoadStatus(LoadStatusEnum.failed);
 				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
@@ -119,7 +119,7 @@ public class ParserDSB extends ParserBase3 {
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
-		book.setLoadStatus(LoadStatus.failed);
+		book.setLoadStatus(LoadStatusEnum.failed);
 		return null;
 	}
 

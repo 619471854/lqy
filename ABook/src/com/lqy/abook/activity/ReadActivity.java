@@ -22,7 +22,7 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.FontMode;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.FileUtil;
@@ -135,21 +135,21 @@ public class ReadActivity extends MenuActivity {
 					if (chapters == null || chapters.size() == 0) {
 						// 获取目录失败，请换源下载
 						if (NetworkUtils.isNetConnected(null))
-							book.setLoadStatus(LoadStatus.failed);
+							book.setLoadStatus(LoadStatusEnum.failed);
 						sendMsgOnThread(4, null);
 					} else {
-						if (book.getLoadStatus() == LoadStatus.failed) {
-							book.setLoadStatus(LoadStatus.notLoaded);
+						if (book.getLoadStatus() == LoadStatusEnum.failed) {
+							book.setLoadStatus(LoadStatusEnum.notLoaded);
 						}
 						sendMsgOnThread(0, chapters);
 					}
 				} else {// 从本地获取
 					String text = LoadManager.getChapterContent(book.getId(), chapter.getName());
 					if (Util.isEmpty(text)) {
-						chapter.setLoadStatus(LoadStatus.failed);
+						chapter.setLoadStatus(LoadStatusEnum.failed);
 						sendMsgOnThread(2, null);
 					} else {
-						chapter.setLoadStatus(LoadStatus.completed);
+						chapter.setLoadStatus(LoadStatusEnum.completed);
 						sendMsgOnThread(1, text);
 					}
 				}

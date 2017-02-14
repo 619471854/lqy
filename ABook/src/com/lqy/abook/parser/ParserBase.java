@@ -5,12 +5,12 @@ import java.util.List;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 
 public abstract class ParserBase extends ParserUtil {
 	protected static final int searchMaxSizeSite = 5;// 每个网站最多显示5本书
 	protected static final int MaxMatch = Integer.MAX_VALUE;// 最大的匹配值
-	protected Site site;
+	protected SiteEnum site;
 	protected String TAG = getClass().getSimpleName();
 
 	protected String encodeType;

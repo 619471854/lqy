@@ -24,7 +24,7 @@ public class BookAndChapters {
 	public BookAndChapters(BookEntity book, List<ChapterEntity> chapters) {
 		if (book != null) {
 			this.book = book;
-			if (book.getSite() == Site.Single) {
+			if (book.getSite() == SiteEnum.Single) {
 				result = SearchResult.InputName;
 			} else if (chapters == null || chapters.size() == 0) {
 				if (Util.isEmpty(book.getName()))

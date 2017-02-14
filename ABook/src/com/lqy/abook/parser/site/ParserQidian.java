@@ -14,8 +14,8 @@ import com.google.gson.reflect.TypeToken;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
@@ -28,7 +28,7 @@ public class ParserQidian extends ParserBase {
 
 	public ParserQidian() {
 		encodeType = "utf-8";
-		site = Site.Qidian;
+		site = SiteEnum.Qidian;
 	}
 
 	@Override
@@ -169,7 +169,7 @@ public class ParserQidian extends ParserBase {
 		if (newChapter.equals(book.getNewChapter())) {
 			return false;// 此书没有更新
 		}
-		book.setLoadStatus(LoadStatus.hasnew);
+		book.setLoadStatus(LoadStatusEnum.hasnew);
 		book.setNewChapter(newChapter);
 		book.setUpdateTime(matcher(html, config.updateTimeReg2).trim());
 		float words = Util.toFloat(matcher(html, "<em>([\\d\\.]+)</em><cite>万字</cite>"));
@@ -182,7 +182,7 @@ public class ParserQidian extends ParserBase {
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
 		if (Util.isEmpty(book.getDetailUrl())) {
-			book.setLoadStatus(LoadStatus.failed);
+			book.setLoadStatus(LoadStatusEnum.failed);
 			return null;
 		}
 		if (!updateBook(book)) {
@@ -191,7 +191,7 @@ public class ParserQidian extends ParserBase {
 		}
 		List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 		if (chapters == null || chapters.size() == 0) {
-			book.setLoadStatus(LoadStatus.failed);
+			book.setLoadStatus(LoadStatusEnum.failed);
 			MyLog.i(TAG, "updateBookAndDict getChapters failed");
 			return null;// 此书更新失败
 		} else {
@@ -247,7 +247,7 @@ public class ParserQidian extends ParserBase {
 						e = new ChapterEntity();
 						e.setName(name);
 						if (isVip)
-							e.setLoadStatus(LoadStatus.vip);
+							e.setLoadStatus(LoadStatusEnum.vip);
 						e.setUrl(cUrl);
 						e.setId(re.size());
 						re.add(e);

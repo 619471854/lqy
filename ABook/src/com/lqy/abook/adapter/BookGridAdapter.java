@@ -29,8 +29,8 @@ import com.lqy.abook.activity.ReadActivity;
 import com.lqy.abook.activity.SearchActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.load.AsyncImageLoader;
 import com.lqy.abook.load.Cache;
@@ -144,20 +144,20 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 			holder.noread.setVisibility(View.GONE);
 		}
 		holder.title.setText(book.getName());
-		LoadStatus status = book.getLoadStatus();
-		if (status == LoadStatus.failed) {
+		LoadStatusEnum status = book.getLoadStatus();
+		if (status == LoadStatusEnum.failed) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.status_disconnect);
-		} else if (status == LoadStatus.loading) {
+		} else if (status == LoadStatusEnum.loading) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.status_refresh);
-		} else if (status == LoadStatus.hasnew) {
+		} else if (status == LoadStatusEnum.hasnew) {
 			holder.status.setVisibility(View.VISIBLE);
 			holder.status.setImageResource(R.drawable.status_new);
 		} else {
 			holder.status.setVisibility(View.GONE);
 		}
-		if (book.getSite() == Site.Pic) {
+		if (book.getSite() == SiteEnum.Pic) {
 			holder.cover.setImageResource(R.drawable.book_cover_pic);
 		} else { // 延迟加载图片
 			asyncImageLoader.loadDrawable(holder.cover, book.getCover(), R.drawable.book_cover_default);
@@ -171,12 +171,12 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					MyLog.i("main books click " + v.getId());
 					BookEntity e = books.get(v.getId());
 
-					if (e.getSite() == Site.Pic && !e.isPicLoadOver()) {
+					if (e.getSite() == SiteEnum.Pic && !e.isPicLoadOver()) {
 						Util.dialog(activity, "请先更新本书(长按本书可更新)");
 						return;
 					}
 					Cache.setBook(e);
-					if (e.getSite() == Site.Pic) {
+					if (e.getSite() == SiteEnum.Pic) {
 						Intent intent = new Intent(activity, ShowImageActivity.class);
 						activity.startActivity(intent);
 						activity.animationRightToLeft();
@@ -241,7 +241,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					activity.startActivity(intent);
 					break;
 				case 4:// 查看目录
-					if (e.getSite() == Site.Pic && !e.isPicLoadOver()) {
+					if (e.getSite() == SiteEnum.Pic && !e.isPicLoadOver()) {
 						Util.dialog(activity, "请先更新本书(长按本书可更新)");
 					} else {
 						intent = new Intent(activity, DirectoryActivity.class);
@@ -255,7 +255,7 @@ public class BookGridAdapter extends ArrayAdapter<BookEntity> {
 					} else {
 						intent = new Intent(activity, BrowserActivity.class);
 						intent.putExtra("title", e.getName());
-						if (e.getSite() == Site.Qidian) {
+						if (e.getSite() == SiteEnum.Qidian) {
 							intent.putExtra("url", e.getDetailUrl());
 						} else {
 							intent.putExtra("url", e.getDirectoryUrl());

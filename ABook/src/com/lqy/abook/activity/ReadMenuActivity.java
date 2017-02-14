@@ -24,7 +24,7 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.FontMode;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.FileUtil;
@@ -239,12 +239,12 @@ public class ReadMenuActivity extends MenuActivity {
 			AsyncTxtLoader.stopLoadBook(Cache.getBook().getId());
 			MainActivity.setLoadingOver();
 
-			if (Cache.getBook().getLoadStatus() == LoadStatus.loading)
-				Cache.getBook().setLoadStatus(LoadStatus.notLoaded);
+			if (Cache.getBook().getLoadStatus() == LoadStatusEnum.loading)
+				Cache.getBook().setLoadStatus(LoadStatusEnum.notLoaded);
 			if (Cache.getChapters() != null)
 				for (ChapterEntity e : Cache.getChapters()) {
-					if (e.getLoadStatus() == LoadStatus.loading) {
-						e.setLoadStatus(LoadStatus.notLoaded);
+					if (e.getLoadStatus() == LoadStatusEnum.loading) {
+						e.setLoadStatus(LoadStatusEnum.notLoaded);
 					}
 				}
 			break;
@@ -465,7 +465,7 @@ public class ReadMenuActivity extends MenuActivity {
 				File file = new File(bookPath, FileUtil.getChapterName(chapter.getName()));
 				if (file.exists()) {
 					file.delete();
-					chapter.setLoadStatus(LoadStatus.notLoaded);
+					chapter.setLoadStatus(LoadStatusEnum.notLoaded);
 				}
 			}
 			LoadManager.asynSaveDirectory(Cache.getBook().getId(), chapters);
@@ -483,7 +483,7 @@ public class ReadMenuActivity extends MenuActivity {
 		}
 		List<ChapterEntity> chapters = Cache.getChapters();
 		for (ChapterEntity chapter : chapters) {
-			chapter.setLoadStatus(LoadStatus.notLoaded);
+			chapter.setLoadStatus(LoadStatusEnum.notLoaded);
 		}
 		LoadManager.asynSaveDirectory(id, chapters);
 		Util.toast(_this, "删除成功");
@@ -521,8 +521,8 @@ public class ReadMenuActivity extends MenuActivity {
 		new Thread() {
 			public void run() {
 				BookEntity book = Cache.getBook();
-				if (book.getLoadStatus() == LoadStatus.failed)
-					book.setLoadStatus(LoadStatus.notLoaded);
+				if (book.getLoadStatus() == LoadStatusEnum.failed)
+					book.setLoadStatus(LoadStatusEnum.notLoaded);
 				List<ChapterEntity> chapters = ParserManager.updateBookAndDict(book);
 				if (chapters == null || chapters.size() == 0) {
 					// 先获取缓存，再查找本地
@@ -531,12 +531,12 @@ public class ReadMenuActivity extends MenuActivity {
 						chapters = LoadManager.getDirectory(book);
 					}
 					// 没有更新,且本地没有章节,则直接下载
-					if ((book.getLoadStatus() != LoadStatus.failed) && (chapters == null || chapters.size() == 0)) {
+					if ((book.getLoadStatus() != LoadStatusEnum.failed) && (chapters == null || chapters.size() == 0)) {
 						chapters = ParserManager.getDict(book);
 					}
 					if (chapters == null || chapters.size() == 0) {
 						if (NetworkUtils.isNetConnected(null))
-							book.setLoadStatus(LoadStatus.failed);
+							book.setLoadStatus(LoadStatusEnum.failed);
 					}
 				}
 				sendMsgOnThread(3, chapters);
@@ -571,7 +571,7 @@ public class ReadMenuActivity extends MenuActivity {
 				return;
 			}
 			Cache.setChapters(chapters);
-			if (book.getLoadStatus() == LoadStatus.hasnew) {
+			if (book.getLoadStatus() == LoadStatusEnum.hasnew) {
 				new BookDao().updateBook(book);
 			}
 			LoadManager.asynSaveDirectory(book.getId(), Cache.getChapters());

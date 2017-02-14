@@ -8,8 +8,8 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
@@ -23,7 +23,7 @@ public class Parser16K extends ParserBase {
 
 	public Parser16K() {
 		encodeType = "gbk";
-		site = Site._16K;
+		site = SiteEnum._16K;
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class Parser16K extends ParserBase {
 			if (newChapter.equals(book.getNewChapter())) {
 				return false;// 此书没有更新
 			}
-			book.setLoadStatus(LoadStatus.hasnew);
+			book.setLoadStatus(LoadStatusEnum.hasnew);
 			book.setNewChapter(newChapter);
 			// book.setUpdateTime(matcher(html, ));
 			return true;
@@ -133,16 +133,16 @@ public class Parser16K extends ParserBase {
 						MyLog.i(TAG, "updateBookAndDict  此书没有更新");
 						return null;// 此书没有更新
 					}
-					book.setLoadStatus(LoadStatus.hasnew);
+					book.setLoadStatus(LoadStatusEnum.hasnew);
 					book.setNewChapter(newChapter);
 				} else {
 					MyLog.i(TAG, "updateBookAndDict getNewChapter failed");
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					return null;// 此书更新失败
 				}
 				List<ChapterEntity> chapters = parserBookDict(null, html);
 				if (chapters == null || chapters.size() == 0) {
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					MyLog.i(TAG, "updateBookAndDict getChapters failed");
 					return null;// 此书更新失败
 				} else {
@@ -152,7 +152,7 @@ public class Parser16K extends ParserBase {
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
-		book.setLoadStatus(LoadStatus.failed);
+		book.setLoadStatus(LoadStatusEnum.failed);
 		return null;
 	}
 

@@ -16,7 +16,7 @@ import com.lqy.abook.db.DBManager;
 import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserBaidu;
@@ -109,13 +109,13 @@ public class LoadingActivity extends MenuActivity {
 			boolean notSupportUpdated = !book.getSite().supportUpdated();
 			for (ChapterEntity chapter : chapters) {
 				if (notSupportUpdated) {
-					chapter.setLoadStatus(LoadStatus.completed);
+					chapter.setLoadStatus(LoadStatusEnum.completed);
 				} else if (!chapter.isVip()) {
 					file = new File(path, FileUtil.getChapterName(chapter.getName()));
 					if (file.exists() && file.length() > 0) {
-						chapter.setLoadStatus(LoadStatus.completed);
+						chapter.setLoadStatus(LoadStatusEnum.completed);
 					} else {
-						chapter.setLoadStatus(LoadStatus.notLoaded);
+						chapter.setLoadStatus(LoadStatusEnum.notLoaded);
 					}
 				}
 			}

@@ -4,15 +4,15 @@ import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.parser.site.*;
 import com.lqy.abook.tool.CONSTANT;
 
-public enum Site {
+public enum SiteEnum {
 	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Biquge, Located, Single;
 
-	public static Site getDefault() {
+	public static SiteEnum getDefault() {
 		return Other;
 	}
 
-	public static Site[] allSearchSite = new Site[] { Site.Biquge, Site.SM, Site.Shuyue, Site._00kw, Site.DSB, Site.Qidian };
-	public static Site[] searchSite = allSearchSite;
+	public static SiteEnum[] allSearchSite = new SiteEnum[] { SiteEnum.Biquge, SiteEnum.SM, SiteEnum.Shuyue, SiteEnum._00kw, SiteEnum.DSB, SiteEnum.Qidian };
+	public static SiteEnum[] searchSite = allSearchSite;
 
 	// public static Site[] searchSite = new Site[] { Site.DSB };
 
@@ -20,19 +20,19 @@ public enum Site {
 	 * 是否没有网址
 	 */
 	public boolean notDictUrl() {
-		return this == Site.Single || this == Site.Located;
+		return this == SiteEnum.Single || this == SiteEnum.Located;
 	}
 
 	/**
 	 * 是否支持更新
 	 */
 	public boolean supportUpdated() {
-		return this != Site.Pic && !notDictUrl();
+		return this != SiteEnum.Pic && !notDictUrl();
 	}
 
-	public static Site valueOf(int index) {
+	public static SiteEnum valueOf(int index) {
 		try {
-			return Site.values()[index];
+			return SiteEnum.values()[index];
 		} catch (Exception e) {
 			return getDefault();
 		}

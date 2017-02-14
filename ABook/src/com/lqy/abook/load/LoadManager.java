@@ -10,8 +10,8 @@ import com.google.gson.reflect.TypeToken;
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.Util;
 
@@ -80,11 +80,11 @@ public class LoadManager {
 	}
 
 	public static List<ChapterEntity> getDirectory(BookEntity book) {
-		if (book.getSite() == Site.Single) {
+		if (book.getSite() == SiteEnum.Single) {
 			List<ChapterEntity> data = new ArrayList<ChapterEntity>();
 			ChapterEntity e = new ChapterEntity();
 			e.setName(book.getName());
-			e.setLoadStatus(LoadStatus.completed);
+			e.setLoadStatus(LoadStatusEnum.completed);
 			data.add(e);
 			return data;
 		} else {

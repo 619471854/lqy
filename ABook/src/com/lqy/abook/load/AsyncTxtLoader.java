@@ -13,7 +13,7 @@ import com.lqy.abook.activity.MainActivity;
 import com.lqy.abook.activity.ReadActivity;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.img.ShowImageActivity;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.tool.MyLog;
@@ -146,7 +146,7 @@ public class AsyncTxtLoader {
 			if (chapter.isVip()) {
 				break;
 			}
-			if (!Util.isEmpty(chapter.getUrl()) && chapter.getLoadStatus() != LoadStatus.completed) {
+			if (!Util.isEmpty(chapter.getUrl()) && chapter.getLoadStatus() != LoadStatusEnum.completed) {
 				// 如果前面没下载本章，则需要把下载内容传回界面
 				count++;
 				load(activity, book, chapter, what, isSendProgress);
@@ -160,7 +160,7 @@ public class AsyncTxtLoader {
 			activity.sendMsgOnThread(what, 100, null);
 			return false;
 		}
-		book.setLoadStatus(LoadStatus.loading);
+		book.setLoadStatus(LoadStatusEnum.loading);
 		return true;
 	}
 
@@ -215,7 +215,7 @@ public class AsyncTxtLoader {
 	}
 
 	private void load(final MenuActivity activity, final BookEntity book, final ChapterEntity chapter, final int what, final boolean sendProgress) {
-		chapter.setLoadStatus(LoadStatus.loading);
+		chapter.setLoadStatus(LoadStatusEnum.loading);
 		executor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -231,7 +231,7 @@ public class AsyncTxtLoader {
 							// 本书下载完成
 							totalCountMap.remove(book.getId());
 							loadedCountMap.remove(book.getId());
-							book.setLoadStatus(LoadStatus.completed);
+							book.setLoadStatus(LoadStatusEnum.completed);
 							if (totalCountMap.keySet().size() == 0) {
 								isRunning = false;
 								instance = null;
@@ -273,9 +273,9 @@ public class AsyncTxtLoader {
 				text = ParserManager.getChapterDetail(book, chapter.getUrl());
 				text = LoadManager.saveChapterContent(book.getId(), chapter.getName(), text);
 
-				chapter.setLoadStatus(text != null ? LoadStatus.completed : LoadStatus.failed);
+				chapter.setLoadStatus(text != null ? LoadStatusEnum.completed : LoadStatusEnum.failed);
 			} else {
-				chapter.setLoadStatus(LoadStatus.completed);
+				chapter.setLoadStatus(LoadStatusEnum.completed);
 			}
 			return text;
 

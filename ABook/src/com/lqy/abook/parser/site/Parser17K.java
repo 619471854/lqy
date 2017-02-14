@@ -11,8 +11,8 @@ import org.htmlparser.util.SimpleNodeIterator;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase2;
 import com.lqy.abook.tool.CONSTANT;
@@ -24,7 +24,7 @@ public class Parser17K extends ParserBase2 {
 
 	public Parser17K() {
 		encodeType = "gbk";
-		site = Site._17K;
+		site = SiteEnum._17K;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class Parser17K extends ParserBase2 {
 			if (book.getNewChapter().equals(newChapter)) {
 				return false;// 此书没有更新
 			}
-			book.setLoadStatus(LoadStatus.hasnew);
+			book.setLoadStatus(LoadStatusEnum.hasnew);
 			book.setNewChapter(newChapter);
 			book.setWords(Util.toInt(matcher(html, config.wordsReg2)));
 
@@ -67,7 +67,7 @@ public class Parser17K extends ParserBase2 {
 			}
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
 			if (chapters == null || chapters.size() == 0) {
-				book.setLoadStatus(LoadStatus.failed);
+				book.setLoadStatus(LoadStatusEnum.failed);
 				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
@@ -76,7 +76,7 @@ public class Parser17K extends ParserBase2 {
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
-		book.setLoadStatus(LoadStatus.failed);
+		book.setLoadStatus(LoadStatusEnum.failed);
 		return null;
 	}
 
@@ -167,7 +167,7 @@ public class Parser17K extends ParserBase2 {
 					e.setId(chapters.size());
 					boolean isVip = tag.toHtml().indexOf("alt=\"vip\"") != -1;
 					if (isVip) {
-						e.setLoadStatus(LoadStatus.vip);
+						e.setLoadStatus(LoadStatusEnum.vip);
 					} else {
 						e.setUrl(getChildUrl(url, tag.getLink()));
 					}

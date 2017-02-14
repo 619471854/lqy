@@ -8,7 +8,7 @@ import com.lqy.abook.MenuActivity;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserOther;
 import com.lqy.abook.parser.site.ParserQidian;
@@ -18,9 +18,9 @@ public class ParserManager {
 	/**
 	 * 解析器
 	 */
-	private static List<ParserBase> getParsers(Site exclude) {
+	private static List<ParserBase> getParsers(SiteEnum exclude) {
 		List<ParserBase> parsers = new ArrayList<ParserBase>();
-		for (Site s : Site.searchSite) {
+		for (SiteEnum s : SiteEnum.searchSite) {
 			if (s != exclude)
 				parsers.add(s.getParser());
 		}
@@ -82,7 +82,7 @@ public class ParserManager {
 	public static List<ChapterEntity> getDict(BookEntity book) {
 		if (book.getSite().notDictUrl()) {
 			return LoadManager.getDirectory(book);
-		} else if (book.getSite() == Site.Other || book.getSite() == Site.Pic) {
+		} else if (book.getSite() == SiteEnum.Other || book.getSite() == SiteEnum.Pic) {
 			return new ParserOther().parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 		} else
 			return book.getSite().getParser().parserBookDict(book.getDirectoryUrl());
@@ -94,7 +94,7 @@ public class ParserManager {
 	public static String getChapterDetail(BookEntity book, String url) {
 		if (book.getSite().notDictUrl()) {
 			return LoadManager.getChapterContent(book.getId(), book.getName());
-		} else if (book.getSite() == Site.Other) {
+		} else if (book.getSite() == SiteEnum.Other) {
 			return new ParserOther().getChapterDetail(url, book.getExt());
 		} else
 			return book.getSite().getParser().getChapterDetail(url);
@@ -114,8 +114,8 @@ public class ParserManager {
 			public void run() {
 				BookAndChapters result = null;
 				if (allParsers) {
-					for (Site s : Site.allSearchSite) {
-						if (s == Site.Qidian)
+					for (SiteEnum s : SiteEnum.allSearchSite) {
+						if (s == SiteEnum.Qidian)
 							result = s.getParser().parserBrowser(url2, html, cookie);
 						else
 							result = s.getParser().parserBrowser(url2, html, cookie);

@@ -14,7 +14,7 @@ import android.os.Message;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iflytek.cloud.SpeechUtility;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.CallBackListener;
 import com.lqy.abook.tool.CrashHandler;
@@ -34,9 +34,11 @@ public class MyApp extends Application {
 		// 是否是debug模式
 		CONSTANT.isDebug = (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
 		MyLog.i_base("MyApplication onCreate");
+				
 		// 崩溃处理
 		CrashHandler crashHandler = CrashHandler.getInstance();
 		crashHandler.init(getApplicationContext());
+		
 		// 科大讯飞语音
 		SpeechUtility.createUtility(this, "appid=" + CONSTANT.speech_appid);
 		// 搜索的网站
@@ -49,21 +51,21 @@ public class MyApp extends Application {
 		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
 		try {
 			String text = sp.getString("site", null);
-			Type type = new TypeToken<List<Site>>() {
+			Type type = new TypeToken<List<SiteEnum>>() {
 			}.getType();
-			List<Site> sites = new Gson().fromJson(text, type);
-			Site.searchSite = sites.toArray(new Site[sites.size()]);
+			List<SiteEnum> sites = new Gson().fromJson(text, type);
+			SiteEnum.searchSite = sites.toArray(new SiteEnum[sites.size()]);
 		} catch (Exception e) {
 			MyLog.i(e);
 		}
-		if (Site.searchSite == null)
-			Site.searchSite = Site.allSearchSite;
+		if (SiteEnum.searchSite == null)
+			SiteEnum.searchSite = SiteEnum.allSearchSite;
 	}
 
-	public void saveSearchSite(List<Site> sites) {
+	public void saveSearchSite(List<SiteEnum> sites) {
 		if (sites == null || sites.size() == 0)
 			return;
-		Site.searchSite = sites.toArray(new Site[sites.size()]);
+		SiteEnum.searchSite = sites.toArray(new SiteEnum[sites.size()]);
 
 		SharedPreferences sp = getSharedPreferences(CONSTANT.SP_CENTER, 0);
 		sp.edit().putString("site", new Gson().toJson(sites)).commit();

@@ -8,7 +8,7 @@ import org.htmlparser.tags.ImageTag;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
 import com.lqy.abook.tool.CONSTANT;
@@ -20,7 +20,7 @@ public class ParserBiquge extends ParserBase3 {
 
 	public ParserBiquge() {
 		encodeType = "utf-8";
-		site = Site.Biquge;
+		site = SiteEnum.Biquge;
 	}
 
 	@Override

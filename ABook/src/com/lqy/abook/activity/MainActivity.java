@@ -23,8 +23,8 @@ import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.load.AsyncPicLoader;
 import com.lqy.abook.load.AsyncTxtLoader;
 import com.lqy.abook.load.Cache;
@@ -236,16 +236,16 @@ public class MainActivity extends MenuActivity {
 			boolean hasLoading = false;
 			if (books != null)
 				for (BookEntity b : books) {
-					if (b.getLoadStatus() == LoadStatus.loading) {
+					if (b.getLoadStatus() == LoadStatusEnum.loading) {
 						hasLoading = true;
-						b.setLoadStatus(LoadStatus.notLoaded);
+						b.setLoadStatus(LoadStatusEnum.notLoaded);
 					}
 				}
 
 			if (Cache.getChapters() != null)
 				for (ChapterEntity e : Cache.getChapters()) {
-					if (e.getLoadStatus() == LoadStatus.loading) {
-						e.setLoadStatus(LoadStatus.notLoaded);
+					if (e.getLoadStatus() == LoadStatusEnum.loading) {
+						e.setLoadStatus(LoadStatusEnum.notLoaded);
 					}
 				}
 			if (hasLoading)
@@ -365,7 +365,7 @@ public class MainActivity extends MenuActivity {
 				BookAndChapters e = (BookAndChapters) o;
 				BookEntity book = e.getBook();
 				ArrayList<ChapterEntity> chapters = (ArrayList<ChapterEntity>) e.getChapters();
-				if (book.getLoadStatus() == LoadStatus.hasnew) {
+				if (book.getLoadStatus() == LoadStatusEnum.hasnew) {
 					dao.updateBook(book);
 				}
 				LoadManager.asynSaveDirectory(book.getId(), chapters);
@@ -375,7 +375,7 @@ public class MainActivity extends MenuActivity {
 
 				if (arg1 == 0) {// 下载未读章节
 					if (!AsyncTxtLoader.getInstance().load(_this, book, chapters, 1, book.getCurrentChapterId())) {
-						book.setLoadStatus(LoadStatus.completed);
+						book.setLoadStatus(LoadStatusEnum.completed);
 						updateBookCount--;
 					}
 				}
@@ -455,7 +455,7 @@ public class MainActivity extends MenuActivity {
 	private ProgressDialog dialog;
 
 	public boolean update(BookEntity book) {
-		if (book.getSite() == Site.Pic) {
+		if (book.getSite() == SiteEnum.Pic) {
 			final AsyncPicLoader loader = new AsyncPicLoader();
 			if (loader.load(_this, book, 5)) {
 				btn_update.setVisibility(View.GONE);
@@ -503,7 +503,7 @@ public class MainActivity extends MenuActivity {
 
 	private void asynUpdateBook(final BookEntity book, final int what, boolean onlyCheck) {
 		if (!onlyCheck)
-			book.setLoadStatus(LoadStatus.loading);
+			book.setLoadStatus(LoadStatusEnum.loading);
 		final int onlyCheckInt = onlyCheck ? 1 : 0;
 		new Thread() {
 			public void run() {
@@ -519,9 +519,9 @@ public class MainActivity extends MenuActivity {
 					sendMsgOnThread(what, onlyCheckInt, new BookAndChapters(book, chapters));
 				} else if (onlyCheckInt == 1) {// 仅仅检查更新
 					sendMsgOnThread(what, onlyCheckInt, null);
-				} else if (book.getLoadStatus() == LoadStatus.failed) {// 仅仅检查更新失败
+				} else if (book.getLoadStatus() == LoadStatusEnum.failed) {// 仅仅检查更新失败
 					if (!NetworkUtils.isNetConnected(null))// 网络原因的不显示失败
-						book.setLoadStatus(LoadStatus.notLoaded);
+						book.setLoadStatus(LoadStatusEnum.notLoaded);
 					sendMsgOnThread(what, onlyCheckInt, null);
 				} else {// 没有更新，获取本地章节目录
 					chapters = LoadManager.getDirectory(book);
@@ -530,7 +530,7 @@ public class MainActivity extends MenuActivity {
 					}
 					if (chapters == null || chapters.size() == 0) {
 						if (NetworkUtils.isNetConnected(null))
-							book.setLoadStatus(LoadStatus.failed);
+							book.setLoadStatus(LoadStatusEnum.failed);
 						sendMsgOnThread(what, onlyCheckInt, null);// 更新失败
 					} else {
 						// 获取剩余未读章节数
@@ -545,13 +545,13 @@ public class MainActivity extends MenuActivity {
 						boolean notSupportUpdated = !book.getSite().supportUpdated();
 						for (ChapterEntity chapter : chapters) {
 							if (notSupportUpdated) {
-								chapter.setLoadStatus(LoadStatus.completed);
+								chapter.setLoadStatus(LoadStatusEnum.completed);
 							} else if (!chapter.isVip()) {
 								file = new File(path, FileUtil.getChapterName(chapter.getName()));
 								if (file.exists() && file.length() > 0) {
-									chapter.setLoadStatus(LoadStatus.completed);
+									chapter.setLoadStatus(LoadStatusEnum.completed);
 								} else {
-									chapter.setLoadStatus(LoadStatus.notLoaded);
+									chapter.setLoadStatus(LoadStatusEnum.notLoaded);
 								}
 							}
 						}

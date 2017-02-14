@@ -25,7 +25,7 @@ import com.lqy.abook.activity.MainActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.tool.CONSTANT;
@@ -174,7 +174,7 @@ public class SaveLocatedBook {
 	private void saveBook(File file, String startReg, int length) {
 		BookEntity book = new BookEntity();
 		book.setDirectoryUrl(CONSTANT.EMPTY);
-		book.setSite(Site.Located);
+		book.setSite(SiteEnum.Located);
 		String name = file.getName();
 		int index = name.lastIndexOf(".");
 		if (index != -1) {

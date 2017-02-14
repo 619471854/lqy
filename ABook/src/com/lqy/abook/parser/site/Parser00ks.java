@@ -5,7 +5,7 @@ import java.util.List;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
 import com.lqy.abook.tool.MyLog;
@@ -16,7 +16,7 @@ public class Parser00ks extends ParserBase3 {
 
 	public Parser00ks() {
 		encodeType = "gbk";
-		site = Site._00kw;
+		site = SiteEnum._00kw;
 	}
 
 	@Override

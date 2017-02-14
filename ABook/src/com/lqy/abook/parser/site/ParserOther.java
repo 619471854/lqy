@@ -13,8 +13,8 @@ import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.ExtEntity;
-import com.lqy.abook.entity.LoadStatus;
-import com.lqy.abook.entity.Site;
+import com.lqy.abook.entity.LoadStatusEnum;
+import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
@@ -47,7 +47,7 @@ public class ParserOther extends ParserBase {
 		try {
 			List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl(), null, book.getExt());
 			if (chapters == null || chapters.size() == 0) {
-				book.setLoadStatus(LoadStatus.failed);
+				book.setLoadStatus(LoadStatusEnum.failed);
 				MyLog.i(TAG, "updateBookAndDict getChapters failed");
 				return null;// 此书更新失败
 			} else {
@@ -91,7 +91,7 @@ public class ParserOther extends ParserBase {
 		} catch (Exception e) {
 			MyLog.e(e);
 		}
-		book.setLoadStatus(LoadStatus.failed);
+		book.setLoadStatus(LoadStatusEnum.failed);
 		return null;
 	}
 
@@ -196,7 +196,7 @@ public class ParserOther extends ParserBase {
 
 		BookEntity book = new BookEntity();
 		book.setDirectoryUrl(url);
-		book.setSite(Site.Other);
+		book.setSite(SiteEnum.Other);
 		book.setExt(ext);
 
 		return new BookAndChapters(book, chapters);

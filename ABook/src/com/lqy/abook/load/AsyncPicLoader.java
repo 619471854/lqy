@@ -11,7 +11,7 @@ import com.lqy.abook.MenuActivity;
 import com.lqy.abook.db.BookDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.LoadStatus;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.parser.ParserManager;
 import com.lqy.abook.parser.site.ParserPic;
 import com.lqy.abook.tool.MyLog;
@@ -38,7 +38,7 @@ public class AsyncPicLoader {
 		isRunning = true;
 		isStop = false;
 		this.book = _book;
-		book.setLoadStatus(LoadStatus.loading);
+		book.setLoadStatus(LoadStatusEnum.loading);
 		// 等待下载并显示进度
 		new Thread() {
 			public void run() {
@@ -47,18 +47,18 @@ public class AsyncPicLoader {
 					chapters = ParserManager.getDict(book);
 				}
 				if (chapters == null || chapters.size() == 0) {
-					book.setLoadStatus(LoadStatus.failed);
+					book.setLoadStatus(LoadStatusEnum.failed);
 					activity.sendMsgOnThread(what);
 					return;
 				}
 				if (!isRunning) {
-					book.setLoadStatus(LoadStatus.notLoaded);
+					book.setLoadStatus(LoadStatusEnum.notLoaded);
 					activity.sendMsgOnThread(what);
 					return;
 				}
 				for (int i = 0; i < chapters.size(); i++) {
 					if (isStop) {
-						book.setLoadStatus(LoadStatus.completed);
+						book.setLoadStatus(LoadStatusEnum.completed);
 						activity.sendMsgOnThread(what);
 					} else if (isRunning) {
 						int progress = i * 98 / chapters.size() + 1;
@@ -69,9 +69,9 @@ public class AsyncPicLoader {
 							chapters.remove(chapter);
 							i--;
 						}
-						chapter.setLoadStatus(LoadStatus.completed);
+						chapter.setLoadStatus(LoadStatusEnum.completed);
 					} else {
-						book.setLoadStatus(LoadStatus.notLoaded);
+						book.setLoadStatus(LoadStatusEnum.notLoaded);
 						activity.sendMsgOnThread(what);
 						return;
 					}
@@ -86,9 +86,9 @@ public class AsyncPicLoader {
 						executor.shutdownNow();
 					} catch (Exception e) {
 					}
-					book.setLoadStatus(LoadStatus.notLoaded);
+					book.setLoadStatus(LoadStatusEnum.notLoaded);
 				} else {
-					book.setLoadStatus(LoadStatus.completed);
+					book.setLoadStatus(LoadStatusEnum.completed);
 					book.setPicLoadOver(true);
 					book.setCurrentChapterId(0);
 					book.setUnReadCount(chapters.size() - 1);
@@ -110,7 +110,7 @@ public class AsyncPicLoader {
 	private int loadCount;
 
 	private boolean load(ChapterEntity chapter) {
-		chapter.setLoadStatus(LoadStatus.loading);
+		chapter.setLoadStatus(LoadStatusEnum.loading);
 		List<String> urls = null;
 		try {
 			urls = LoadManager.getPicUrls(book.getId(), chapter.getName());
