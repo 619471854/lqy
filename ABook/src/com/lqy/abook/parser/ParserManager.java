@@ -11,7 +11,6 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.site.ParserOther;
-import com.lqy.abook.parser.site.ParserQidian;
 import com.lqy.abook.tool.Util;
 
 public class ParserManager {

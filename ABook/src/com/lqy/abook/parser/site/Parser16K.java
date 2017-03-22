@@ -15,7 +15,6 @@ import com.lqy.abook.parser.ParserBase;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
-import com.lqy.abook.tool.WebServer;
 import com.lqy.abook.tool.WebViewParser;
 
 public class Parser16K extends ParserBase {

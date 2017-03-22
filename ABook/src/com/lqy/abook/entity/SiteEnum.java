@@ -15,8 +15,6 @@ public enum SiteEnum {
 			SiteEnum.Qidian };
 	public static SiteEnum[] searchSite = allSearchSite;
 
-	// public static Site[] searchSite = new Site[] { Site.DSB };
-
 	/**
 	 * 是否没有网址
 	 */
