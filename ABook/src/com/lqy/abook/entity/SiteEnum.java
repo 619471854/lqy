@@ -5,13 +5,14 @@ import com.lqy.abook.parser.site.*;
 import com.lqy.abook.tool.CONSTANT;
 
 public enum SiteEnum {
-	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00kw, DSB, Biquge, Located, Single;
+	_17K, SM, _16K, Other, Baidu, Qidian, Shuyue, Pic, _00ks, DSB, Biquge, _6Mao, Located, Single;
 
 	public static SiteEnum getDefault() {
 		return Other;
 	}
 
-	public static SiteEnum[] allSearchSite = new SiteEnum[] { SiteEnum.Biquge, SiteEnum.SM, SiteEnum.Shuyue, SiteEnum._00kw, SiteEnum.DSB, SiteEnum.Qidian };
+	public static SiteEnum[] allSearchSite = new SiteEnum[] { SiteEnum.Biquge, SiteEnum._6Mao, SiteEnum.SM, SiteEnum.Shuyue, SiteEnum._00ks, SiteEnum.DSB,
+			SiteEnum.Qidian };
 	public static SiteEnum[] searchSite = allSearchSite;
 
 	// public static Site[] searchSite = new Site[] { Site.DSB };
@@ -60,12 +61,14 @@ public enum SiteEnum {
 			return new ParserQidian();
 		case Shuyue:
 			return new ParserShuyue();
-		case _00kw:
+		case _00ks:
 			return new Parser00ks();
 		case DSB:
 			return new ParserDSB();
 		case Biquge:
 			return new ParserBiquge();
+		case _6Mao:
+			return new Parser6Mao();
 		case Pic:
 			return new ParserPic();
 		default:
@@ -87,12 +90,14 @@ public enum SiteEnum {
 			return "起点中文网";
 		case Shuyue:
 			return "书阅屋";
-		case _00kw:
+		case _00ks:
 			return "零点看书";
 		case DSB:
 			return "大书包小说网";
 		case Biquge:
 			return "笔趣阁";
+		case _6Mao:
+			return "6毛小说网";
 		case Pic:
 			return CONSTANT.EMPTY;
 		case Located:

@@ -16,7 +16,7 @@ public class Parser00ks extends ParserBase3 {
 
 	public Parser00ks() {
 		encodeType = "gbk";
-		site = SiteEnum._00kw;
+		site = SiteEnum._00ks;
 	}
 
 	@Override

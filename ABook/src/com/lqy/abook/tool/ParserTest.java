@@ -25,20 +25,27 @@ public class ParserTest {
 		ArrayList<BookEntity> data = new ArrayList<BookEntity>();
 		tool.parserSearch(data, keyword);
 
-		if (data != null && data.size() > 0) {
-			resultData.add(" parserSearch 成功:" + data.size());
-		} else {
+		if (data == null || data.size() == 0) {
 			resultData.add(" parserSearch 失败:" + keyword);
 			return;
 		}
-
 		BookEntity book = data.get(0);
+		resultData.add(" parserSearch 成功:" + data.size() + " first=" + book.getName() + "  " + book.getAuthor());
 		{
 			BookEntity e = tool.parserSearchSite(book.getName(), book.getAuthor());
 			if (e != null) {
 				resultData.add(" parserSearchSite 成功:" + e.getDirectoryUrl());
 			} else {
 				resultData.add(" parserSearchSite 失败:" + book.getName() + "  " + book.getAuthor());
+			}
+		}
+		{
+			BookEntity copy = copy(book);
+			tool.parserBookDetail(copy);
+			if (!Util.isEmpty(copy.getTip())) {
+				resultData.add(" parserBookDetail 成功:" + shortString(copy.getTip()));
+			} else {
+				resultData.add(" parserBookDetail 失败:" + (copy.getDetailUrl() == null ? copy.getDirectoryUrl() : copy.getDetailUrl()));
 			}
 		}
 
@@ -57,25 +64,15 @@ public class ParserTest {
 			BookEntity copy = copy(book);
 			List<ChapterEntity> chapters = tool.updateBookAndDict(copy);
 			if (chapters != null && chapters.size() > 0) {
-				resultData.add(" updateBookAndDict 成功:" + chapters.size());
+				resultData.add(" updateBookAndDict 成功:" + getChapterTip(chapters));
 			} else {
 				resultData.add(" updateBookAndDict 失败:" + copy.getDirectoryUrl());
 			}
 		}
 
-		{
-			BookEntity copy = copy(book);
-			tool.parserBookDetail(copy);
-			if (!Util.isEmpty(copy.getTip())) {
-				resultData.add(" parserBookDetail 成功:" + shortString(copy.getTip()));
-			} else {
-				resultData.add(" parserBookDetail 失败:" + (copy.getDetailUrl() == null ? copy.getDirectoryUrl() : copy.getDetailUrl()));
-			}
-		}
-
 		List<ChapterEntity> chapters = tool.parserBookDict(book.getDirectoryUrl());
 		if (chapters != null && chapters.size() > 0) {
-			resultData.add(" parserBookDict 成功:" + chapters.size());
+			resultData.add(" parserBookDict 成功:" + getChapterTip(chapters));
 
 			{
 				String chapter = chapters.get(0).getUrl();
@@ -101,7 +98,7 @@ public class ParserTest {
 				resultData.add(" parserBrowser DetailUrl 失败:" + book.getDetailUrl());
 			} else if (re.getResult() != SearchResult.Failed) {
 				resultData.add(" parserBrowser DetailUrl 成功， 名字：" + (re.getBook() != null ? re.getBook().getName() : "") + " 章节数： "
-						+ (re.getChapters() != null ? re.getChapters().size() : 0));
+						+ getChapterTip(re.getChapters()));
 			}
 		}
 		if (Util.isEmpty(book.getDirectoryUrl())) {
@@ -114,7 +111,7 @@ public class ParserTest {
 				resultData.add(" parserBrowser DirectoryUrl 失败:" + book.getDirectoryUrl());
 			} else if (re.getResult() != SearchResult.Failed) {
 				resultData.add(" parserBrowser DirectoryUrl 成功， 名字：" + (re.getBook() != null ? re.getBook().getName() : "") + " 章节数： "
-						+ (re.getChapters() != null ? re.getChapters().size() : 0));
+						+ getChapterTip(re.getChapters()));
 			}
 		}
 	}
@@ -126,10 +123,17 @@ public class ParserTest {
 		return copy;
 	}
 
-	private String shortString(String msg) {
+	private static String shortString(String msg) {
 		if (Util.isEmpty(msg))
 			return "";
 		int l = msg.length();
 		return l + "字：" + msg.substring(0, Math.min(l, 20)).replace("\n", "");
+	}
+
+	private static String getChapterTip(List<ChapterEntity> chapters) {
+		if (chapters == null || chapters.size() == 0)
+			return "";
+		ChapterEntity e = chapters.get(0);
+		return chapters.size() + " first=" + e.getName() + "  " + e.getUrl();
 	}
 }

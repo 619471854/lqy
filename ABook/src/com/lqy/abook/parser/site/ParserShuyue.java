@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.htmlparser.Node;
 import org.htmlparser.util.NodeList;
-import org.htmlparser.util.SimpleNodeIterator;
 
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;

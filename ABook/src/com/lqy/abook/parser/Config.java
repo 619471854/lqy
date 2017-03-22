@@ -253,6 +253,33 @@ public class Config {
 		}
 		return biquge;
 	}
+
+	private static Config _6mao;
+
+	public static Config get6MaoConfig() {
+		if (_6mao == null) {
+			_6mao = new Config();
+			_6mao.searchUrl = "http://zhannei.baidu.com/cse/search?s=3242083170117637887&q=";
+			_6mao.searchFilter = "div class=\"result-item result-game-item\"";
+			_6mao.detailUrlReg = null;
+			_6mao.coverReg = "<img\\s*src=\"([^\"]+)\"\\s*alt";// 列表和详情界面都用的这个
+			_6mao.directoryUrlReg = null;
+			_6mao.nameReg = "<a\\s*cpos=\"title\"\\s*href=\"([^\"]+)\"\\s*title=\"([^\"]+)\"[^>]+>[^<]*(<em>(.*)</em>)?[^<]*</a>";//
+			_6mao.keyReg = null;// 搜索到的关键词
+			_6mao.authorReg = "作者：</span>\\s*<span>\\s*(((?!</span>)[\\s\\S])+)</span>";
+			_6mao.typeReg = null;
+			_6mao.wordsReg = "字数：\\s*</span>\\s*<span[^>]+>\\s*(\\d+)";
+			_6mao.wordsReg2 = "<span>字数：(\\d+)</span>";
+			_6mao.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
+			_6mao.tipsDetailReg = "<div\\s*class=\"txtbox\">(((?!</div>)[\\s\\S])+)</div>";
+			_6mao.newChapterReg = null;
+			_6mao.newChapterReg2 = "<div\\s*class=\"lastzj\">[^<]+<a\\s*[^>]+>([^<]+)</a>";
+			_6mao.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
+			_6mao.completedReg = null;
+		}
+		return _6mao;
+	}
+
 	private static Config _520;
 
 	public static Config get18KConfig() {

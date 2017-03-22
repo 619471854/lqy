@@ -8,6 +8,7 @@ import org.htmlparser.tags.ImageTag;
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
+import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
@@ -31,14 +32,10 @@ public class ParserBiquge extends ParserBase3 {
 
 	@Override
 	public List<ChapterEntity> parserBookDict(String url) {
-		try {
-			String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"list\""), encodeType));
-			if (!Util.isEmpty(html)) {
-				MyLog.i(TAG, "parserBookDict getParserResult ok");
-				return parserBookDictByHtml("http://www.biquge.com", html);
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+		String html = toHtml(parseNodeByUrl(url, createEqualFilter("div id=\"list\""), encodeType));
+		if (!Util.isEmpty(html)) {
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
+			return parserBookDictByHtml("http://www.biquge.com", html);
 		}
 		return null;
 	}
@@ -91,7 +88,7 @@ public class ParserBiquge extends ParserBase3 {
 				MyLog.i(TAG, "getBookAndDict book  " + book == null ? null : book.getName());
 				// 获取章节
 				html = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"list\"")));
-				List<ChapterEntity> chapters = parserBookDictByHtml("http://www.biquge.com/", html);
+				List<ChapterEntity> chapters = parserBookDictByHtml("http://www.biquge.com", html);
 				if (chapters == null || chapters.size() == 0) {
 					MyLog.i(TAG, "getBookAndDict getChapters failed");
 					return null;

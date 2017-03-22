@@ -31,7 +31,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 	public boolean parserBookDetail(BookEntity book) {
 		String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"intro\""), encodeType));
 		if (!Util.isEmpty(html)) {
-			book.setTip(html.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+			book.setTip(html.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s+", CONSTANT.EMPTY));
 			return true;
 		}
 		return false;
@@ -49,28 +49,19 @@ public abstract class ParserBase3 extends ParserBase2 {
 
 	@Override
 	public List<ChapterEntity> updateBookAndDict(BookEntity book) {
-		try {
-			String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div id=\"list\""), encodeType));
-			if (!Util.isEmpty(html)) {
-				List<ChapterEntity> chapters = parserBookDictByHtml(book.getDirectoryUrl(), html);
-				if (chapters == null || chapters.size() == 0) {
-					book.setLoadStatus(LoadStatusEnum.failed);
-					MyLog.i("ParserOther updateBookAndDict getChapters failed");
-					return null;// 此书更新失败
-				}
-				String newChapter = chapters.get(chapters.size() - 1).getName();
-				if (newChapter.equals(book.getNewChapter())) {
-					return null;// 此书没有更新
-				}
-				book.setLoadStatus(LoadStatusEnum.hasnew);
-				book.setNewChapter(newChapter);
-				return chapters;
-			}
-		} catch (Exception e) {
-			MyLog.e(e);
+		List<ChapterEntity> chapters = parserBookDict(book.getDirectoryUrl());
+		if (chapters == null || chapters.size() == 0) {
+			book.setLoadStatus(LoadStatusEnum.failed);
+			MyLog.i("ParserOther updateBookAndDict getChapters failed");
+			return null;// 此书更新失败
 		}
-		book.setLoadStatus(LoadStatusEnum.failed);
-		return null;
+		String newChapter = chapters.get(chapters.size() - 1).getName();
+		if (newChapter.equals(book.getNewChapter())) {
+			return null;// 此书没有更新
+		}
+		book.setLoadStatus(LoadStatusEnum.hasnew);
+		book.setNewChapter(newChapter);
+		return chapters;
 	}
 
 	protected String getChapterDetail(String url, String filterReg) {
@@ -89,6 +80,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 	}
 
 	protected static List<ChapterEntity> parserBookDictByHtml(String urlRoot, String h) {
+
 		if (Util.isEmpty(h))
 			return null;
 		try {
@@ -142,6 +134,7 @@ public abstract class ParserBase3 extends ParserBase2 {
 
 		book.setCover(matcher(html, config.coverReg));
 		book.setType(matcher(html, config.typeReg));
+		book.setWords(Util.toInt(matcher(html, config.wordsReg)));
 		book.setTip(matcher(html, config.tipsReg).replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
 
 		book.setNewChapter(matcher(html, config.newChapterReg).trim().replaceAll("\\s", " "));
