@@ -3,52 +3,15 @@ package com.lqy.abook.tool;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookAndChapters.SearchResult;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
-import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.ParserBase;
 
 public class ParserTest {
 
-	public static Object o = new Object();
-
 	public static String keyword = "诛仙";
-
-	public static void main(String[] args) {
-
-		// testSite(SiteEnum.Qidian);
-
-		MyLog.isShowLog = false;
-		for (final SiteEnum site : SiteEnum.allSearchSite) {
-			testSite(site);
-		}
-	}
-
-	private static void testSite(final SiteEnum site) {
-		new Thread() {
-			public void run() {
-				final ParserTest test = new ParserTest(site.getParser());
-				try {
-					test.test();
-				} catch (Exception e) {
-					test.resultData.add(e.toString() + " " + e.getMessage());
-				}
-				synchronized (o) {
-					Log.i("zztx", "++++++++++++++" + site.toString() + "+++++++++++++++++++++++++");
-					for (String re : test.resultData) {
-						Log.i("zztx", re);
-					}
-					Log.i("zztx", "----------------------------------------------");
-					Log.i("zztx", "----------------------------------------------");
-				}
-			};
-
-		}.start();
-	}
 
 	private ParserBase tool;
 
@@ -106,7 +69,7 @@ public class ParserTest {
 			if (!Util.isEmpty(copy.getTip())) {
 				resultData.add(" parserBookDetail 成功:" + shortString(copy.getTip()));
 			} else {
-				resultData.add(" parserBookDetail 失败+" + (copy.getDetailUrl() == null ? copy.getDirectoryUrl() : copy.getDetailUrl()));
+				resultData.add(" parserBookDetail 失败:" + (copy.getDetailUrl() == null ? copy.getDirectoryUrl() : copy.getDetailUrl()));
 			}
 		}
 
@@ -126,7 +89,7 @@ public class ParserTest {
 			}
 
 		} else {
-			resultData.add(" parserBookDict 失败" + book.getDirectoryUrl());
+			resultData.add(" parserBookDict 失败:" + book.getDirectoryUrl());
 		}
 		if (Util.isEmpty(book.getDetailUrl())) {
 			resultData.add(" parserBrowser DetailUrl is null");
