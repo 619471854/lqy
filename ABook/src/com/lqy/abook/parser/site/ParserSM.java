@@ -215,6 +215,12 @@ public class ParserSM extends ParserBase2 {
 			id = matcher(url, "^http://www\\.shenmabook\\.com/ml-(\\d+)/$");
 		}
 		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.shenmaxiaoshuo\\.com/xx-(\\d+)/$");
+		}
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.shenmaxiaoshuo\\.com/ml-(\\d+)/$");
+		}
+		if (Util.isEmpty(id)) {
 			id = matcher(url, "^http://m\\.shenmabook\\.com/xx-(\\d+)/$");
 			html = null;
 		}

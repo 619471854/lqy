@@ -12,15 +12,12 @@ import android.widget.ImageView;
 import com.lqy.abook.MenuActivity;
 import com.lqy.abook.R;
 import com.lqy.abook.db.BookDao;
-import com.lqy.abook.db.DBManager;
 import com.lqy.abook.db.HistoryDao;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.LoadStatusEnum;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
-import com.lqy.abook.parser.site.ParserBaidu;
-import com.lqy.abook.tool.MyLog;
 
 public class LoadingActivity extends MenuActivity {
 
@@ -37,21 +34,6 @@ public class LoadingActivity extends MenuActivity {
 			view.setImageDrawable(drawable);
 		}
 		getBooks();
-		// testGetData();
-	}
-
-	private static void testGetData() {
-		new Thread() {
-			public void run() {
-				try {
-					ArrayList<BookEntity> data = new ArrayList<BookEntity>();
-					new ParserBaidu().parserSearch(data, "武神");
-					MyLog.i(data);
-				} catch (Exception e) {
-					MyLog.i(e);
-				}
-			}
-		}.start();
 	}
 
 	private void step(ArrayList<BookEntity> books) {

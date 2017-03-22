@@ -108,6 +108,10 @@ public class MyCenterActivity extends MenuActivity {
 			startActivity(new Intent(_this, MyHelpActivity.class));
 			animationRightToLeft();
 			break;
+		case R.id.my_center_test:
+			startActivity(new Intent(_this, TestActivity.class));
+			animationRightToLeft();
+			break;
 		}
 	}
 

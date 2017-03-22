@@ -141,6 +141,14 @@
             style="@style/item_text"
             android:onClick="sendButtonClick"
             android:text="帮助和说明" />
+        
+        <View style="@style/item_line" />
+
+        <TextView
+            android:id="@+id/my_center_test"
+            style="@style/item_text"
+            android:onClick="sendButtonClick"
+            android:text="接口测试" />
     </LinearLayout>
     <TextView
         android:id="@+id/my_center_exit"

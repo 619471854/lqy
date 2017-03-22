@@ -47,6 +47,8 @@ public class Parser00ks extends ParserBase3 {
 
 		if (Util.isEmpty(id)) {
 			id = matcher(url, "http://www\\.00ksw\\.net/html/(\\d+/\\d+)/?");
+			if (Util.isEmpty(id)) 
+				id = matcher(url, "http://www\\.00ksw\\.com/html/(\\d+/\\d+)/?");
 			if (Util.isEmpty(id))
 				return null;
 			html = null;// 重新加载电脑版网页,直接用html有问题

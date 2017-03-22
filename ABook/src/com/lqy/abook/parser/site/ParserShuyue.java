@@ -50,6 +50,8 @@ public class ParserShuyue extends ParserBase3 {
 		if (Util.isEmpty(id)) {
 			id = matcher(url, "http://www\\.09xs\\.com/kan_(\\d+)/");
 			if (Util.isEmpty(id))
+				id = matcher(url, "http://www\\.shuyuewu\\.com/kan_(\\d+)/");
+			if (Util.isEmpty(id))
 				return null;
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页

@@ -181,6 +181,13 @@ public class ParserDSB extends ParserBase3 {
 			id = matcher(url, "^http://www\\.dashubao\\.net/jieshaoinfo/(\\d+/\\d+)\\.htm$");
 		}
 		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.dashubao\\.co/book/(\\d+/\\d+)/index\\.html$");
+		}
+		if (Util.isEmpty(id)) {
+			id = matcher(url, "^http://www\\.dashubao\\.co/jieshaoinfo/(\\d+/\\d+)\\.htm$");
+		}
+		
+		if (Util.isEmpty(id)) {
 			id = matcher(url, "^http://m\\.dashubao\\.net/info-(\\d+)/$");
 			if (Util.isEmpty(id)) {
 				id = matcher(url, "^http://m\\.dashubao\\.net/wapbook-(\\d+)_?\\d*/$");

@@ -151,6 +151,11 @@
             android:launchMode="singleTask"
             android:theme="@style/ActivityTheme" />
         
+        <!-- 测试-->
+        <activity
+            android:name="com.lqy.abook.activity.TestActivity"
+            android:theme="@style/ActivityTheme" />
+        
         <meta-data
             android:name="BaiduMobAd_STAT_ID"
             android:value="18bfbaab5a" />

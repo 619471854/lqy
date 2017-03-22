@@ -13,9 +13,11 @@ public class MyLog {
 
 	public static final String SEPARATOR = "----------------------------------";
 
+	public static boolean isShowLog = true;
+
 	public static boolean isShowLog() {
-		return true;// CONSTANT.isDebug;// || CONSTANT.CurrentRunTime ==
-					// CONSTANT.RunTimeType.LOCATION;
+		return isShowLog;// CONSTANT.isDebug;// || CONSTANT.CurrentRunTime ==
+		// CONSTANT.RunTimeType.LOCATION;
 	}
 
 	public static void i(Object msg) {
