@@ -56,7 +56,7 @@ public class MainActivity extends MenuActivity {
 	private static MainActivity instance;
 	private BookGridAdapter adapter;
 	private BookDao dao = new BookDao();
-	private boolean hasNavigationBar;//是否是有地步导航栏（华为手机）
+	private boolean hasNavigationBar;// 是否是有地步导航栏（华为手机）
 
 	public static MainActivity getInstance() {
 		if (instance.isFinishing())
@@ -115,8 +115,6 @@ public class MainActivity extends MenuActivity {
 		btn_stop = findViewById(R.id.pager_stop);
 
 		hasNavigationBar = AndroidWorkaround.checkDeviceHasNavigationBar(this);
-		if (hasNavigationBar)
-			numLay.setGravity(Gravity.CENTER_VERTICAL);
 	}
 
 	@Override
@@ -177,7 +175,7 @@ public class MainActivity extends MenuActivity {
 			return;
 		}
 		// 每页3列，行数通过计算出来,下间隙是142dp，每行145dp
-		int rows = (GlobalConfig.getScreenHeight() - DisplayUtil.dip2px(_this, 142)) / DisplayUtil.dip2px(_this, 145);
+		int rows = (GlobalConfig.getScreenHeight() - DisplayUtil.dip2px(_this, 142)) / DisplayUtil.dip2px(_this, hasNavigationBar ? 135 : 145);
 		int scrollWid = GlobalConfig.getScreenWidth();
 		int spaceing = DisplayUtil.dip2px(_this, hasNavigationBar ? 10 : 20);
 		int columnWidth = (scrollWid - spaceing * 4) / 3;
