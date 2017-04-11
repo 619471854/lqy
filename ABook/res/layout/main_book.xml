@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg"
@@ -98,8 +99,8 @@
                 android:background="#66af43"
                 android:clickable="false"
                 android:enabled="false"
-                android:textColor="@color/white"
-                android:text="书架" />
+                android:text="书架"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/pager_toWeb"

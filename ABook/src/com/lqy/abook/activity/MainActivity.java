@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
@@ -31,6 +32,7 @@ import com.lqy.abook.load.Cache;
 import com.lqy.abook.load.FileUtil;
 import com.lqy.abook.load.LoadManager;
 import com.lqy.abook.parser.ParserManager;
+import com.lqy.abook.tool.AndroidWorkaround;
 import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.DisplayUtil;
 import com.lqy.abook.tool.GlobalConfig;
@@ -54,6 +56,7 @@ public class MainActivity extends MenuActivity {
 	private static MainActivity instance;
 	private BookGridAdapter adapter;
 	private BookDao dao = new BookDao();
+	private boolean hasNavigationBar;//是否是有地步导航栏（华为手机）
 
 	public static MainActivity getInstance() {
 		if (instance.isFinishing())
@@ -111,6 +114,9 @@ public class MainActivity extends MenuActivity {
 		btn_update = findViewById(R.id.pager_update);
 		btn_stop = findViewById(R.id.pager_stop);
 
+		hasNavigationBar = AndroidWorkaround.checkDeviceHasNavigationBar(this);
+		if (hasNavigationBar)
+			numLay.setGravity(Gravity.CENTER_VERTICAL);
 	}
 
 	@Override
@@ -173,7 +179,7 @@ public class MainActivity extends MenuActivity {
 		// 每页3列，行数通过计算出来,下间隙是142dp，每行145dp
 		int rows = (GlobalConfig.getScreenHeight() - DisplayUtil.dip2px(_this, 142)) / DisplayUtil.dip2px(_this, 145);
 		int scrollWid = GlobalConfig.getScreenWidth();
-		int spaceing = DisplayUtil.dip2px(_this, 20);
+		int spaceing = DisplayUtil.dip2px(_this, hasNavigationBar ? 10 : 20);
 		int columnWidth = (scrollWid - spaceing * 4) / 3;
 		int pages = (books.size() - 1) / (rows * 3) + 1;// 页数
 		if (lastPages != pages) {
