@@ -37,8 +37,10 @@ public class Parser6Mao extends ParserBase3 {
 		String html = toHtml(parseNodeByUrl(book.getDirectoryUrl(), createEqualFilter("div class=\"intro\""), encodeType));
 		if (!Util.isEmpty(html)) {
 			book.setType(matcher(html, "<span\\s*class=\"sort\">类型：([^<]+)</span>"));
-			book.setTip(matcher(html, "<li\\s*class=\"jieshao\">\\s*<span>([\\s\\S]+?)</span>\\s*</li>").replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll(
-					"\\s+", CONSTANT.EMPTY));
+			book.setNewChapter(matcher(html, "最新章节[^<]+<a[^>]+>([^<]+)</a>"));
+			String tip = matcher(html, "<li\\s*class=\"jieshao\">\\s*<span>([\\s\\S]+?)</span>\\s*</li>").replaceAll(Config.tagReg, CONSTANT.EMPTY)
+					.replaceAll(Config.nbsp, " ").replaceAll("\\s+", CONSTANT.EMPTY);
+			book.setTip(tip);
 			return true;
 		}
 		return false;
@@ -157,7 +159,29 @@ public class Parser6Mao extends ParserBase3 {
 	}
 
 	protected boolean setDetailUrl(BookEntity book) {
-		book.setDetailUrl(book.getDirectoryUrl());
-		return false;
+		String url = book.getDirectoryUrl();
+		if (Util.isEmpty(url))
+			return true;
+
+		String id = matcher(url, "http://www\\.6mao\\.com/html/\\d+/(\\d+)/index\\.html?");
+		if (!Util.isEmpty(id)) {
+			book.setDetailUrl(url);
+			book.setDirectoryUrl(url);
+			return false;
+		}
+		id = matcher(url, "http://www\\.6mao\\.com/book/(\\d+).html?");
+		if (!Util.isEmpty(id)) {
+			String typeId = null;
+			if (id.length() > 3)
+				typeId = id.substring(0, id.length() - 3);
+			else {
+				typeId = "0";
+			}
+			String dictUrl = String.format("http://www.6mao.com/html/%s/%s/index.html", typeId, id);
+			book.setDirectoryUrl(dictUrl);
+			book.setDetailUrl(dictUrl);
+			return false;
+		}
+		return true;
 	}
 }

@@ -246,7 +246,7 @@ public class Config {
 			biquge.wordsReg2 = "<span>字数：(\\d+)</span>";
 			biquge.tipsReg = "<p\\s*class=\"result-game-item-desc\">(((?!</p>)[\\s\\S])+)</p>";
 			biquge.tipsDetailReg = "<div\\s*class=\"txtbox\">(((?!</div>)[\\s\\S])+)</div>";
-			biquge.newChapterReg = null;
+			biquge.newChapterReg = "<a\\s*cpos=\"newchapter\"[^>]+>([^<]+)</a>";
 			biquge.newChapterReg2 = "<div\\s*class=\"lastzj\">[^<]+<a\\s*[^>]+>([^<]+)</a>";
 			biquge.updateTimeReg = "更新时间：</span>\\s*<span\\s*class=\"result-game-item-info-tag-title\">(\\d\\d\\d\\d-\\d\\d-\\d\\d)</span>";
 			biquge.completedReg = null;
