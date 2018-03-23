@@ -2,12 +2,16 @@ package com.lqy.abook.parser.site;
 
 import java.util.List;
 
+import org.htmlparser.Node;
+import org.htmlparser.tags.ImageTag;
+
 import com.lqy.abook.entity.BookAndChapters;
 import com.lqy.abook.entity.BookEntity;
 import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
+import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -26,8 +30,24 @@ public class Parser00ks extends ParserBase3 {
 	}
 
 	@Override
+	public List<ChapterEntity> parserBookDict(String url) {
+		String html = toHtml(parseNodeByUrl(url, createEqualFilter("div class=\"ml_list\""), encodeType));
+		if (!Util.isEmpty(html)) {
+			MyLog.i(TAG, "parserBookDict getParserResult ok");
+			return parserBookDictByHtml(url, html);
+		}
+		return null;
+	}
+
+	@Override
 	public String getChapterDetail(String url) {
-		return getChapterDetail(url, "<div id=\"content\">\\s*(((?!</div>)[\\s\\S])+)\\s*</div>");
+		String text = toText(parseNode(url, null, createEqualFilter("div class=\"novelcontent\""), encodeType));
+		if (!Util.isEmpty(text)) {
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
+			text = text.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
+			return text.trim();
+		}
+		return null;
 	}
 
 	protected boolean setDetailUrl(BookEntity book) {
@@ -41,34 +61,28 @@ public class Parser00ks extends ParserBase3 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String id = matcher(url, "http://m\\.00ksw\\.net/html/(\\d+/\\d+)");
-		if (Util.isEmpty(id))
-			id = matcher(url, "http://m\\.00ksw\\.net/ml/(\\d+/\\d+)/?");
+		String id = matcher(url, "https://m\\.1200ksw\\.com/html/(\\d+/\\d+)/?");
 
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://www\\.00ksw\\.net/html/(\\d+/\\d+)/?");
-			if (Util.isEmpty(id)) 
-				id = matcher(url, "http://www\\.00ksw\\.com/html/(\\d+/\\d+)/?");
+			id = matcher(url, "https://www\\.1200ksw\\.com/html/(\\d+/\\d+)/?");
 			if (Util.isEmpty(id))
 				return null;
 			html = null;// 重新加载电脑版网页,直接用html有问题
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页
-			url = "http://www.00ksw.com/html/" + id + "/";
+			url = "https://www.1200ksw.com/html/" + id + "/";
 		}
-		if (!url.endsWith("/"))
-			url += "/";
 
 		try {
-			html = toHtml(parseNode(url, html, createEqualFilter("div id=\"wrapper\""), encodeType));
+			html = toHtml(parseNode(url, html, createEqualFilter("div class=\"biaoqian\""), encodeType));
 
 			MyLog.i(TAG, "parserBookDict getParserResult ok");
 			if (!Util.isEmpty(html)) {
 				// 获取内容
-				BookEntity book = parserBookDetail(url, html);
+				BookEntity book = parserBookDetail(html);
 				MyLog.i(TAG, "getBookAndDict book  " + book == null ? null : book.getName());
 				// 获取章节
-				html = toHtml(parseNodeByHtml(html, createEqualFilter("div id=\"list\"")));
+				html = toHtml(parseNodeByHtml(html, createEqualFilter("div class=\"ml_list\"")));
 				List<ChapterEntity> chapters = parserBookDictByHtml(url, html);
 				if (chapters == null || chapters.size() == 0) {
 					MyLog.i(TAG, "getBookAndDict getChapters failed");
@@ -88,7 +102,26 @@ public class Parser00ks extends ParserBase3 {
 		return null;
 	}
 
-	public BookEntity parserBookDetail(String url, String html) {
-		return parserBookDetail(url, html, "http://www.00ksw.net");
+	protected BookEntity parserBookDetail(String html) {
+		try {
+			String infoHtml = toHtml(parseNodeByHtml(html, createEqualFilter("div class=\"catalog\"")));
+			BookEntity book = new BookEntity();
+			book.setSite(site);
+			book.setName(matcher(infoHtml, "<h1>([^<]*)</h1>"));
+			book.setAuthor(matcher(infoHtml, "<span>作者：([^<]*)</span>"));
+			book.setUpdateTime(matcher(infoHtml, "<span>更新：(\\d\\d\\d\\d-\\d\\d-\\d\\d)[^<]*</span>"));
+
+			String tipHtml = toHtml(parseNodeByHtml(html, createEqualFilter("p class=\"jj\"")));
+			book.setTip(tipHtml.replaceAll(Config.tagReg, CONSTANT.EMPTY).replaceAll("\\s", CONSTANT.EMPTY));
+
+			Node node = parseNodeByHtml(html, createEqualFilter("div class=\"pic\""));
+			ImageTag cover = (ImageTag) node.getChildren().elementAt(0);
+			book.setCover("https://www.1200ksw.com" + cover.getImageURL());
+
+			return book;
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

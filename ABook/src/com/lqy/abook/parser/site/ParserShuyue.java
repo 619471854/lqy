@@ -42,22 +42,17 @@ public class ParserShuyue extends ParserBase3 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		html = null;// 手机端网页，需要重新加载电脑版网页
-		String id = matcher(url, "http://m\\.09xs\\.com/wapbook-(\\d+)[^\\d]?(\\d*)/?");
-		if (Util.isEmpty(id))
-			id = matcher(url, "http://m\\.09xs\\.com/info-(\\d+)/?");
+		String id = matcher(url, "http://www\\.biqugewx\\.com/kan_(\\d+)/?");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://www\\.09xs\\.com/kan_(\\d+)/");
+			id = matcher(url, "http://m\\.biqugewx\\.com/info-(\\d+)/?");
 			if (Util.isEmpty(id))
-				id = matcher(url, "http://www\\.shuyuewu\\.com/kan_(\\d+)/");
+				id = matcher(url, "http://m\\.biqugewx\\.com/wapbook-(\\d+)_\\d*/?");
 			if (Util.isEmpty(id))
 				return null;
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页
-			url = "http://www.09xs.com/kan_" + id;
+			url = "http://www.biqugewx.com/kan_" + id + "/";
 		}
-		if (!url.endsWith("/"))
-			url += "/";
 
 		try {
 			Node node = parseNode(url, html, createEqualFilter("div id=\"wrapper\""), encodeType);

@@ -73,16 +73,23 @@ public class Parser6Mao extends ParserBase3 {
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String id = matcher(url, "http://m\\.6mao\\.com/wapbook/(\\d+)\\.html/?");
+		String id = matcher(url, "http://m\\.6mao\\.com/wapbook/(\\d+)\\.html");
+		if (!Util.isEmpty(id)) {
+			id = getTypeId(id, url, html) + "/" + id;
+		} else {
+			id = matcher(url, "http://m\\.6mao\\.com/html/(\\d+/\\d+)/index\\.html");
+			if (Util.isEmpty(id))
+				id = matcher(url, "http://m\\.6mao\\.com/(\\d+/\\d+)_\\d+");
+		}
 
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://www\\.6mao\\.com/html/(\\d+/\\d+)/index\\.html?");
+			id = matcher(url, "http://www\\.6mao\\.com/html/(\\d+/\\d+)/index\\.html");
 			if (Util.isEmpty(id))
 				return null;
 			html = null;// 重新加载电脑版网页,直接用html有问题
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页
-			url = "http://www.6mao.com/html/" + getTypeId(id, url, html) + "/" + id + "/index.html";
+			url = "http://www.6mao.com/html/" + id + "/index.html";
 		}
 
 		try {

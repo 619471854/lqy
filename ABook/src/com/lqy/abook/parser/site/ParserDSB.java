@@ -188,9 +188,9 @@ public class ParserDSB extends ParserBase3 {
 		}
 		
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "^http://m\\.dashubao\\.net/info-(\\d+)/$");
+			id = matcher(url, "^http://m\\.dashubao\\.net/info-(\\d+)/?$");
 			if (Util.isEmpty(id)) {
-				id = matcher(url, "^http://m\\.dashubao\\.net/wapbook-(\\d+)_?\\d*/$");
+				id = matcher(url, "^http://m\\.dashubao\\.net/bookmulu-(\\d+)_?\\d*/?$");
 			}
 			if (Util.isEmpty(id))
 				return null;
