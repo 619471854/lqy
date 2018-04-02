@@ -11,6 +11,7 @@ import com.lqy.abook.entity.ChapterEntity;
 import com.lqy.abook.entity.SiteEnum;
 import com.lqy.abook.parser.Config;
 import com.lqy.abook.parser.ParserBase3;
+import com.lqy.abook.tool.CONSTANT;
 import com.lqy.abook.tool.MyLog;
 import com.lqy.abook.tool.Util;
 
@@ -35,23 +36,30 @@ public class ParserShuyue extends ParserBase3 {
 
 	@Override
 	public String getChapterDetail(String url) {
-		return getChapterDetail(url, "您提供精彩小说阅读。\\s*(((?!手机用户请浏览m.shuyuewu.com阅读)[\\s\\S])+)");
+		String text = toText(parseNode(url, null, createEqualFilter("div id=\"content\""), encodeType));
+		if (!Util.isEmpty(text)) {
+			MyLog.i(TAG, "asynGetChapterDetail getParserResult ok");
+			text = text.replaceAll("\\s+", CONSTANT.EMPTY);
+			text = text.replaceAll("&nbsp;&nbsp;&nbsp;&nbsp;", "\n        ");
+			return text.trim();
+		}
+		return getChapterDetail(url, "您提供精彩小说阅读。\\s*(((?!手机用户请浏览m.09xs.com阅读)[\\s\\S])+)");
 	}
 
 	/**
 	 * 通过url与html解析小说目录
 	 */
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
-		String id = matcher(url, "http://www\\.biqugewx\\.com/kan_(\\d+)/?");
+		String id = matcher(url, "https://m\\.biqugewx\\.com/info-(\\d+)/?");
+		if (Util.isEmpty(id))
+			id = matcher(url, "https://m\\.biqugewx\\.com/wapbook-(\\d+)_\\d*/?");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "http://m\\.biqugewx\\.com/info-(\\d+)/?");
-			if (Util.isEmpty(id))
-				id = matcher(url, "http://m\\.biqugewx\\.com/wapbook-(\\d+)_\\d*/?");
+			id = matcher(url, "https://www\\.biqugewx\\.com/kan_(\\d+)/?");
 			if (Util.isEmpty(id))
 				return null;
 		} else {
 			html = null;// 手机端网页，需要重新加载电脑版网页
-			url = "http://www.biqugewx.com/kan_" + id + "/";
+			url = "https://www.biqugewx.com/kan_" + id + "/";
 		}
 
 		try {
@@ -87,6 +95,6 @@ public class ParserShuyue extends ParserBase3 {
 	}
 
 	public BookEntity parserBookDetail(String url, String html) {
-		return parserBookDetail(url, html, "http://www.shuyuewu.com");
+		return parserBookDetail(url, html, "https://www.biqugewx.com");
 	}
 }

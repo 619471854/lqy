@@ -113,7 +113,6 @@ public class ParserQidian extends ParserBase {
 		return book;// 已找到
 	}
 
-
 	protected boolean processSearchNode(List<BookEntity> books, String html, String[] searchKey) throws Exception {
 		// MyLog.i(html);
 		BookEntity book = new BookEntity();
@@ -283,26 +282,28 @@ public class ParserQidian extends ParserBase {
 	 */
 	@Override
 	public BookAndChapters parserBrowser(String url, String html, String cookie) {
+		if (true)
+			return null;
 		String detailUrl = null;
-		String id = matcher(url, "http://m\\.qidian\\.com/book/(\\d+)");
+		String id = matcher(url, "https://m\\.qidian\\.com/book/(\\d+)");
 		if (Util.isEmpty(id))
-			id = matcher(url, "^http://book\\.qidian\\.com/info/(\\d+)$");
+			id = matcher(url, "^https://book\\.qidian\\.com/info/(\\d+)$");
 		if (Util.isEmpty(id)) {
-			id = matcher(url, "^http://read\\.qidian\\.com/chapter/([\\w-]+)/([\\w-]+)$");
+			id = matcher(url, "^https://read\\.qidian\\.com/chapter/([\\w-]+)/([\\w-]+)$");
 			if (Util.isEmpty(id))
 				return null;
 			detailUrl = parserBookDetailUrl(url, html);
 		} else {
-			detailUrl = "http://book.qidian.com/info/" + id;
+			detailUrl = "https://book.qidian.com/info/" + id;
 		}
 
 		BookEntity book = new BookEntity();
 		book.setSite(site);
 		book.setDetailUrl(detailUrl);
-		id = matcher(detailUrl, "^http://book\\.qidian\\.com/info/(\\d+)$");
+		id = matcher(detailUrl, "^https://book\\.qidian\\.com/info/(\\d+)$");
 		if (Util.isEmpty(id))
 			return null;
-		book.setDirectoryUrl("http://book.qidian.com/ajax/book/category?bookId=" + id);
+		book.setDirectoryUrl("https://book.qidian.com/ajax/book/category?bookId=" + id);
 
 		if (!parserBookDetail(book, url.equals(detailUrl) ? html : null)) {
 			return null;

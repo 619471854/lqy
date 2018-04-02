@@ -11,7 +11,7 @@ public enum SiteEnum {
 		return Other;
 	}
 
-	public static SiteEnum[] allSearchSite = new SiteEnum[] { SiteEnum.Biquge, SiteEnum._6Mao, SiteEnum.SM, SiteEnum.Shuyue, SiteEnum._00ks, SiteEnum.DSB,
+	public static SiteEnum[] allSearchSite = new SiteEnum[] { SiteEnum.Biquge, SiteEnum._6Mao,SiteEnum.Shuyue, SiteEnum._00ks, SiteEnum.DSB,
 			SiteEnum.Qidian };
 	public static SiteEnum[] searchSite = allSearchSite;
 
